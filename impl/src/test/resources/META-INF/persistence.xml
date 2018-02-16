@@ -1,0 +1,36 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="defaultJPAUnit">
+        <class>com.walterjwhite.shell.api.model.Node</class>
+        <class>com.walterjwhite.shell.api.model.ShellCommand</class>
+        <class>com.walterjwhite.shell.api.model.ShellCommandEnvironmentProperty</class>
+        <class>com.walterjwhite.shell.api.model.CommandOutput</class>
+        <class>com.walterjwhite.shell.api.model.CommandError</class>
+        <class>com.walterjwhite.shell.api.model.IPAddress</class>
+        <class>com.walterjwhite.shell.api.model.Service</class>
+        <class>com.walterjwhite.shell.api.model.ServiceStatus</class>
+        <class>com.walterjwhite.shell.api.model.BindAddress</class>
+        <class>com.walterjwhite.shell.api.model.BindAddressState</class>
+        <class>com.walterjwhite.shell.api.model.ServiceCommand</class>
+
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+        <properties>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+
+            <property name="hibernate.connection.url" value="jdbc:h2:./db/repository"/>
+
+            <!--
+            <property name="hibernate.hbm2ddl.import_files_sql_extractor" value="org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor" />
+            -->
+
+            <!--<property name="hibernate.show_sql" value="true"/>-->
+            <property name="org.hibernate.flushMode" value="COMMIT"/>
+        </properties>
+    </persistence-unit>
+</persistence>
