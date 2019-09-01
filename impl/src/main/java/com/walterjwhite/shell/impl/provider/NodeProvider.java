@@ -1,14 +1,13 @@
 package com.walterjwhite.shell.impl.provider;
 
-import com.google.inject.persist.Transactional;
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.datastore.api.repository.Repository;
+import com.walterjwhite.infrastructure.inject.core.NodeId;
+import com.walterjwhite.property.impl.annotation.Property;
 import com.walterjwhite.shell.api.model.Node;
-import com.walterjwhite.shell.api.property.NodeId;
-import com.walterjwhite.shell.api.repository.NodeRepository;
+import com.walterjwhite.shell.impl.query.FindNodeByUUIDQuery;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.persistence.NoResultException;
 
 @Singleton
 public class NodeProvider implements Provider<Node> {
@@ -16,36 +15,27 @@ public class NodeProvider implements Provider<Node> {
   protected final String nodeId;
   protected final Node node;
 
-  protected final Provider<NodeRepository> nodeRepositoryProvider;
+  protected final Provider<Repository> repositoryProvider;
 
   @Inject
   public NodeProvider(
-      @Property(NodeId.class) String nodeId, Provider<NodeRepository> nodeRepositoryProvider) {
+      @Property(NodeId.class) String nodeId, Provider<Repository> repositoryProvider) {
     super();
 
     this.nodeId = nodeId;
-    this.nodeRepositoryProvider = nodeRepositoryProvider;
+    this.repositoryProvider = repositoryProvider;
 
     this.node = getNode();
   }
 
   protected Node getNode() {
-    try {
-      return (nodeRepositoryProvider.get().findByUuid(nodeId));
-    } catch (NoResultException e) {
-      return (createNode(nodeId));
-    }
-  }
-
-  @Transactional
-  protected Node createNode(final String nodeId) {
-    return (nodeRepositoryProvider.get().persist(new Node(nodeId)));
+    return repositoryProvider.get().query(new FindNodeByUUIDQuery(nodeId));
   }
 
   //  @Singleton
   @Override
   public Node get() {
-    //    nodeRepositoryProvider.get().refresh(node);
+    //    repositoryProvider.get().refresh(node);
     return node;
   }
 }

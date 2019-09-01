@@ -3,7 +3,13 @@ package com.walterjwhite.shell.api.model;
 import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
 import com.walterjwhite.shell.api.enumeration.ServiceAction;
 import javax.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@Data
+@ToString(doNotUseGetters = true)
+// @PersistenceCapable
 @Entity
 public class ServiceCommand extends AbstractEntity implements ShellCommandable {
   @ManyToOne(optional = false)
@@ -14,6 +20,7 @@ public class ServiceCommand extends AbstractEntity implements ShellCommandable {
   @Column(nullable = false, updatable = false)
   protected ServiceAction serviceAction;
 
+  @EqualsAndHashCode.Exclude
   @Column(nullable = false, updatable = false)
   protected int timeout;
 
@@ -21,51 +28,8 @@ public class ServiceCommand extends AbstractEntity implements ShellCommandable {
   @JoinColumn(nullable = false, updatable = false)
   protected ShellCommand shellCommand;
 
-  protected ServiceStatus serviceStatus;
-
-  public Service getService() {
-    return service;
-  }
-
-  public void setService(Service service) {
-    this.service = service;
-  }
-
-  public ServiceAction getServiceAction() {
-    return serviceAction;
-  }
-
-  public void setServiceAction(ServiceAction serviceAction) {
-    this.serviceAction = serviceAction;
-  }
-
-  @Override
-  public ShellCommand getShellCommand() {
-    return shellCommand;
-  }
-
-  @Override
-  public void setShellCommand(ShellCommand shellCommand) {
-    this.shellCommand = shellCommand;
-  }
-
-  @Override
-  public int getTimeout() {
-    return timeout;
-  }
-
-  @Override
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
-  }
-
-  public ServiceStatus getServiceStatus() {
-    return serviceStatus;
-  }
-
-  public void setServiceStatus(ServiceStatus serviceStatus) {
-    this.serviceStatus = serviceStatus;
-  }
+  // TODO: what is the intent here?
+  @ManyToOne @JoinColumn @EqualsAndHashCode.Exclude protected ServiceStatus serviceStatus;
 
   public ServiceCommand withService(Service service) {
     this.service = service;

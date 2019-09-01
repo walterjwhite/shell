@@ -1,34 +1,34 @@
 package com.walterjwhite.shell.impl.service;
 
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.datastore.api.repository.Repository;
+import com.walterjwhite.property.impl.annotation.Property;
 import com.walterjwhite.shell.api.enumeration.PingResponseType;
-import com.walterjwhite.shell.api.model.*;
+import com.walterjwhite.shell.api.model.CommandOutput;
+import com.walterjwhite.shell.api.model.IPAddress;
+import com.walterjwhite.shell.api.model.ShellCommand;
 import com.walterjwhite.shell.api.model.ping.PingRequest;
 import com.walterjwhite.shell.api.model.ping.PingResponse;
-import com.walterjwhite.shell.api.repository.IPAddressRepository;
 import com.walterjwhite.shell.api.service.PingService;
 import com.walterjwhite.shell.api.service.ShellExecutionService;
 import com.walterjwhite.shell.impl.property.PingTimeout;
+import com.walterjwhite.shell.impl.query.FindIPAddressByIPAddressQuery;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Provider;
 
 public class DefaultPingService extends AbstractSingleShellCommandService<PingRequest>
     implements PingService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPingService.class);
-
-  protected final IPAddressRepository ipAddressRepository;
+  protected final Provider<Repository> repositoryProvider;
 
   @Inject
   public DefaultPingService(
       ShellCommandBuilder shellCommandBuilder,
       ShellExecutionService shellExecutionService,
-      IPAddressRepository ipAddressRepository,
+      Provider<Repository> repositoryProvider,
       @Property(PingTimeout.class) int pingTimeout) {
     super(shellCommandBuilder, shellExecutionService, pingTimeout);
-    this.ipAddressRepository = ipAddressRepository;
+    this.repositoryProvider = repositoryProvider;
   }
 
   protected String getCommandLine(PingRequest pingRequest) {
@@ -83,9 +83,7 @@ public class DefaultPingService extends AbstractSingleShellCommandService<PingRe
       //      return ((PingRequest) repository.merge(pingRequest));
       return;
     } else {
-      LOGGER.warn("return code:" + pingRequest.getShellCommand().getReturnCode());
-
-      pingRequest.setPingResponseType(PingResponseType.Other);
+      handleOther(pingRequest);
       //      return ((PingRequest) repository.merge(pingRequest));
       // throw (new RuntimeException("Something bad happened."));
       // return(new PingResponse());
@@ -94,8 +92,15 @@ public class DefaultPingService extends AbstractSingleShellCommandService<PingRe
     }
   }
 
+  protected void handleOther(PingRequest pingRequest) {
+    pingRequest.setPingResponseType(PingResponseType.Other);
+  }
+
   protected IPAddress getIPAddress(final ShellCommand shellCommand) {
-    return (ipAddressRepository.findByAddressOrCreate(getIPAddressFromPingOutput(shellCommand)));
+    return (repositoryProvider
+        .get()
+        .query(new FindIPAddressByIPAddressQuery(getIPAddressFromPingOutput(shellCommand)) /*,
+            PersistenceOption.Create*/));
   }
 
   private static String getIPAddressFromPingOutput(ShellCommand shellCommand) {
@@ -121,7 +126,6 @@ public class DefaultPingService extends AbstractSingleShellCommandService<PingRe
         break;
       }
 
-      LOGGER.info("line:" + shellCommand.getOutputs().get(i).getOutput());
       final String[] splitLine = shellCommand.getOutputs().get(i).getOutput().split(" ");
       final int ttl = Integer.valueOf(splitLine[6].replace("ttl=", ""));
       final double time = Double.valueOf(splitLine[7].replace("time=", ""));

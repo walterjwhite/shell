@@ -1,46 +1,49 @@
 package com.walterjwhite.shell.impl;
 
-import com.walterjwhite.google.guice.GuiceHelper;
+import com.walterjwhite.infrastructure.inject.core.helper.ApplicationHelper;
+import com.walterjwhite.interruptable.Interruptable;
+import com.walterjwhite.interruptable.annotation.InterruptableTask;
 import com.walterjwhite.shell.api.model.ShellCommand;
 import com.walterjwhite.shell.api.service.OutputCollector;
 import com.walterjwhite.shell.impl.collector.InputConsumable;
 import com.walterjwhite.shell.impl.collector.LoggerOutputCollector;
 import com.walterjwhite.shell.impl.collector.ShellCommandOutputCollector;
+import com.walterjwhite.timeout.TimeConstrainedMethodInvocation;
+import com.walterjwhite.timeout.annotation.TimeConstrained;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
-public abstract class AbstractProcessExecution {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessExecution.class);
-
-  protected final transient ScheduledExecutorService interrupterExecutorService =
-      Executors.newScheduledThreadPool(1);
-
+public abstract class AbstractProcessExecution
+    implements TimeConstrainedMethodInvocation, Interruptable {
   protected final ShellCommand shellCommand;
   protected final Thread inputThread;
   protected final Thread errorThread;
   protected final OutputStream outputStream;
-
-  protected ScheduledFuture interrupter;
+  protected final boolean requiresExplicitExit;
+  protected final ChronoUnit interruptGracePeriodUnits;
+  protected final long interruptGracePeriodValue;
 
   protected AbstractProcessExecution(
       ShellCommand shellCommand,
       final InputStream inputStream,
       final InputStream errorStream,
-      final OutputStream outputStream) {
+      final OutputStream outputStream,
+      boolean requiresExplicitExit,
+      ChronoUnit interruptGracePeriodUnits,
+      long interruptGracePeriodValue) {
     super();
     this.shellCommand = shellCommand;
     this.outputStream = outputStream;
 
     this.inputThread = setupMonitoringThread(inputStream, false);
     this.errorThread = setupMonitoringThread(errorStream, true);
+    this.requiresExplicitExit = requiresExplicitExit;
+    this.interruptGracePeriodUnits = interruptGracePeriodUnits;
+    this.interruptGracePeriodValue = interruptGracePeriodValue;
   }
 
   public Thread setupMonitoringThread(InputStream inputStream, final boolean isError) {
@@ -75,7 +78,10 @@ public abstract class AbstractProcessExecution {
     int i = 0;
     for (Class<? extends OutputCollector> outputCollectorClass :
         outputCollectorConfiguration.getOutputCollectorClasses())
-      outputCollectors[i++] = GuiceHelper.getGuiceInjector().getInstance(outputCollectorClass);
+      outputCollectors[i++] =
+          ApplicationHelper.getApplicationInstance()
+              .getInjector()
+              .getInstance(outputCollectorClass);
 
     return (outputCollectors);
   }
@@ -83,7 +89,6 @@ public abstract class AbstractProcessExecution {
   protected void setTimeout() throws Exception {
     final int timeout = getTimeout();
     if (getTimeout() > 0) {
-      interrupter = scheduleInterruption(timeout);
 
       doSetTimeout(timeout);
     }
@@ -95,84 +100,76 @@ public abstract class AbstractProcessExecution {
 
   protected abstract int getReturnCode() throws InterruptedException, IOException;
 
-  protected void kill() throws IOException {
-    try {
-      outputStream.write(3);
-      outputStream.flush();
+  protected void kill(Exception e) throws IOException, InterruptedException {
+    outputStream.write(3);
+    outputStream.flush();
 
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-      }
-    } catch (Exception e) {
-      LOGGER.warn("Error killing process", e);
-    }
+    Thread.sleep(1000);
   }
 
+  @InterruptableTask
+  @TimeConstrained
   public void run() throws IOException, InterruptedException {
+    doRun();
+    setReturnCode();
+    syncInputs();
+  }
+
+  public void interrupt() {
+    inputThread.interrupt();
+    errorThread.interrupt();
+  }
+
+  /**
+   * Sets the timeout on the run method, if the execution fails to complete within that time, it is
+   * interrupted
+   */
+  public Duration getAllowedExecutionDuration() {
+    return Duration.of(getTimeout(), ChronoUnit.SECONDS);
+  }
+
+  protected void doRun() throws IOException, InterruptedException {
     try {
       setTimeout();
 
-      // if we're running in a chroot (or SSH), type this in
-      // whenever the actual command finishes, this will execute and cause the input/error streams
-      // to close
-      outputStream.write("\nexit\n".getBytes(Charset.defaultCharset()));
-      outputStream.flush();
+      if (requiresExplicitExit) exitAfterCompletionOfCommand();
 
     } catch (IOException e) {
-      if (!e.getMessage().contains("Stream closed") && !e.getMessage().contains("Broken pipe")) {
-        LOGGER.error("Error exiting cleanly, killing command.", e);
-        kill();
-      } else {
-        LOGGER.debug("Process already exited");
+      if (exitedButNotCleanly(e)) {
+        kill(e);
       }
     } catch (Exception e) {
-      LOGGER.error("Error exiting cleanly, killing command.", e);
-      kill();
+      kill(e);
     }
+  }
 
+  protected void exitAfterCompletionOfCommand() throws IOException {
+    // if we're running in a chroot (or SSH), type this in
+    // whenever the actual command finishes, this will execute and cause the input/error streams
+    // to close
+    outputStream.write("\nexit\n".getBytes(Charset.defaultCharset()));
+    outputStream.flush();
+  }
+
+  protected boolean exitedButNotCleanly(Exception e) {
+    return !e.getMessage().contains("Stream closed") && !e.getMessage().contains("Broken pipe");
+  }
+
+  protected void setReturnCode() {
     try {
       shellCommand.setReturnCode(getReturnCode());
     } catch (Exception e) {
       shellCommand.setReturnCode(-1);
     }
+  }
 
+  protected void syncInputs() throws InterruptedException {
     inputThread.join();
     errorThread.join();
-
-    cancel();
   }
 
-  protected ScheduledFuture scheduleInterruption(int timeout) {
-    return interrupterExecutorService.schedule(new TimeoutRunnable(), timeout, TimeUnit.SECONDS);
-  }
-
-  protected boolean cancel() {
-    if (interrupter != null) {
-      try {
-        if (!interrupter.isCancelled() && !interrupter.isDone()) {
-          return interrupter.cancel(true);
-        }
-
-        return false;
-      } catch (Exception e) {
-        LOGGER.trace("error cancelling task", e);
-        return false;
-      }
-    }
-
-    // the method did not have an timeout
-    return false;
-  }
-
-  private class TimeoutRunnable implements Runnable {
-    @Override
-    public void run() {
-      try {
-        kill();
-      } catch (IOException e) {
-        throw (new RuntimeException("Error killing the process", e));
-      }
-    }
+  @Override
+  public Duration getInterruptGracePeriodTimeout() {
+    return Duration.of(interruptGracePeriodValue, interruptGracePeriodUnits);
   }
 }

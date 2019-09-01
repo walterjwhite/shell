@@ -1,0 +1,5 @@
+group = 'com.walterjwhite.modules.shell'
+description = 'shell - impl'
+dependencies {
+  compile project(':infrastructure:datastore:api:service')
+}

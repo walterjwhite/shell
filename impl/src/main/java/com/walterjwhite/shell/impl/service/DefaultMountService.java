@@ -1,14 +1,15 @@
 package com.walterjwhite.shell.impl.service;
 
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.datastore.api.repository.Repository;
+import com.walterjwhite.property.impl.annotation.Property;
 import com.walterjwhite.shell.api.enumeration.MountAction;
 import com.walterjwhite.shell.api.enumeration.VFSType;
 import com.walterjwhite.shell.api.model.MountCommand;
 import com.walterjwhite.shell.api.model.MountPoint;
-import com.walterjwhite.shell.api.repository.MountPointRepository;
 import com.walterjwhite.shell.api.service.MountService;
 import com.walterjwhite.shell.api.service.ShellExecutionService;
 import com.walterjwhite.shell.impl.property.MountTimeout;
+import com.walterjwhite.shell.impl.query.FindMountPointByMountPointQuery;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,24 +23,33 @@ import javax.inject.Provider;
 
 public class DefaultMountService extends AbstractMultipleShellCommandService<MountCommand>
     implements MountService {
-  protected final Provider<MountPointRepository> mountPointRepositoryProvider;
+  protected final Provider<Repository> repositoryProvider;
 
   @Inject
   public DefaultMountService(
       ShellCommandBuilder shellCommandBuilder,
       ShellExecutionService shellExecutionService,
       @Property(MountTimeout.class) int timeout,
-      Provider<MountPointRepository> mountPointRepositoryProvider) {
+      Provider<Repository> repositoryProvider) {
     super(shellCommandBuilder, shellExecutionService, timeout);
-    this.mountPointRepositoryProvider = mountPointRepositoryProvider;
+    this.repositoryProvider = repositoryProvider;
   }
 
   @Override
   protected void doBefore(MountCommand mountCommand) {
     super.doBefore(mountCommand);
+    mountCommand.setTimeout(timeout);
     mountCommand.setMountPoint(
-        mountPointRepositoryProvider.get().findByMountPointOrCreate(mountCommand.getMountPoint()));
+        repositoryProvider
+            .get()
+            .query(new FindMountPointByMountPointQuery(mountCommand.getMountPoint())));
   }
+
+  //  protected Supplier<PersistenceOptionConfiguration> getCreateConfiguration(MountCommand
+  // mountCommand){
+  //    return () -> new PersistenceOptionConfiguration(
+  //            PersistenceOption.Create, mountCommand.getMountPoint());
+  //  }
 
   protected void doBeforeEach(MountCommand mountCommand) {
 
@@ -52,6 +62,7 @@ public class DefaultMountService extends AbstractMultipleShellCommandService<Mou
   protected void prepareDevice(MountPoint mountPoint) {
     // do not create "device" mount points for psuedo filesystems that do not have an actual
     // underlying device
+    // TODO: this SHOULD *NOT* be hard-coded
     if ("none".equals(mountPoint.getDevice())) return;
 
     final File deviceFile = new File(getDevice(mountPoint.getDevice()));

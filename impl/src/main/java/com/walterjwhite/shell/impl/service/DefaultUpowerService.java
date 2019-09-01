@@ -1,6 +1,6 @@
 package com.walterjwhite.shell.impl.service;
 
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.property.impl.annotation.Property;
 import com.walterjwhite.shell.api.enumeration.BatteryState;
 import com.walterjwhite.shell.api.model.BatteryRequest;
 import com.walterjwhite.shell.api.model.BatteryStatus;
@@ -8,16 +8,13 @@ import com.walterjwhite.shell.api.model.Node;
 import com.walterjwhite.shell.api.service.ShellExecutionService;
 import com.walterjwhite.shell.api.service.UpowerService;
 import com.walterjwhite.shell.impl.property.UpowerTimeout;
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultUpowerService extends AbstractSingleShellCommandService<BatteryRequest>
     implements UpowerService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUpowerService.class);
-
   protected final Node node;
 
   @Inject
@@ -49,19 +46,12 @@ public class DefaultUpowerService extends AbstractSingleShellCommandService<Batt
       final Matcher stateMatcher = statePattern.matcher(line);
 
       if (stateMatcher.matches()) {
-        LOGGER.debug("state matches:" + stateMatcher.matches());
-        // LOGGER.debug("state matches:" + stateMatcher.group(0));
-        LOGGER.debug("state matches:" + stateMatcher.group(1));
-
         state = stateMatcher.group(1);
-        // LOGGER.debug("state matches:" + stateMatcher.group(2));
         continue;
       }
 
       final Matcher percentageMatcher = percentagePattern.matcher(line);
       if (percentageMatcher.matches()) {
-        LOGGER.debug("percentage matches:" + percentageMatcher.matches());
-        LOGGER.debug("percentage matches:" + percentageMatcher.group(1));
         percentage = Integer.valueOf(percentageMatcher.group(1));
         continue;
       }
@@ -70,6 +60,7 @@ public class DefaultUpowerService extends AbstractSingleShellCommandService<Batt
     batteryRequest.setBatteryStatus(
         new BatteryStatus(
             node,
+            LocalDateTime.now(),
             BatteryState.getFromUpowerString(state),
             Integer.valueOf(percentage),
             batteryRequest.getShellCommand()));

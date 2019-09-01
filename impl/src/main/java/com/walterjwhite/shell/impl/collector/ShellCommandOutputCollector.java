@@ -4,7 +4,11 @@ import com.walterjwhite.shell.api.model.CommandError;
 import com.walterjwhite.shell.api.model.CommandOutput;
 import com.walterjwhite.shell.api.model.ShellCommand;
 import com.walterjwhite.shell.api.service.OutputCollector;
+import lombok.Getter;
+import lombok.ToString;
 
+@ToString
+@Getter
 public class ShellCommandOutputCollector implements OutputCollector {
   protected int outputIndex = 0;
   protected int errorIndex = 0;
@@ -21,18 +25,5 @@ public class ShellCommandOutputCollector implements OutputCollector {
     } else {
       shellCommand.getOutputs().add(new CommandOutput(shellCommand, outputIndex++, line));
     }
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getName()
-        + "{"
-        + "outputIndex="
-        + outputIndex
-        + ", errorIndex="
-        + errorIndex
-        + ", shellCommand="
-        + shellCommand.getCommandLine()
-        + '}';
   }
 }

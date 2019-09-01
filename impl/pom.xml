@@ -1,102 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.walterjwhite.modules</groupId>
-		<artifactId>shell</artifactId>
-		<version>0.0.15-SNAPSHOT</version>
-	</parent>
-
-	<groupId>com.walterjwhite.modules.shell</groupId>
-	<artifactId>impl</artifactId>
-	<packaging>jar</packaging>
-	<name>shell - impl</name>
-	<description>
-		shell impl
-	</description>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.walterjwhite.modules.shell.api</groupId>
-			<artifactId>service</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-		</dependency>
-
-		<!--<dependency>-->
-			<!--<groupId>com.walterjwhite.infrastructure.dependencies</groupId>-->
-			<!--<artifactId>sshj</artifactId>-->
-			<!--<version>0.0.15-SNAPSHOT</version>-->
-			<!--<type>pom</type>-->
-		<!--</dependency>-->
-
-		<!--<dependency>-->
-			<!--<groupId>com.walterjwhite.infrastructure.dependencies</groupId>-->
-			<!--<artifactId>expectit</artifactId>-->
-			<!--<version>0.0.15-SNAPSHOT</version>-->
-			<!--<type>pom</type>-->
-		<!--</dependency>-->
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.google-guice</groupId>
-			<artifactId>core</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.google-guice.modules</groupId>
-			<artifactId>guava-event-bus</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
-			<artifactId>expectit</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-			<type>pom</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-			<type>pom</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.modules.queue.api</groupId>
-			<artifactId>service</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.google-guice.modules</groupId>
-			<artifactId>property-test</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-            <scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
-			<artifactId>h2</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
-			<artifactId>hikari-jdbc-connection-pool</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
-			<artifactId>hibernate-hikari</artifactId>
-			<version>0.0.15-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.walterjwhite.java.modules</groupId>
+    <artifactId>shell</artifactId>
+    <version>0.0.15-SNAPSHOT</version>
+  </parent>
+  <groupId>com.walterjwhite.java.modules.shell</groupId>
+  <artifactId>impl</artifactId>
+  <packaging>jar</packaging>
+  <name>shell - impl</name>
+  <description>shell impl</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.walterjwhite.java.modules.shell.api</groupId>
+      <artifactId>service</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.dependencies</groupId>-->
+    <!--<artifactId>sshj</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--<type>pom</type>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.dependencies</groupId>-->
+    <!--<artifactId>expectit</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--<type>pom</type>-->
+    <!--</dependency>-->
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.inject</groupId>
+      <artifactId>core</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.infrastructure.google-guice.modules</groupId>-->
+    <!--<artifactId>guava-event-bus</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--</dependency>-->
+    <dependency>
+      <groupId>com.walterjwhite.java.dependencies</groupId>
+      <artifactId>expectit</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.dependencies</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+      <type>pom</type>
+    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.modules.queue.api</groupId>-->
+    <!--<artifactId>service</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.infrastructure.google-guice.modules</groupId>-->
+    <!--<artifactId>property-test</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--<scope>test</scope>-->
+    <!--</dependency>-->
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.datastore</groupId>
+      <artifactId>impl</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.dependencies</groupId>
+      <artifactId>h2</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.dependencies</groupId>
+      <artifactId>hikari-jdbc-connection-pool</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.dependencies</groupId>
+      <artifactId>hibernate-hikari</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.datastore.api</groupId>
+      <artifactId>repository</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

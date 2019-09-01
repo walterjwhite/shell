@@ -1,31 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>com.walterjwhite.modules.shell</groupId>
-        <artifactId>api</artifactId>
-        <version>0.0.15-SNAPSHOT</version>
-    </parent>
-
-    <groupId>com.walterjwhite.modules.shell.api</groupId>
-    <artifactId>service</artifactId>
-    <packaging>jar</packaging>
-
-    <name>shell - API - service</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.walterjwhite.modules.shell.api</groupId>
-            <artifactId>model</artifactId>
-            <version>0.0.15-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.walterjwhite.infrastructure.datastore.modules</groupId>
-            <artifactId>google-guice-persist-criteria-builder</artifactId>
-            <version>0.0.15-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.walterjwhite.java.modules.shell</groupId>
+    <artifactId>api</artifactId>
+    <version>0.0.15-SNAPSHOT</version>
+  </parent>
+  <groupId>com.walterjwhite.java.modules.shell.api</groupId>
+  <artifactId>service</artifactId>
+  <packaging>jar</packaging>
+  <name>shell - API - service</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.property</groupId>
+      <artifactId>api</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.datastore.api</groupId>
+      <artifactId>repository</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.walterjwhite.java.modules.shell.api</groupId>
+      <artifactId>model</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.walterjwhite.java.infrastructure.datastore.modules</groupId>-->
+    <!--<artifactId>google-guice-create-criteria-builder</artifactId>-->
+    <!--<version>0.0.15-SNAPSHOT</version>-->
+    <!--</dependency>-->
+  </dependencies>
 </project>

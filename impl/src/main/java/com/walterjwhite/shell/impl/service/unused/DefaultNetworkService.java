@@ -15,7 +15,7 @@
 // import org.slf4j.LoggerFactory;
 //
 // public class DefaultNetworkService implements NetworkService {
-//  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNetworkService.class);
+
 //
 //  protected final EventBus eventBus;
 //  protected final ShellExecutionService shellExecutionService;

@@ -4,9 +4,16 @@ import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
 import com.walterjwhite.shell.api.model.IPAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Data
+@ToString(doNotUseGetters = true)
+@NoArgsConstructor
+// @PersistenceCapable
 @Entity
 public class TracerouteHop extends AbstractEntity {
   @ManyToOne(optional = false)
@@ -16,9 +23,11 @@ public class TracerouteHop extends AbstractEntity {
   @Column(nullable = false, updatable = false)
   protected int index;
 
+  @EqualsAndHashCode.Exclude
   @Column(updatable = false)
   protected String fqdn;
 
+  @EqualsAndHashCode.Exclude
   @ManyToOne(optional = false)
   @JoinColumn(nullable = false, updatable = false)
   protected IPAddress ipAddress;
@@ -33,55 +42,5 @@ public class TracerouteHop extends AbstractEntity {
     this.index = index;
     this.fqdn = fqdn;
     this.ipAddress = ipAddress;
-  }
-
-  public TracerouteHop() {
-    super();
-  }
-
-  public int getIndex() {
-    return index;
-  }
-
-  public void setIndex(int index) {
-    this.index = index;
-  }
-
-  public String getFqdn() {
-    return fqdn;
-  }
-
-  public void setFqdn(String fqdn) {
-    this.fqdn = fqdn;
-  }
-
-  public IPAddress getIpAddress() {
-    return ipAddress;
-  }
-
-  public void setIpAddress(IPAddress ipAddress) {
-    this.ipAddress = ipAddress;
-  }
-
-  public List<TracrouteHopResponse> getTracrouteHopResponses() {
-    return tracrouteHopResponses;
-  }
-
-  public void setTracrouteHopResponses(List<TracrouteHopResponse> tracrouteHopResponses) {
-    this.tracrouteHopResponses = tracrouteHopResponses;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TracerouteHop that = (TracerouteHop) o;
-    return index == that.index && Objects.equals(tracerouteRequest, that.tracerouteRequest);
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(tracerouteRequest, index);
   }
 }

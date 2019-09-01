@@ -1,34 +1,28 @@
 package com.walterjwhite.shell.impl.service;
 
-import com.walterjwhite.datastore.criteria.Repository;
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.datastore.api.repository.Repository;
+import com.walterjwhite.property.impl.annotation.Property;
 import com.walterjwhite.shell.api.model.*;
-import com.walterjwhite.shell.api.repository.BindAddressRepository;
-import com.walterjwhite.shell.api.repository.IPAddressRepository;
 import com.walterjwhite.shell.api.service.ShellExecutionService;
 import com.walterjwhite.shell.api.service.SystemServiceService;
 import com.walterjwhite.shell.impl.property.ServiceTimeout;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class UnixSystemServiceService extends AbstractSingleShellCommandService<ServiceCommand>
     implements SystemServiceService {
 
-  protected final Repository repository;
-  protected final IPAddressRepository ipAddressRepository;
-  protected final BindAddressRepository bindAddressRepository;
+  //  protected final Repository Repository;
+  protected final Provider<Repository> repositoryProvider;
 
   @Inject
   public UnixSystemServiceService(
       ShellCommandBuilder shellCommandBuilder,
       ShellExecutionService shellExecutionService,
-      Repository repository,
-      IPAddressRepository ipAddressRepository,
-      BindAddressRepository bindAddressRepository,
-      @Property(ServiceTimeout.class) int timeout) {
+      @Property(ServiceTimeout.class) int timeout,
+      Provider<Repository> repositoryProvider) {
     super(shellCommandBuilder, shellExecutionService, timeout);
-    this.repository = repository;
-    this.ipAddressRepository = ipAddressRepository;
-    this.bindAddressRepository = bindAddressRepository;
+    this.repositoryProvider = repositoryProvider;
   }
 
   protected String getCommandLine(ServiceCommand serviceCommand) {

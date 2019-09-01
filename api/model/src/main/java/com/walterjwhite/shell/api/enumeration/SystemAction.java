@@ -1,9 +1,12 @@
 package com.walterjwhite.shell.api.enumeration;
 
+import lombok.Getter;
+
+@Getter
 public enum SystemAction {
-  Shutdown("shutdown"),
-  Reboot("reboot"),
-  Poweroff("poweroff"),
+  Shutdown(),
+  Reboot(),
+  Poweroff(),
   PoweroffImmediately("poweroff -f");
 
   private final String commandLine;
@@ -12,7 +15,7 @@ public enum SystemAction {
     this.commandLine = commandLine;
   }
 
-  public String getCommandLine() {
-    return (commandLine);
+  SystemAction() {
+    this.commandLine = name().toLowerCase();
   }
 }

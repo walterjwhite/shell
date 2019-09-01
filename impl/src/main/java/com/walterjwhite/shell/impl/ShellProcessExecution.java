@@ -1,24 +1,30 @@
 package com.walterjwhite.shell.impl;
 
+import com.walterjwhite.shell.api.model.ChrootShellCommand;
 import com.walterjwhite.shell.api.model.Chrootable;
 import com.walterjwhite.shell.api.model.ShellCommand;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ShellProcessExecution extends AbstractProcessExecution {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ShellProcessExecution.class);
-
   protected final Process process;
 
-  public ShellProcessExecution(Process process, ShellCommand shellCommand) throws IOException {
+  public ShellProcessExecution(
+      Process process,
+      ShellCommand shellCommand,
+      final ChronoUnit interruptGracePeriodUnits,
+      final long interruptGracePeriodValue)
+      throws IOException {
     super(
         shellCommand,
         process.getInputStream(),
         process.getErrorStream(),
-        process.getOutputStream());
+        process.getOutputStream(),
+        ChrootShellCommand.class.isInstance(shellCommand),
+        interruptGracePeriodUnits,
+        interruptGracePeriodValue);
     this.process = process;
 
     doExecute();
@@ -51,9 +57,15 @@ public class ShellProcessExecution extends AbstractProcessExecution {
   }
 
   @Override
-  protected void kill() throws IOException {
-    super.kill();
+  protected void kill(Exception e) throws IOException, InterruptedException {
+    super.kill(e);
 
     process.destroy();
+  }
+
+  public void interrupt() {
+    process.destroy();
+
+    super.interrupt();
   }
 }

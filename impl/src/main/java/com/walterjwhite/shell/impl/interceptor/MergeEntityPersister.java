@@ -1,15 +1,16 @@
 package com.walterjwhite.shell.impl.interceptor;
 
 import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
-import javax.persistence.EntityManager;
+import com.walterjwhite.datastore.api.repository.Repository;
 
 public class MergeEntityPersister extends AbstractEntityPersister {
-  public MergeEntityPersister(EntityManager entityManager) {
-    super(entityManager);
+  public MergeEntityPersister(Repository repository) {
+    super(repository);
   }
 
   @Override
   protected AbstractEntity doSave(AbstractEntity entity) {
-    return entityManager.merge(entity);
+    return repository.create(
+        entity); // in JPA, this must be merge, otherwise, the operation will fail.
   }
 }

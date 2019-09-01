@@ -1,28 +1,27 @@
 package com.walterjwhite.shell.impl.interceptor;
 
 import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import com.walterjwhite.datastore.api.repository.Repository;
+import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public abstract class AbstractEntityPersister {
-  protected final EntityManager entityManager;
-  protected final EntityTransaction entityTransaction;
+  protected final Repository repository;
+  // protected final EntityTransaction entityTransaction;
 
-  public AbstractEntityPersister(EntityManager entityManager) {
-    this.entityManager = entityManager;
-    this.entityTransaction = entityManager.getTransaction();
-  }
-
+  // TODO: use JTA
+  @Transactional
   public AbstractEntity save(AbstractEntity entity) {
     try {
-      entityTransaction.begin();
+      // entityTransaction.begin();
 
       entity = doSave(entity);
       // entityManager.close();
-      entityTransaction.commit();
+      // entityTransaction.commit();
       return entity;
     } catch (Exception e) {
-      entityTransaction.rollback();
+      // entityTransaction.rollback();
       throw (e);
     }
   }

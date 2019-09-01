@@ -1,39 +1,37 @@
 package com.walterjwhite.shell.impl.service;
 
-import com.walterjwhite.google.guice.property.property.Property;
-import com.walterjwhite.shell.api.model.*;
+import com.walterjwhite.datastore.api.repository.Repository;
+import com.walterjwhite.property.impl.annotation.Property;
+import com.walterjwhite.shell.api.model.CommandOutput;
 import com.walterjwhite.shell.api.model.traceroute.TracerouteHop;
 import com.walterjwhite.shell.api.model.traceroute.TracerouteRequest;
 import com.walterjwhite.shell.api.model.traceroute.TracrouteHopResponse;
-import com.walterjwhite.shell.api.repository.IPAddressRepository;
 import com.walterjwhite.shell.api.service.ShellExecutionService;
 import com.walterjwhite.shell.api.service.TracerouteService;
 import com.walterjwhite.shell.impl.property.TracerouteTimeout;
+import com.walterjwhite.shell.impl.query.FindIPAddressByIPAddressQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Provider;
 
 public class DefaultTracerouteService extends AbstractSingleShellCommandService<TracerouteRequest>
     implements TracerouteService {
   private static final Pattern TRACEROUTE_OUTPUT_PATTERN =
       Pattern.compile("^([\\d]{1,})  ([\\d]{1,3}\\.[\\d]{1,3}\\.[\\d]{1,3}\\.[\\d]{1,3})  (.*)$");
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTracerouteService.class);
 
-  protected final IPAddressRepository ipAddressRepository;
+  protected final Provider<Repository> repositoryProvider;
 
   @Inject
   public DefaultTracerouteService(
       ShellCommandBuilder shellCommandBuilder,
       ShellExecutionService shellExecutionService,
-      IPAddressRepository ipAddressRepository,
-      @Property(TracerouteTimeout.class) int timeout) {
+      @Property(TracerouteTimeout.class) int timeout,
+      Provider<Repository> repositoryProvider) {
     super(shellCommandBuilder, shellExecutionService, timeout);
-
-    this.ipAddressRepository = ipAddressRepository;
+    this.repositoryProvider = repositoryProvider;
   }
 
   protected String getCommandLine(TracerouteRequest tracerouteRequest) {
@@ -69,24 +67,20 @@ public class DefaultTracerouteService extends AbstractSingleShellCommandService<
 
     int index = 0;
     for (final CommandOutput commandOutput : tracerouteRequest.getShellCommand().getOutputs()) {
-      LOGGER.info("LINE:" + commandOutput.getOutput());
       if (index > 0) {
-        LOGGER.info("hop:" + commandOutput.getOutput());
-
         final String line = commandOutput.getOutput().trim().replace("ms", "");
 
         final Matcher matcher = TRACEROUTE_OUTPUT_PATTERN.matcher(line);
         if (matcher.matches()) {
-          LOGGER.info("matches:" + line);
-          LOGGER.info("hop:" + matcher.group(1));
-          LOGGER.info("IP:" + matcher.group(2));
-
           final TracerouteHop tracerouteHop =
               new TracerouteHop(
                   tracerouteRequest,
                   index,
                   null,
-                  ipAddressRepository.findByAddressOrCreate(matcher.group(2)));
+                  repositoryProvider
+                      .get()
+                      .query(new FindIPAddressByIPAddressQuery(matcher.group(2)) /*,
+                          PersistenceOption.Create*/));
           tracerouteRequest.getTracerouteHops().add(tracerouteHop);
 
           int j = 0;
@@ -102,12 +96,10 @@ public class DefaultTracerouteService extends AbstractSingleShellCommandService<
             }
             j++;
           }
-        } else {
-          LOGGER.info("!matched:" + commandOutput.getOutput());
         }
-      }
 
-      index++;
+        index++;
+      }
     }
   }
 }

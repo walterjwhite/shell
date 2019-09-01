@@ -7,19 +7,28 @@ import com.walterjwhite.shell.api.model.ShellCommandable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+// @PersistenceCapable
 @Entity
+@Data
+@ToString(doNotUseGetters = true)
+@NoArgsConstructor
 public class DigRequest extends AbstractEntity implements ShellCommandable {
   @ManyToOne @JoinColumn protected NetworkDiagnosticTest networkDiagnosticTest;
 
   @Column(nullable = false, updatable = false)
   protected LocalDateTime requestDateTime = LocalDateTime.now();
 
+  @EqualsAndHashCode.Exclude
   @Column(nullable = false, updatable = false)
   protected int timeout;
 
+  @EqualsAndHashCode.Exclude
   @ManyToOne
   @JoinColumn(updatable = false)
   protected ShellCommand shellCommand;
@@ -35,74 +44,5 @@ public class DigRequest extends AbstractEntity implements ShellCommandable {
   public DigRequest(NetworkDiagnosticTest networkDiagnosticTest) {
     super();
     this.networkDiagnosticTest = networkDiagnosticTest;
-  }
-
-  public DigRequest() {
-    super();
-  }
-
-  public NetworkDiagnosticTest getNetworkDiagnosticTest() {
-    return networkDiagnosticTest;
-  }
-
-  public void setNetworkDiagnosticTest(NetworkDiagnosticTest networkDiagnosticTest) {
-    this.networkDiagnosticTest = networkDiagnosticTest;
-  }
-
-  public LocalDateTime getRequestDateTime() {
-    return requestDateTime;
-  }
-
-  public void setRequestDateTime(LocalDateTime requestDateTime) {
-    this.requestDateTime = requestDateTime;
-  }
-
-  public List<DigRequestIPAddress> getDigRequestIPAddresses() {
-    return digRequestIPAddresses;
-  }
-
-  public void setDigRequestIPAddresses(List<DigRequestIPAddress> digRequestIPAddresses) {
-    this.digRequestIPAddresses = digRequestIPAddresses;
-  }
-
-  public ShellCommand getShellCommand() {
-    return shellCommand;
-  }
-
-  public void setShellCommand(ShellCommand shellCommand) {
-    this.shellCommand = shellCommand;
-  }
-
-  @Override
-  public int getTimeout() {
-    return timeout;
-  }
-
-  @Override
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
-  }
-
-  public DigRequest withFQDN(final String fqdn) {
-    this.networkDiagnosticTest = new NetworkDiagnosticTest();
-    this.networkDiagnosticTest.withFQDN(fqdn);
-    //    this.networkDiagnosticTest.withName("dig." + fqdn);
-    //    this.networkDiagnosticTest.withDescription("dig." + fqdn);
-    return this;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    DigRequest that = (DigRequest) o;
-    return Objects.equals(networkDiagnosticTest, that.networkDiagnosticTest)
-        && Objects.equals(requestDateTime, that.requestDateTime);
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(networkDiagnosticTest, requestDateTime);
   }
 }

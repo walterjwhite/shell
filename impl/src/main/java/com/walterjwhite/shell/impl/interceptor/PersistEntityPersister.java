@@ -1,16 +1,16 @@
 package com.walterjwhite.shell.impl.interceptor;
 
 import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
-import javax.persistence.EntityManager;
+import com.walterjwhite.datastore.api.repository.Repository;
 
 public class PersistEntityPersister extends AbstractEntityPersister {
-  public PersistEntityPersister(EntityManager entityManager) {
-    super(entityManager);
+  public PersistEntityPersister(Repository repository) {
+    super(repository);
   }
 
   @Override
   protected AbstractEntity doSave(AbstractEntity entity) {
-    entityManager.persist(entity);
+    repository.create(entity);
 
     return entity;
   }

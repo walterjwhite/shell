@@ -16,7 +16,7 @@ public class TracerouteParseTest {
     // records
     final String output =
         "traceroute to google.com (216.58.219.206), 30 hops max, 60 byte packets\n"
-            + "1  10.30.0.1  0.182 ms  0.178 ms  0.178 ms\n"
+            + "1  192.168.1.1  0.182 ms  0.178 ms  0.178 ms\n"
             + "2  108.39.138.1  1.383 ms  1.388 ms  1.387 ms\n"
             + "3  100.41.217.26  3.114 ms  3.122 ms  3.122 ms\n"
             + "4  * * *\n"

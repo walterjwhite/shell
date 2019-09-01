@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.walterjwhite.java.modules.shell</groupId>
+    <artifactId>providers</artifactId>
+    <version>0.0.15-SNAPSHOT</version>
+  </parent>
+  <groupId>com.walterjwhite.java.modules.shell.providers</groupId>
+  <artifactId>criteria</artifactId>
+  <version>0.0.15-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>criteria</name>
+  <description>criteria</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.walterjwhite.java.infrastructure.datastore.providers.jpa.modules</groupId>
+      <artifactId>criteria</artifactId>
+      <version>0.0.15-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
