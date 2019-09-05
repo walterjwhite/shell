@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.walterjwhite.java</groupId>
     <artifactId>modules</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.17-SNAPSHOT</version>
   </parent>
   <groupId>com.walterjwhite.java.modules</groupId>
   <artifactId>shell</artifactId>
-  <version>0.0.15-SNAPSHOT</version>
+  <version>0.0.17-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>shell</name>
   <description>shell</description>
@@ -23,5 +23,6 @@
     <connection>scm:git:ssh://git@localhost:/projects/active/github.com/java/modules/shell.git</connection>
     <developerConnection>scm:git:ssh://git@localhost:/projects/active/github.com/java/modules/shell.git</developerConnection>
     <url>https://github.com/walterjwhite/shell.git</url>
+    <tag>java-0.0.16</tag>
   </scm>
 </project>
