@@ -23,6 +23,6 @@ public enum Protocol {
       }
     }
 
-    throw (new IllegalArgumentException(netstatProtocol + " was not found/mapped."));
+    throw new IllegalArgumentException(netstatProtocol + " was not found/mapped.");
   }
 }

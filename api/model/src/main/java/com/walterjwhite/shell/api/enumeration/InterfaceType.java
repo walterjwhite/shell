@@ -21,6 +21,6 @@ public enum InterfaceType {
       }
     }
 
-    throw (new IllegalArgumentException(nmcliType + " was not found / mapped."));
+    throw new IllegalArgumentException(nmcliType + " was not found / mapped.");
   }
 }

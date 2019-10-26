@@ -111,7 +111,7 @@ public class DefaultMountService extends AbstractMultipleShellCommandService<Mou
       return commandLines.toArray(new String[commandLines.size()]);
     }
 
-    throw (new IllegalArgumentException("Remounting is not currently supported."));
+    throw new IllegalArgumentException("Remounting is not currently supported.");
   }
 
   protected String getDevice(final String device) {
@@ -159,7 +159,7 @@ public class DefaultMountService extends AbstractMultipleShellCommandService<Mou
               .toPath(),
           permissions);
     } catch (IOException e) {
-      throw (new RuntimeException("Error fixing permissions", e));
+      throw new RuntimeException("Error fixing permissions", e);
     }
   }
 

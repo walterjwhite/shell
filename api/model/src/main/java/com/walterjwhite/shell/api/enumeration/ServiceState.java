@@ -23,6 +23,6 @@ public enum ServiceState {
       }
     }
 
-    throw (new IllegalArgumentException(Integer.toString(returnValue) + " was not found."));
+    throw new IllegalArgumentException(Integer.toString(returnValue) + " was not found.");
   }
 }

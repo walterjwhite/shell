@@ -72,7 +72,7 @@ public class DefaultPingService extends AbstractSingleShellCommandService<PingRe
         }
       }
 
-      throw (new RuntimeException("Unexpected output, did NOT find ping statistics header"));
+      throw new RuntimeException("Unexpected output, did NOT find ping statistics header");
     } else if (pingRequest.getShellCommand().getReturnCode() == 2) {
       pingRequest.setPingResponseType(PingResponseType.UnknownHost);
       //      return ((PingRequest) repository.merge(pingRequest));
@@ -85,7 +85,7 @@ public class DefaultPingService extends AbstractSingleShellCommandService<PingRe
     } else {
       handleOther(pingRequest);
       //      return ((PingRequest) repository.merge(pingRequest));
-      // throw (new RuntimeException("Something bad happened."));
+      // throw new RuntimeException("Something bad happened."));
       // return(new PingResponse());
 
       return;

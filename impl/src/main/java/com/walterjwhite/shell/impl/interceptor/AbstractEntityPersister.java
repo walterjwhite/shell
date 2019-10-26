@@ -22,7 +22,7 @@ public abstract class AbstractEntityPersister {
       return entity;
     } catch (Exception e) {
       // entityTransaction.rollback();
-      throw (e);
+      throw e;
     }
   }
 

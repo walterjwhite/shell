@@ -8,23 +8,31 @@ import java.util.Set;
 public class ShellExecutionUtil {
   private ShellExecutionUtil() {}
 
-  public static void setEnvironmentalProperties(ShellCommand shellCommand) {
+  public static String[] setEnvironmentalProperties(ShellCommand shellCommand) {
     if (isEnvironmentAware(shellCommand)) {
       final Set<ShellCommandEnvironmentProperty> shellCommandEnvironmentProperties =
           (shellCommand).getShellCommandEnvironmentProperties();
       if (shellCommandEnvironmentProperties != null
           && !shellCommandEnvironmentProperties.isEmpty()) {
+        final String[] environmentalVariables =
+            new String[shellCommandEnvironmentProperties.size()];
+        int i = 0;
         for (ShellCommandEnvironmentProperty shellCommandEnvironmentProperty :
             shellCommandEnvironmentProperties) {
-          set(shellCommandEnvironmentProperty);
+          environmentalVariables[i++] = set(shellCommandEnvironmentProperty);
         }
+
+        return environmentalVariables;
       }
     }
+
+    return null;
   }
 
-  private static void set(ShellCommandEnvironmentProperty shellCommandEnvironmentProperty) {
-    System.setProperty(
-        shellCommandEnvironmentProperty.getKey(), shellCommandEnvironmentProperty.getValue());
+  private static String set(ShellCommandEnvironmentProperty shellCommandEnvironmentProperty) {
+    return shellCommandEnvironmentProperty.getKey()
+        + "="
+        + shellCommandEnvironmentProperty.getValue();
   }
 
   private static boolean isEnvironmentAware(ShellCommand shellCommand) {
@@ -33,6 +41,10 @@ public class ShellExecutionUtil {
 
   public static String getChrootCmdLine(final Chrootable chrootable) {
     return ("/bin/chroot " + chrootable.getChrootPath() + " /bin/bash");
+  }
+
+  public static String[] getProcessBuilderChrootCmdLine(final Chrootable chrootable) {
+    return (new String[] {"/bin/chroot", chrootable.getChrootPath(), "/bin/bash"});
   }
 
   public static String getFreeBSDJailChrootCmdLine(final Chrootable chrootable) {

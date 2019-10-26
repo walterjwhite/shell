@@ -41,9 +41,6 @@ public class DefaultShellExecution implements ShellExecutionService, Interruptab
   public ShellCommand run(ShellCommand shellCommand) throws Exception {
     checkIfShutdown();
 
-    //    shellCommand.setNode(nodeProvider.get());
-    ShellExecutionUtil.setEnvironmentalProperties(shellCommand);
-
     doRun(shellCommand);
     return shellCommand;
   }
@@ -75,27 +72,46 @@ public class DefaultShellExecution implements ShellExecutionService, Interruptab
     final Chrootable chrootable = (Chrootable) shellCommand;
     doValidate(shellCommand, chrootable);
 
-    if (shellCommand instanceof EnvironmentAware)
-      return (Runtime.getRuntime()
-          .exec(
-              ShellExecutionUtil.getChrootCmdLine(chrootable),
-              ShellExecutionUtil.getEnvironmentalProperties(
-                  (shellCommand).getShellCommandEnvironmentProperties())));
+    if (shellCommand instanceof EnvironmentAware) {
+      final ProcessBuilder processBuilder =
+          new ProcessBuilder(ShellExecutionUtil.getProcessBuilderChrootCmdLine(chrootable));
+      setEnvironment(
+          processBuilder, (EnvironmentAware) shellCommand.getShellCommandEnvironmentProperties());
+      return processBuilder.start();
+    }
     return (Runtime.getRuntime().exec(ShellExecutionUtil.getChrootCmdLine(chrootable)));
 
     // once chroot process is running, execute actual command ...
+  }
+
+  private static void setEnvironment(
+      final ProcessBuilder processBuilder, final EnvironmentAware environmentAware) {
+    for (final ShellCommandEnvironmentProperty shellCommandEnvironmentProperty :
+        environmentAware.getShellCommandEnvironmentProperties()) {
+      setEnvironmentProperty(processBuilder, shellCommandEnvironmentProperty);
+    }
+  }
+
+  private static void setEnvironmentProperty(
+      final ProcessBuilder processBuilder,
+      final ShellCommandEnvironmentProperty shellCommandEnvironmentProperty) {
+    processBuilder
+        .environment()
+        .put(shellCommandEnvironmentProperty.getKey(), shellCommandEnvironmentProperty.getValue());
   }
 
   protected Process doChrootProcess(ShellCommand shellCommand) throws IOException {
     final Chrootable chrootable = (Chrootable) shellCommand;
     doValidate(shellCommand, chrootable);
 
-    if (shellCommand instanceof EnvironmentAware)
-      return (Runtime.getRuntime()
-          .exec(
-              ShellExecutionUtil.getChrootCmdLine(chrootable),
-              ShellExecutionUtil.getEnvironmentalProperties(
-                  (shellCommand).getShellCommandEnvironmentProperties())));
+    if (shellCommand instanceof EnvironmentAware) {
+      if (shellCommand instanceof EnvironmentAware) {
+        final ProcessBuilder processBuilder =
+            new ProcessBuilder(ShellExecutionUtil.getProcessBuilderChrootCmdLine(chrootable));
+        setEnvironment(processBuilder, shellCommand);
+        return processBuilder.start();
+      }
+    }
     return (Runtime.getRuntime().exec(ShellExecutionUtil.getChrootCmdLine(chrootable)));
 
     // once chroot process is running, execute actual command ...
@@ -103,8 +119,8 @@ public class DefaultShellExecution implements ShellExecutionService, Interruptab
 
   protected void doValidate(final ShellCommand shellCommand, final Chrootable chrootable) {
     if (chrootable.getChrootPath() == null || chrootable.getChrootPath().isEmpty())
-      throw (new IllegalStateException(
-          "Cannot chroot, chroot path is null:" + shellCommand.getCommandLine()));
+      throw new IllegalStateException(
+          "Cannot chroot, chroot path is null:" + shellCommand.getCommandLine());
   }
 
   @Override

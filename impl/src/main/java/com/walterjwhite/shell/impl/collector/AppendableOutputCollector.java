@@ -16,7 +16,7 @@ public class AppendableOutputCollector implements OutputCollector {
     try {
       appendable.append(line);
     } catch (IOException e) {
-      throw (new RuntimeException("Error appending line:", e));
+      throw new RuntimeException("Error appending line:", e);
     }
   }
 }
