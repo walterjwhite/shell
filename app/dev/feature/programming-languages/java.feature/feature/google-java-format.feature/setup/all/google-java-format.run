@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib net/download.sh
+cfg feature:.
+
+_download https://repo1.maven.org/maven2/com/google/googlejavaformat/google-java-format/${_CONF_DEV_GOOGLE_JAVA_FORMAT_VERSION}/google-java-format-${_CONF_DEV_GOOGLE_JAVA_FORMAT_VERSION}-all-deps.jar
+_download_install_file $_CONF_DEV_GOOGLE_JAVA_FORMAT_JAR

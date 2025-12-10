@@ -1,0 +1,12 @@
+#!/bin/sh
+
+_LOMBOK_CMDLINE="$_CONF_DEV_JAVA_TIMO_A_LOMBOKER_JDK -jar $_CONF_DEV_JAVA_TIMO_A_LOMBOKER_JAR"
+
+$_LOMBOK_CMDLINE reduce getter $1
+$_LOMBOK_CMDLINE reduce setter $1
+
+$_LOMBOK_CMDLINE reduce equalsAndHashCode $1
+$_LOMBOK_CMDLINE reduce toString $1
+$_LOMBOK_CMDLINE reduce no-args-constructor $1
+
+$_LOMBOK_CMDLINE summarize gs $1

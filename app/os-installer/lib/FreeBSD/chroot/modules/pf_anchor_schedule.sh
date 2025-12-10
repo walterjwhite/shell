@@ -1,0 +1,1 @@
+_PF_ANCHOR_SCHEDULE_EXEC="$_CONF_APPLICATION_LIBRARY_PATH/bin/_pf_anchor_schedule {} ;"

@@ -1,0 +1,82 @@
+#!/bin/sh
+
+lib sudo.sh
+
+_STAGING_AREA=$_CONF_MEDIA_MOUNTPOINT/staging
+
+
+
+
+_UID=$(id -u)
+if [ "$_UID" -gt 0 ]; then
+	_INFO "Enter sudo password to run this program as root"
+
+	_sudo $0 "$@"
+	exit $?
+fi
+
+if [ $(find ${_STAGING_AREA} -type f | wc -l) -eq 0 ]; then
+	_ERROR "No media files found @ $_STAGING_AREA" 1
+fi
+
+_remove_spaces() {
+	find $_STAGING_AREA -type f -name '* *' -exec replace-space {} \;
+}
+
+_doProcessStaging() {
+	for f in $(find $_STAGING_AREA -type f | grep $2 CR2); do
+		_process_event_file $1
+	done
+}
+
+_process_staging() {
+	_doProcessStaging output -v
+	_doProcessStaging raw
+}
+
+_process_event_file() {
+	local _target_volume=$1
+
+	local _event_file=$(printf '%s' $f | sed -e "s/^.*staging\///")
+	local _event_directory=$(dirname $_event_file | sed -e "s/^\///" -e "s/converted\///")
+
+	local _event_target_directory=${_CONF_MEDIA_MOUNTPOINT}/${_target_volume}/by-time/${_event_directory}
+
+	_INFO "moving $f -> $_event_target_directory"
+
+	chown $_CONF_MEDIA_USER:$_CONF_MEDIA_USER $f
+
+	_SUDO_USER=$_CONF_MEDIA_USER _sudo mkdir -p $_event_target_directory
+	mv $f $_event_target_directory
+}
+
+_do_git_annex() {
+	_do_do_git_annex output
+	_do_do_git_annex raw
+}
+
+_do_do_git_annex() {
+	cd $_CONF_MEDIA_MOUNTPOINT/$1
+
+	_SUDO_USER=$_CONF_MEDIA_USER _sudo git annex add .
+	_SUDO_USER=$_CONF_MEDIA_USER _sudo git commit -am "added media - media-process-staging"
+}
+
+_cleanup_staging() {
+	if [ $(find $_STAGING_AREA -type f | wc -l) -eq 0 ]; then
+		_INFO "Removing empty directories"
+		rm -rf $_STAGING_AREA/*
+	else
+		_WARN "Staging area is not empty, not cleaning up"
+	fi
+}
+
+_remove_spaces
+
+_process_staging
+_do_git_annex
+
+zap snap $_CONF_MEDIA_RETENTION $_CONF_MEDIA_VOLUME
+
+_cleanup_staging
+

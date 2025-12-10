@@ -1,0 +1,6 @@
+https://blog.codinghorror.com/an-exercise-program-for-the-fat-web/
+
+1 update-domain-allow   generates aggregate allow list
+2 update-domain-blocks  generates aggregate block list
+3 update-aggregate-domain-blocks generates aggregate block list (removes blocks that match the allow list)
+4 dnsmasq-update-domain-blocks or coredns-update-domain-blocks

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case $_SUB_PLATFORM in
+    Ubuntu)
+        snap install yq
+        ;;
+    Gentoo)
+        _WARN "Using distribution package"
+        ;;
+    *)
+        _WARN "Unsupported distribution, $_SUB_PLATFORM"
+        ;;
+esac

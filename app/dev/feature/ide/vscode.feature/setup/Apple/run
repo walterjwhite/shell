@@ -1,0 +1,5 @@
+#!/bin/sh
+
+lib io/link.sh
+
+_link /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code $_CONF_BIN_PATH

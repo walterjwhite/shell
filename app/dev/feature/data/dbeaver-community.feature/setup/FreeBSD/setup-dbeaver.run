@@ -1,0 +1,17 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+_DBEAVER_CONTENTS=$(_MKTEMP_OPTIONS=d _mktemp)
+
+_cleanup_dbeaver() {
+	rm -rf $_DBEAVER_CONTENTS
+}
+
+_download https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
+_extract $_DOWNLOADED_FILE $_DBEAVER_CONTENTS
+_defer _cleanup_dbeaver
+
+$_SUDO_CMD mkdir -p $_CONF_APPLICATION_LIBRARY_PATH/feature/$_FEATURE_NAME
+$_SUDO_CMD mv $_DBEAVER_CONTENTS/dbeaver/* $_CONF_APPLICATION_LIBRARY_PATH/feature/$_FEATURE_NAME

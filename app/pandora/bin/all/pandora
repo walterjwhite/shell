@@ -1,0 +1,3 @@
+#!/bin/sh
+
+$_CONF_APPLICATION_LIBRARY_PATH/pandora.expect

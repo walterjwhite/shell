@@ -1,0 +1,82 @@
+#!/bin/sh
+
+lib ./gh.auth.sh
+lib sed.sh
+
+_github_backup() {
+	local github_project_name=$(printf '%s' "$_PROJECT" | sed -e "s/^.*\/projects//" -e 's/\.git$//' -e 's/\///' | tr '/' '_' | sed -e 's/_$//')
+	_DETAIL "Backing up $_PROJECT -> $github_project_name"
+
+	cd $_PROJECT
+
+	_github_repo_exists $github_project_name
+	if [ $? -gt 0 ]; then
+		_github_create_repo $github_project_name
+	else
+		_github_setup_remotes $github_project_name
+		_github_sync_repo $github_project_name
+	fi
+
+	cd
+}
+
+_github_repo_exists() {
+	[ -z $_GITHUB_PROJECT_LIST_CACHE ] && {
+		_GITHUB_PROJECT_LIST_CACHE=$(_mktemp)
+		_defer _github_cleanup_project_list_cache
+
+		gh repo list -L 1000 | awk {'print$1'} | sed -e "s/^$_GIT_USERNAME\///" >$_GITHUB_PROJECT_LIST_CACHE
+	}
+
+	grep -cq "^${1}$" $_GITHUB_PROJECT_LIST_CACHE
+}
+
+_github_cleanup_project_list_cache() {
+	rm -f $_GITHUB_PROJECT_LIST_CACHE
+}
+
+_github_create_repo() {
+	_DETAIL "Creating $1 @ $_GIT_USERNAME"
+	gh repo create $1 --private -s . --push
+
+}
+
+_github_sync_repo() {
+	_DETAIL "Syncing $(basename $PWD) -> github"
+
+	git push github --all &&
+		git push github --tags
+}
+
+_github_setup_remotes() {
+	local remote
+	local github_remote_exists
+	for remote in $(git remote); do
+		case $remote in
+		github)
+			github_remote_exists=1
+			;;
+		*)
+			_WARN "Removing remote: $remote"
+			git remote rm $remote
+			;;
+		esac
+	done
+
+	[ -z $github_remote_exists ] && {
+		_DETAIL "Adding remote: github git@github.com:$_GIT_USERNAME/$1"
+		git remote add github git@github.com:$_GIT_USERNAME/$1
+	}
+}
+
+_github_auth
+
+if [ $# -eq 0 ]; then
+	for _PROJECT in $(find $_CONF_GITHUB_GIT_PROJECTS_PATH -type d -name '*.git'); do
+		_github_backup
+	done
+else
+	for _PROJECT in "$@"; do
+		_github_backup
+	done
+fi

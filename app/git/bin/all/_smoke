@@ -1,0 +1,51 @@
+#!/bin/sh
+
+cfg ./smoke
+
+_git_smoke_cleanup() {
+	cd
+	rm -rf $_GIT_SMOKE_TMP_DIR
+}
+
+_git_smoke_iteration() {
+	git push origin :$_CONF_GIT_SMOKE_TARGET_BRANCH
+
+	git checkout -b $_CONF_GIT_SMOKE_TARGET_BRANCH
+
+	for i in $(seq 1 $_CONF_GIT_SMOKE_COMMITS); do
+		touch .PLACEHOLDER-$i
+		git add .PLACEHOLDER-$i
+		git commit .PLACEHOLDER-$i -m $_CONF_GIT_SMOKE_COMMIT_MESSAGE
+		git push
+	done
+
+	git checkout $_ORIGINAL_BRANCH
+	git branch -D $_CONF_GIT_SMOKE_TARGET_BRANCH
+}
+
+_git_smoke_iteration_delay() {
+	_WARN "sleeping $_CONF_GIT_SMOKE_SLEEP_DURATION"
+	sleep $_CONF_GIT_SMOKE_SLEEP_DURATION
+}
+
+_GIT_SMOKE_TMP_DIR=$(_mktemp)
+defer _git_smoke_cleanup
+
+git clone $_CONF_GIT_SMOKE_REPOSITORY_URL $_GIT_SMOKE_TMP_DIR
+cd $_GIT_SMOKE_TMP_DIR
+
+_ORIGINAL_BRANCH=$(git branch --no-color --show-current)
+
+if [ "$_CONF_SMOKE_ITERATIONS" -eq "-1" ]; then
+	_WARN "Running indefinitely"
+
+	while :; do
+		_git_smoke_iteration
+		_git_smoke_iteration_delay
+	done
+else
+	for i in $(seq 1 $_CONF_SMOKE_ITERATIONS); do
+		_git_smoke_iteration
+		_git_smoke_iteration_delay
+	done
+fi

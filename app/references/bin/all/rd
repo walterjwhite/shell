@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib ./add.sh
+lib git/data.app.sh
+
+cfg git
+
+_git_init
+
+if [ "$#" -lt "1" ]; then
+	_ERROR "Reference key required" 1
+fi
+
+_KEY="$1"
+shift
+
+git rm -rf "$_KEY"
+_git_save "rm $_KEY" "$_KEY"

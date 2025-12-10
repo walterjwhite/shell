@@ -1,0 +1,2 @@
+: ${_CONF_GIT_TEMPLATE_PATH:=/usr/local/share/git-core/templates}
+

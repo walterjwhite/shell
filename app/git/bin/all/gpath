@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib git/include.sh
+
+
+_RELATIVE_PATH=$(git remote get-url origin | sed -e "s/^.*@//" -e "s/\:\//\//g")
+_INFO $_PROJECT_BASE_PATH/$_RELATIVE_PATH

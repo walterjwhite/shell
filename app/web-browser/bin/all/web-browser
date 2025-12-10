@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib ./arguments.sh
+lib git/data.app.sh
+lib ./history.sh
+
+cfg git
+
+_git_init
+
+_browser_configure
+_launch

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+$_CONF_GNU_SED -i '/^\/\/$/d' $@
+$_CONF_GNU_SED -i '/^\/\*\* \*\/$/d' $@
+$_CONF_GNU_SED -i 's/\/\*\* \*\///g' $@
+
+

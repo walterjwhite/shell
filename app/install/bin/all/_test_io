@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib iostat.sh
+
+
+_INFO "Collecting io information ..."
+_io

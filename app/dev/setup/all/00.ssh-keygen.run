@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ ! -e ~/.ssh/id_${_CONF_DEV_SSH_KEYTYPE} ]; then
+    _INFO "Generating new SSH key pair"
+    timeout -s SIGKILL 5 yes '' | ssh-keygen -t ${_CONF_DEV_SSH_KEYTYPE}
+fi

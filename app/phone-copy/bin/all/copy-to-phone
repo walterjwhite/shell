@@ -1,0 +1,16 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_PHONE_COPY_SOURCE_DIRECTORY:Source Directory"
+
+lib .
+lib io/file.sh
+
+_require_file "$_PHONE_COPY_SOURCE_DIRECTORY" "Source Directory"
+
+if [ -z "$_CONF_PHONE_COPY_MOUNT_PHONE" ]; then
+	_phone_mount
+fi
+
+_phone_copy_prepare_target
+_phone_copy_copy
+_phone_copy_install_secrets

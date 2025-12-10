@@ -1,0 +1,57 @@
+#!/bin/sh
+
+lib git/data.app.sh
+
+_git_init
+
+_append() {
+	if [ -n "$_MATCH" ]; then
+		_MATCH="$_MATCH && \$$1$2"
+	else
+		_MATCH="\$$1$2"
+	fi
+}
+
+_include git
+
+_AGGREGATION=sum
+_UNITS=miles
+
+_GROUP_BUCKET="sum += \$4; n++"
+_GROUP_PRINT="print $_AGGREGATION\" \"units"
+
+[ "$_RIDES_BIKE" ] && _append 3 "==\"$_RIDES_BIKE\""
+[ "$_RIDES_START" ] && {
+	_RIDES_START=$(printf '%s' ${_RIDES_START#*=} | sed -e "s/\///g")
+	_append 1 ">=$_RIDES_START"
+}
+[ "$_RIDES_END" ] && {
+	_RIDES_END=$(printf '%s' ${_RIDES_END#*=} | sed -e "s/\///g")
+	_append 1 "<=$_RIDES_END"
+}
+[ "$_RIDES_GROUP" ] && {
+	case $_RIDES_GROUP in
+	bike)
+		_GROUP_BUCKET="bucket = \$3;A[bucket] = A[bucket] + \$4;"
+
+		;;
+	year)
+		_GROUP_BUCKET="bucket = substr(\$1, 1, 4);A[bucket] = A[bucket] + \$4;"
+		;;
+	month)
+		_GROUP_BUCKET="bucket = substr(\$1, 1, 7);A[bucket] = A[bucket] + \$4;"
+		;;
+	day)
+		_GROUP_BUCKET="bucket = substr(\$1, 1, 7);A[bucket] = A[bucket] + \$4;"
+		;;
+	esac
+
+	_GROUP_PRINT="for (i in A) {print i, A[i];}"
+}
+
+_RIDE_FILTER=$(printf '%s {%s} END {%s}\n' "$_MATCH" "$_GROUP_BUCKET" "$_GROUP_PRINT")
+
+awk -F'|' "$_RIDE_FILTER" \
+	$(find $_PROJECT_PATH -type f -name '*.csv') |
+	sed -e "s/$/ $_UNITS/" |
+	sort

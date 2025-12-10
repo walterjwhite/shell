@@ -1,0 +1,34 @@
+lib git/data.app.sh
+
+_export_history() {
+	[ -z "$_SQLITE_DATABASE" ] && {
+		_call _history_file || return 1
+
+		[ -z "$_SQLITE_DATABASE" ] && return 2
+	}
+
+	[ -n "$_ORIGINAL_HOME" ] && HOME=$_ORIGINAL_HOME
+
+	_HISTORY_FILE=$_CONF_APPLICATION_DATA_PATH/history/$_CONF_WEB_BROWSER_BROWSER-$_CONF_INSTALL_CONTEXT/$(date "+%Y%m%d%H%M%S")
+	_INFO "$_CONF_INSTALL_CONTEXT browser history >$_HISTORY_FILE"
+
+	mkdir -p $(dirname $_HISTORY_FILE)
+	sqlite3 -csv $_SQLITE_DATABASE "$_QUERY" | tr -d '"' >$_HISTORY_FILE 2>&1
+
+	if [ $(wc -l $_HISTORY_FILE | awk {'print$1'}) -gt 0 ]; then
+		_git_save "$_CONF_INSTALL_CONTEXT" $_HISTORY_FILE
+	else
+		_WARN "Pruning empty history: $_HISTORY_FILE"
+		rm -f $_HISTORY_FILE
+	fi
+}
+
+_save_history() {
+	[ "$_CONF_WEB_BROWSER_SAVE_BROWSER_HISTORY_WITH_PROXY" -eq 0 ] && {
+		_WARN "Not saving browser history"
+		unset _SQLITE_DATABASE
+		return
+	}
+
+	_INFO "Saving browser history"
+}

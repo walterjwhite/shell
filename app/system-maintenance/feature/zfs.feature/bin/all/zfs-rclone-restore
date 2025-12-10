@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib feature:zfs.rclone.sh
+lib fs/zfs.sh
+
+_ZFS_RCLONE_RESTORE() {
+	_WARN "Overwriting $_ZFS_VOLUME"
+	rclone cat $_RCLONE_TARGET:$_ZFS_VOLUME | zfs receive -F $_ZFS_VOLUME
+}
+
+_zfs_rclone restore

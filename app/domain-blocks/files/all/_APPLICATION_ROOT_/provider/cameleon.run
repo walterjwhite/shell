@@ -1,0 +1,8 @@
+#!/bin/sh
+lib ./blocks.sh
+
+_domain_blocks_filter() {
+	awk {'print$2'}
+}
+
+_domain_blocks_install http://sysctl.org/cameleon/hosts

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+
+if [ -z "$_GIT_RECURSIVE" ]; then
+	_git_in_working_directory || {
+		_GIT_RECURSIVE=1
+		find . \( -type d -or -type f \) -and -name '.git' -execdir gpush "$@" \;
+
+		exit
+	}
+fi
+
+_git_relative_path
+_INFO "$_PROJECT_RELATIVE_PATH"
+git push "$@"

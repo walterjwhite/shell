@@ -1,0 +1,29 @@
+#!/bin/sh
+
+lib net/download.sh
+lib io/write.sh
+
+_ollama_install_linux_version() {
+    _download https://ollama.ai/download/ollama-linux-$_ARCHITECTURE
+    _download_install_file $_CONF_BIN_PATH/ollama
+}
+
+_ollama_install_from_source() {
+
+    cd /tmp
+    git clone https://github.com/prep/ollama.git
+    cd ollama && git checkout feature/add-bsd-support
+    go122 generate ./...
+    go122 build .
+
+    _sudo cp ollama $_CONF_BIN_PATH/ollama
+    printf '%s\n' "$_CONF_BIN_PATH/ollama" | _append $_INSTALLED_FILES
+
+    cd ..
+    rm -rf ollama
+}
+
+which ollama > /dev/null 2>&1 || {
+    _ollama_install_from_source
+    _sudo chmod +x $_CONF_BIN_PATH/ollama
+}

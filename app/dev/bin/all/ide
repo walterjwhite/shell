@@ -1,0 +1,21 @@
+#!/bin/sh
+
+_ACTION=launch
+for _ARG in "$@"; do
+	_DEBUG "$_ARG"
+
+	case $_ARG in
+	clean | open)
+		shift
+		_ACTION=${_ARG#--}
+		;;
+	esac
+done
+
+_require _ACTION "No action was specified" 1
+
+if [ ! -e $_CONF_APPLICATION_LIBRARY_PATH/action/ide/$_CONF_DEV_IDE/$_ACTION.sh ]; then
+	_ERROR "Unknown action $_ACTION for $_CONF_DEV_IDE"
+fi
+
+. $_CONF_APPLICATION_LIBRARY_PATH/action/ide/$_CONF_DEV_IDE/$_ACTION.sh

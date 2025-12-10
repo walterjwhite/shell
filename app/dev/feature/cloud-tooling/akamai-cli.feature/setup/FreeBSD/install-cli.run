@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cd /tmp
+
+git clone https://github.com/akamai/cli akamai-cli
+cd akamai-cli/cli
+
+go build -o akamai ./main.go
+mv akamai $_CONF_BIN_PATH/
+
+cd /tmp
+rm -rf akamai-cli

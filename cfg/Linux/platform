@@ -1,0 +1,13 @@
+_PLATFORM="Linux"
+
+: ${_CONF_GNU_GREP:=grep}
+: ${_CONF_GNU_SED:=sed}
+
+_ARCHITECTURE=$(uname -m)
+
+PORTAGE_REFRESH_PERIOD=3600
+
+: ${_EMERGE_FLAGS:="-q --quiet-build --quiet-fail"}
+[ -n "$_ROOT" ] && [ "$_ROOT" != "/" ] && _EMERGE_OPTIONS="--root=$_ROOT"
+
+_SUDO_CMD="sudo"

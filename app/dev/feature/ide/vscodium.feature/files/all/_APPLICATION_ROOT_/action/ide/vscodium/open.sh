@@ -1,0 +1,1 @@
+$_CONF_DEV_VSCODIUM_IDE $_IDE_PROJECT >/dev/null 2>&1 &

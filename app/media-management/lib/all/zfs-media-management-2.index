@@ -1,0 +1,19 @@
+#!/bin/sh
+
+_ROOT=/media/raw
+cd $_ROOT
+
+_INDEX=0
+
+_ORIGINAL_IFS=$IFS
+IFS=$'\n'
+
+for _LINK in $(find by-time panorama -type l); do
+	ls -l $_LINK | /usr/local/bin/ggrep -Po "(by-time|panorama)/.*$" |
+		sed -e "s/->/|/" |
+		sed -e "s/\.\.\///g" |
+		sed -e "s/\.git\/annex\/objects\///" \
+			>>/media/raw-backup/index.map
+done
+
+IFS=$_ORIGINAL_IFS

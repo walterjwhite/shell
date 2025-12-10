@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib app.sh
+lib git.sh
+lib install/install/git.sh
+lib install/publish/publish.sh
+lib io/file.sh
+
+cfg install
+
+_restrict_to_single_process
+
+if [ ! -e .app ]; then
+	_app_publish_recursive
+	exit $?
+fi
+
+_app_publish_instance

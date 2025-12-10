@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_DRIVER_INSTALLATION_PATH=$_CONF_APPLICATION_LIBRARY_PATH/drivers
+_SQLLINE_TARGET_FILE=$_DRIVER_INSTALLATION_PATH/sqlline.jar
+
+_INFO "Building/Installing sqlline (command-line SQL client)"
+
+_download https://repo1.maven.org/maven2/sqlline/sqlline/$_CONF_DEV_SQLLINE_VERSION/sqlline-$_CONF_DEV_SQLLINE_VERSION-jar-with-dependencies.jar
+_download_install_file $_SQLLINE_TARGET_FILE

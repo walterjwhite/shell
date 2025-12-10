@@ -1,0 +1,22 @@
+#!/bin/sh
+
+_COMMENTED_FILE_UNCOMMENT() {
+	$_CONF_GNU_SED -i 's/^\/\/ //' $_FILE
+	$_CONF_GNU_SED -i 's/^\/\/$//' $_FILE
+	$_CONF_GNU_SED -i 's/^\/\/\/\/ //' $_FILE
+}
+
+_COMMENTED_FILE_DELETE() {
+	rm -f $_FILE
+}
+
+for _FILE in $@; do
+	_FILE_LINE_COUNT=$(wc -l <$_FILE)
+	if [ $_FILE_LINE_COUNT -gt 0 ]; then
+		if [ $($_CONF_GNU_GREP -Pc '^//( |$|// )' $_FILE) -eq $(wc -l <$_FILE) ]; then
+			_WARN "Entire file ($_FILE) is commented"
+
+			commented_file_$_CONF_DEV_COMMENTED_FILE_ACTION
+		fi
+	fi
+done

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+lib io/write.sh
+
+for _CONSOLE in $(find $_CONF_APPLICATION_LIBRARY_PATH/shell -mindepth 1 -maxdepth 1 -type d | sort -u); do
+  _DETAIL "Configuring micro as the EDITOR: $_CONSOLE"
+  printf 'export EDITOR="micro"\n' | _append $_CONSOLE/micro-text-editor
+done

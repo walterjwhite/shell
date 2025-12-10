@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ln -s "${_CONF_DEV_INTELLIJ_IDE}" $_CONF_BIN_PATH/intellij

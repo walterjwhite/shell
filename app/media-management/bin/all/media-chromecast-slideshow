@@ -1,0 +1,8 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_MEDIA_DIRECTORY:Media Directory"
+
+lib ./chromecast.sh
+
+_media_get_chromecast
+_media_chromecast_play

@@ -1,0 +1,4 @@
+: ${_CONF_GITHUB_TARGET_BRANCH:=main}
+
+: ${_CONF_GITHUB_DATE_TAG_FORMAT:="+%Y/%m/%d/%H/%M/%S"}
+: ${_CONF_GITHUB_REVIEW:=1}

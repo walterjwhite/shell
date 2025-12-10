@@ -1,0 +1,18 @@
+#!/bin/sh
+
+cd /media/raw/.git/annex/objects
+
+rm -f /media/raw-backup/index
+_NUMBER=16
+index=1
+for _ELEMENT in $(ls -1); do
+	_LINE="$_LINE $_ELEMENT"
+	if [ $(expr $index % $_NUMBER) -eq 0 ]; then
+		printf '%s\n' "$_LINE" >>/media/raw-backup/index
+		_LINE=""
+	fi
+
+	index=$((index + 1))
+done
+
+printf '%s\n' "$_LINE" >>/media/raw-backup/index

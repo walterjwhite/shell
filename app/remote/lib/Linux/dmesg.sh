@@ -1,0 +1,3 @@
+_dmesg() {
+	dmesg -Tc
+}

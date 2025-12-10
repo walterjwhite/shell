@@ -1,0 +1,12 @@
+#!/bin/sh
+
+_akamai_cli_install() {
+	_is_feature_enabled "akamai_$1" || return 1
+	
+	akamai install $1
+}
+
+which akamai >/dev/null 2>&1 && {
+	_akamai_cli_install edgeworkers
+	_akamai_cli_install sandbox
+}

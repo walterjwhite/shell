@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib net/public-ip.sh
+lib system-alert.sh
+
+_public_ip
+_system_alert "Remote - public IP" "public IP: $PUBLIC_IP"

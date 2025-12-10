@@ -1,0 +1,8 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_require "$_CONF_DEV_JENKINS_URL" _CONF_DEV_JENKINS_URL
+
+_download $_CONF_DEV_JENKINS_URL/jnlpJars/jenkins-cli.jar
+_download_install_file $_CONF_DEV_JENKINS_JAR

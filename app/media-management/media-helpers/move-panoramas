@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for f in $(find /media/output-files/panorama-output -type l)
+do
+	_INFO $f
+	t=$(printf '%s' $f | sed -e "s/panorama-output\///")
+
+	tp=$(dirname $t)
+	mkdir -p "$tp"
+	mv "$f" "$tp" -i
+done
+

@@ -1,0 +1,13 @@
+_PLATFORM_PACKAGES="app-eselect/eselect-repository app-portage/mirrorselect app-portage/cpuid2cpuflags sys-apps/pciutils sys-fs/dosfstools dev-vcs/git dev-tcltk/expect net-misc/curl dev-util/sh app-admin/sudo sys-apps/usbutils"
+_PLATFORM_PACKAGES_ACCEPT_KEYWORDS="dev-util/sh ~amd64"
+
+NPM_PACKAGE="net-libs/nodejs"
+RUST_PACKAGE="dev-lang/rust"
+
+PYPI_PACKAGE="dev-lang/python"
+
+GO_PACKAGE="dev-lang/go"
+EXPECT_PACKAGE="dev-tcltk/expect"
+
+
+_CONF_INSTALL_STAT_ARGUMENTS='-c %a'

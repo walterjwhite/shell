@@ -1,0 +1,16 @@
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+
+_CONF_INSTALL_STAT_ARGUMENTS='-f %OLp'
+
+_FREEBSD_PKG_OPTIONS="-yq"
+
+_PLATFORM_PACKAGES="git gsed gnugrep gtar gawk sudo shuf"
+
+NPM_PACKAGE="npm"
+RUST_PACKAGE="rust"
+
+PYPI_DISABLED=1
+
+PYPI_PACKAGE="python39 py39-pip"
+
+GO_PACKAGE="go"

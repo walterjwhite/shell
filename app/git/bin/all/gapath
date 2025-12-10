@@ -1,0 +1,24 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+lib io/file.sh
+
+[ $# -eq 0 ] && _ERROR "At least 1 path is required"
+
+_get_project_directory
+
+project_sed_safe=$(_sed_safe $_PROJECT_PATH)
+
+for _ARG in "$@"; do
+	_require_file "$_ARG" _ || continue
+
+	filepath=$(_readlink $_ARG)
+	filepath=$(printf '%s' $filepath | sed -e "s/$project_sed_safe/$project_sed_safe\/.archived/")
+
+	target_parent_directory=$(dirname "$filepath")
+
+	mkdir -p $target_parent_directory
+	git mv "$_ARG" $filepath
+done
+
+gcommit "$@" $_PROJECT_PATH/.archived -m 'archived'

@@ -1,0 +1,12 @@
+_PLATFORM_PACKAGES="git coreutils gnu-sed grep expect mas-cli/tap/mas"
+NPM_PACKAGE="node"
+RUST_PACKAGE="rust"
+PYPI_PACKAGE="python"
+GO_PACKAGE="go"
+
+: ${_CONF_INSTALL_APPLE_BEEP_MESSAGE:=beep}
+: ${_CONF_INSTALL_APPLE_SUDO_PRECMD_MESSAGE:=Please enter your sudo credentials}
+
+: ${_CONF_INSTALL_HOMEBREW_CMD:=/opt/homebrew/bin/brew}
+
+_CONF_INSTALL_STAT_ARGUMENTS='-f %OLp'

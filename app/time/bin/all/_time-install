@@ -1,0 +1,14 @@
+#!/bin/sh
+
+lib ./install.sh
+lib io/file.sh
+
+[ -n "$USER" ] && [ "$USER" = "root" ] && _ERROR "Not installing jobs as root"
+
+if [ $# -eq 0 ]; then
+	for _TIME_INSTALL_FILE in $(find .time -type f); do
+		_time_install "$_TIME_INSTALL_FILE"
+	done
+else
+	_time_install "$1"
+fi

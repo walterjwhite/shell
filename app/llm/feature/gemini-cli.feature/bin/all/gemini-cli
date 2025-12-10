@@ -1,0 +1,9 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="GEMINI_PROMPT:Gemini Prompt Name"
+
+lib io/file.sh
+
+_require_file $_CONF_APPLICATION_LIBRARY_PATH/prompts/$GEMINI_PROMPT
+
+cat $_CONF_APPLICATION_LIBRARY_PATH/prompts/$GEMINI_PROMPT | gemini -y .

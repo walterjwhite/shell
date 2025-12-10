@@ -1,0 +1,41 @@
+#!/bin/sh
+
+lib app.sh
+lib feature.sh
+lib git.sh
+lib install
+lib io/file.sh
+lib io/write.sh
+lib platform.sh
+lib sed.sh
+
+cfg install
+
+_is_supported_platform
+
+[ -z "$_DEPENDENCY" ] && _restrict_to_single_process
+
+_APP_INSTALLATION=0
+_APP_INSTALL_SELF=$(readlink -f $0)
+_APPLICATION_INSTALL_DATE=$(date)
+
+[ -z "$_INSTALL_BIN_PATH" ] && _settings_init
+
+_bootstrap_install
+
+if [ $# -gt 0 ]; then
+	_TARGET_APPLICATION_NAMES="$@"
+elif [ -e .app ]; then
+	_TARGET_APPLICATION_NAMES=$(basename $PWD)
+else
+	_ERROR "Specify application to install or cd to app dir"
+fi
+
+_INFO "Installing $_TARGET_APPLICATION_NAMES"
+for _TARGET_APPLICATION_NAME in $_TARGET_APPLICATION_NAMES; do
+	_setup_project $_TARGET_APPLICATION_NAME
+done
+
+if [ $_CONF_INSTALL_AUTO_UPDATE_PACKAGES -gt 0 ]; then
+	_PACKAGE_UPDATE
+fi

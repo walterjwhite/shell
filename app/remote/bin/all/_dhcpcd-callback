@@ -1,0 +1,10 @@
+#!/bin/sh
+
+lib net/network.sh
+
+_INFO "_dhcpcd-callback: $interface | $reason | $ifcarrier | $ifup"
+
+_online && _success "Connected to the Internet, no captive portal detected"
+
+captive-portal-auto-accept
+_online

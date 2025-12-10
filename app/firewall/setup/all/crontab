@@ -1,0 +1,3 @@
+* * * * * firewall-update-tables
+
+0 */4 * * * firewall-update-ip-blocks

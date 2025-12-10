@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ "$#" -lt "1" ]; then
+	_ERROR "Disc index is required." 1
+fi
+
+_INDEX=$1
+shift
+
+cdrecord -v dev=$_BURNER_DEVICE $_IMAGE_PATH/image.$_INDEX.iso

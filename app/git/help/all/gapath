@@ -1,0 +1,4 @@
+git archive path
+	moves file or directory @ path to .archived at the same path
+
+	path

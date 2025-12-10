@@ -1,0 +1,26 @@
+#!/bin/sh
+
+lib feature.sh
+lib ./helper.sh
+
+_format_all() {
+	_git-is-clean || _ERROR "git workspace has changes"
+
+	_ORIGINAL_BRANCH=$(gcb)
+
+	for _BRANCH in $(gb); do
+		gco $_BRANCH
+		format
+
+		gcommit "$_MESSAGE" && gpush
+	done
+
+	gco $_ORIGINAL_BRANCH
+}
+
+if [ -n "$_DEV_ALL" ]; then
+	_format_all
+	exit 0
+fi
+
+_helper_main "$@"

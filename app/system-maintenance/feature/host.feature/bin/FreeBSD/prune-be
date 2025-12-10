@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib feature:prune-be
+lib jail.sh
+lib time.sh
+
+_in_jail && _ERROR "Update System is not designed to run inside jails, aborting"
+
+_CURRENT_EPOCH_TIME=$(date "+%s")
+_CMD_LOGFILE=/var/log/walterjwhite/prune-be.log
+
+_prune_be_by_age
+_prune_be_by_number
+
+_prune_jail_snapshot_by_age
+_prune_jail_snapshot_by_number

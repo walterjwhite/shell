@@ -1,0 +1,5 @@
+run an application (Java)
+	looks for files in <project>/.application/java
+	
+	-type=java
+		only run the Java application, useful if there is more than one application type in the project directory

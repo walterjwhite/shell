@@ -1,0 +1,3 @@
+#!/bin/sh
+
+_ERROR "Testing error message"

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_GIT_SINCE:SHA1 Hash of starting commit or date"
+
+lib git/project.directory.sh
+
+_get_project_directory
+
+_git_gucf_cleanup() {
+	rm -f $_ALL $_CHANGED
+}
+
+_ALL=$(_mktemp)
+_CHANGED=$(_mktemp)
+
+_defer _git_gucf_cleanup
+
+_SAFE_PATH=$(printf '%s' $_PROJECT_PATH/ | sed -e "s/\//\\\\\//g")
+
+find $_PROJECT_PATH -type f | grep -v \\.git | sed '/^[[:space:]]*$/d' |
+	sort -u | sed -e "s/$_SAFE_PATH//g" \
+	>$_ALL
+
+gcf $_GIT_SINCE |
+	sed '/^[[:space:]]*$/d' |
+	sort -u >$_CHANGED
+
+comm -1 -3 $_CHANGED $_ALL

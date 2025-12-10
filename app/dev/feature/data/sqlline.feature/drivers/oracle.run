@@ -1,0 +1,7 @@
+#!/bin/sh
+
+_ORACLE_ARTIFACT_ID=ojdbc11
+
+_download https://repo1.maven.org/maven2/com/oracle/database/jdbc/$_ORACLE_ARTIFACT_ID/$_CONF_DEV_ORACLE_VERSION/$_ORACLE_ARTIFACT_ID-${_CONF_DEV_ORACLE_VERSION}.jar
+
+_download_install_file $_DRIVER_INSTALLATION_PATH/oracle.jar

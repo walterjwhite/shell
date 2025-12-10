@@ -1,0 +1,24 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+_RANDOOP_VERSION=4.3.2
+
+_install_randoop() {
+    _download https://github.com/randoop/randoop/releases/download/v${_RANDOOP_VERSION}/randoop-${_RANDOOP_VERSION}.zip
+
+    _RANDOOP_CONTENTS=$(_MKTEMP_OPTIONS=d _mktemp)
+    _defer _cleanup_randoop
+    _extract $_DOWNLOADED_FILE $_RANDOOP_CONTENTS
+
+    _DOWNLOADED_FILE=$_RANDOOP_CONTENTS/randoop-${_RANDOOP_VERSION}/randoop-all-${_RANDOOP_VERSION}.jar
+    _download_install_file ${_CONF_APPLICATION_LIBRARY_PATH}/randoop-all.jar
+}
+
+_cleanup_randoop() {
+    rm -rf $_RANDOOP_CONTENTS
+}
+
+_install_randoop
+

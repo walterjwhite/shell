@@ -1,0 +1,15 @@
+#!/bin/sh
+
+cfg install
+
+_app_update_update_all() {
+	app-install install
+
+	app-install $(find $_CONF_LIBRARY_PATH -type f -maxdepth 2 -name .metadata ! -path '*/install/*' | sed -e 's/\/.metadata$//' -e 's/^.*\///' | sort -u)
+}
+
+if [ $# -eq 0 ]; then
+	_app_update_update_all
+else
+	app-install "$@"
+fi

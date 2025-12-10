@@ -1,0 +1,13 @@
+#!/bin/sh
+
+_terraform_setup() {
+  [ -z "$INTERACTIVE" ] && {
+    _WARN "non-interactive, unable to configure terraform"
+    return 1
+  }
+
+  _require "$_CONF_DEV_TERRAFORM_LOGIN_URL" _CONF_DEV_TERRAFORM_LOGIN_URL
+  terraform login $_CONF_DEV_TERRAFORM_LOGIN_URL
+}
+
+which terraform > /dev/null 2>&1 && _terraform_setup

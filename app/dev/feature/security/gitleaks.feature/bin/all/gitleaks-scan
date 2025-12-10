@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+
+_get_project_directory
+
+_GITLEAKS_PROJECT_REPORT_PATH=$_CONF_APPLICATION_DATA_PATH/gitleaks/$_PROJECT_RELATIVE_PATH/$(gcb).json
+mkdir -p $(dirname $_GITLEAKS_PROJECT_REPORT_PATH)
+
+if [ -e $_GITLEAKS_PROJECT_REPORT_PATH ]; then
+	_GITLEAKS_FLAG="-b"
+else
+	_GITLEAKS_FLAG="-r"
+fi
+
+gitleaks detect -v $_GITLEAKS_FLAG $_GITLEAKS_PROJECT_REPORT_PATH
+
+_INFO "Refer to $_GITLEAKS_PROJECT_REPORT_PATH"

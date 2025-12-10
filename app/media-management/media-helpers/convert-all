@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for f in $(find . | grep -i png$)
+do
+	_INFO "converting: $f"
+	python /tmp/convert-to-jpeg "$f"
+done

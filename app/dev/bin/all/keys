@@ -1,0 +1,27 @@
+#!/bin/sh
+
+lib feature.sh
+lib ./helper.sh
+
+
+for _ARG in $@; do
+	case $_ARG in
+	--key=*)
+		_CONF_DEV_KEY="${_ARG#*=}"
+		shift
+		;;
+	--key-server=*)
+		_CONF_DEV_KEY_SERVERS="$_KEY_SERVERS ${_ARG#*=}"
+		shift
+		;;
+	esac
+done
+
+for _KEY_SERVER in $_CONF_DEV_KEY_SERVERS; do
+	gpg --keyserver hkp://${_KEY_SERVER} --send-keys $_CONF_DEV_KEY
+done
+
+
+
+
+_helper_main "$@"

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+_PARALLEL=10
+
+cd $_CONF_APPLICATION_DATA_PATH
+
+for _FILE in $(find queued watched error -type f); do
+	$_CONF_APPLICATION_LIBRARY_PATH/bin/do-convert-metadata $_FILE
+done

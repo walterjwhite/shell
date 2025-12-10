@@ -1,0 +1,9 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_MOVIE_SEARCH_PATTERN:Movie Search Pattern"
+
+lib .
+
+_git_init
+
+find . -type f -name title -exec $_CONF_GNU_GREP -PiH "$_MOVIE_SEARCH_PATTERN" {} + | sed -e 's/\/title:/|/' -e 's/^.*\///'

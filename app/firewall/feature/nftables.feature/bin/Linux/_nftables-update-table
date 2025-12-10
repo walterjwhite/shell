@@ -1,0 +1,9 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="NFTABLES_SET_NAME:nftables set name|NFTABLES_SET_DATA_FILE:nftables set filename"
+
+nft flush set ip global $NFTABLES_SET_NAME
+
+while read -r ip; do
+	nft add element ip global $NFTABLES_SET_NAME { $ip }
+done <$NFTABLES_SET_DATA_FILE

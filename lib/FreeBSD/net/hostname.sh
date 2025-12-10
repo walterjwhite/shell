@@ -1,0 +1,3 @@
+_hostname() {
+	hostname
+}

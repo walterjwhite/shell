@@ -1,0 +1,26 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_MEDIA_DRIVE:Media Drive|_MEDIA_VOLUME_NAME:Media Volume Name|_MEDIA_SOURCE_HOST:Media Source Host|_MEDIA_LUKS_PASSPHRASE:Media LUKS Passphrase"
+
+_media_drive_create_zfs_snapshot_send() {
+	zfs send -v $(zfs list -t snapshot | grep $1@ | tail -1 | awk {'print$1'}) | ssh $_MEDIA_SOURCE_HOST zfs receive $_MEDIA_VOLUME_NAME
+}
+
+sgdisk -Z $_MEDIA_DRIVE
+
+sgdisk -g $_MEDIA_DRIVE
+
+sgdisk -n 1:0:0 -t 1:8300 $_MEDIA_DRIVE
+
+sgdisk -b /tmp/disk.sgdisk $_MEDIA_DRIVE
+cp /tmp/disk.sgdisk /home/w/projects/git/systems/$_MEDIA_VOLUME_NAME
+
+cryptsetup luksHeaderBackup $GENTOO_DISK_DEVICE_LUKS --header-backup-file=$GENTOO_DISK_ID/luks
+
+printf '%s\n' "$_MEDIA_LUKS_PASSPHRASE" | cryptsetup luksFormat --batch-mode -c aes-xts-plain -s 512 --hash sha512 $_MEDIA_DRIVE{1}
+printf '%s\n' "$_MEDIA_LUKS_PASSPHRASE" | cryptsetup luksOpen sha512 /dev/sdb1 media
+zpool create -f -o ashift=12 -o autotrim=on -O acltype=posixacl -O xattr=sa -O relatime=on -O compression=zstd -m none $_MEDIA_VOLUME_NAME /dev/mapper/media
+
+_media_drive_create_zfs_snapshot_send media
+_media_drive_create_zfs_snapshot_send media/audio
+_media_drive_create_zfs_snapshot_send media/raw

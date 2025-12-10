@@ -1,0 +1,22 @@
+#!/bin/sh
+
+find . -type f -name '*Controller.java' -exec $_CONF_GNU_GREP '^[\s]*@RequestMapping' -m 1 -Hn {} \; 2>/dev/null | while read -r _SPRING_CONTROLLER_MAPPING_MATCH; do
+	_SPRING_CONTROLLER_MAPPING_FILE=$(printf "$_SPRING_CONTROLLER_MAPPING_MATCH" | cut -f1 -d':')
+	_SPRING_CONTROLLER_MAPPING_LINE_NUMBER=$(printf "$_SPRING_CONTROLLER_MAPPING_MATCH" | cut -f2 -d':')
+	_SPRING_CONTROLLER_MAPPING_MATCH=$(printf "$_SPRING_CONTROLLER_MAPPING_MATCH" | cut -f3 -d':')
+
+	_SPRING_CONTROLLER_MAPPING_PATH=$(printf "$_SPRING_CONTROLLER_MAPPING_MATCH" | $_CONF_DEV_GAWK 'match($0, /value = "(.*)"/, a) {print a[1]}')
+
+	_INFO "$_SPRING_CONTROLLER_MAPPING_FILE ($_SPRING_CONTROLLER_MAPPING_PATH)"
+
+	$_CONF_GNU_GREP -Phn '^[\s]*@(Request|Post|Put|Get)Mapping' $_SPRING_CONTROLLER_MAPPING_FILE | $_CONF_GNU_GREP -Pv "^$_SPRING_CONTROLLER_MAPPING_LINE_NUMBER\:" |
+		$_CONF_DEV_GAWK 'match($0, /^([0-9]+):/, ln) \
+                                match($0, /(value|path) *= *"(.*)"/, a) \
+								match($0, /@(Get|Post|Put)Mapping\("(.*)"\)/, e) \
+                                match($0, /@(Get|Post|Put)Mapping/, b) \
+                                match($0, /method *= *RequestMethod.(.*)\)/, c) \
+                                {printf "  %-4s:%-30s%s\n",  ln[1],\
+								(length(e[2]) > 0?e[2]:a[2]),\
+								(length(b[1]) > 0?toupper(b[1]):toupper(c[1]))\
+								}'
+done

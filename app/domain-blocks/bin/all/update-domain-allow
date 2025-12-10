@@ -1,0 +1,5 @@
+#!/bin/sh
+
+lib ./blocks.sh
+
+_domain_blocks_aggregate $_CONF_DOMAIN_BLOCKS_ALLOWLIST

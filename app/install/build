@@ -1,0 +1,45 @@
+#!/bin/sh
+
+_load_directory() {
+  local import_type=$1
+  shift
+
+  local file import_path import_file
+  for file in "$@"; do
+    for platform in all $_PLATFORM; do
+      import_path=$PROJECT_ROOT_DIR/$import_type/$platform/$file
+
+      [ ! -e $import_path ] && continue
+
+      for import_file in $(find $import_path -type f ! -name '*.test' | sort -u); do
+        . $import_file || {
+          printf 'Unable import: %s\n' $import_file
+        }
+      done
+    done
+  done
+}
+
+set -a
+[ -n "$_DEBUG" ] && set -x
+
+OPWD=$PWD
+PROJECT_ROOT_DIR=$(git rev-parse --show-toplevel)
+
+. $PROJECT_ROOT_DIR/cfg/all/platform
+_PLATFORM=$_DETECTED_PLATFORM
+
+_load_directory cfg .
+
+_load_directory lib platform.sh install/build context.sh environment.sh exec.sh exit.sh help.sh include.sh processes.sh \
+  mktemp.sh logging.sh syslog.sh beep.sh stdin.sh sudo.sh wait.sh validation.sh app.sh git.sh
+
+_load_directory lib io/file.sh sed.sh shell-script.sh
+
+_load_directory cfg install logging paths
+
+_include install
+
+_load_directory init platform full
+
+_app_build

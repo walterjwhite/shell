@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ $# -gt 0 ]; then
+	if [ $1 = "init" ]; then
+		_SPRING_CLI_ARGS="-x"
+	fi
+fi
+
+_FEATURE_NAME=SPRING
+java -cp $_CONF_APPLICATION_LIBRARY_PATH/feature/$_FEATURE_NAME/spring-boot-cli.jar org.springframework.boot.loader.JarLauncher "$@" "$_SPRING_CLI_ARGS" || _ERROR "see above error message"
+
+git init
+git add .
+gcommit -am 'spring init'

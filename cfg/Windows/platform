@@ -1,0 +1,16 @@
+_PLATFORM="Windows"
+: ${_CONF_GNU_GREP:=grep}
+: ${_CONF_GNU_SED:=sed}
+
+: ${_CONF_LOG_BEEP_ERR:='500,400'}
+: ${_CONF_LOG_BEEP_ALRT:='600,200'}
+: ${_CONF_LOG_BEEP_SCS:='700,100'}
+: ${_CONF_LOG_BEEP_WRN:=''}
+: ${_CONF_LOG_BEEP_INFO:=''}
+: ${_CONF_LOG_BEEP_DETAIL:=''}
+: ${_CONF_LOG_BEEP_DEBUG:=''}
+: ${_CONF_LOG_BEEP_STDIN:='700,200'}
+
+
+: ${_CONF_LIBRARY_PATH:=~/lib}
+: ${_CONF_BIN_PATH:=~/bin}

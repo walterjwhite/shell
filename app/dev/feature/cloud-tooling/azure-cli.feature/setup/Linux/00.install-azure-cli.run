@@ -1,0 +1,50 @@
+lib net/download.sh
+
+case $_SUB_PLATFORM in
+    Ubuntu)
+        _download https://aka.ms/InstallAzureCLIDeb
+        _sudo bash $_DOWNLOADED_FILE
+        ;;
+    Centos | RedHat)
+        _sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+        case $_SUB_PLATFORM in
+            Centos)
+                _OS_VERSION=$(cat /etc/centos-release)
+                ;;
+            RedHat)
+                _OS_VERSION=$(cat /etc/redhat-release)
+                ;;
+        esac
+
+        _OS_MAJOR_VERSION=$(printf '%s' "$_OS_VERSION" | cut -f1 -d'.')
+        _OS_MINOR_VERSION=$(printf '%s' "$_OS_VERSION" | cut -f2 -d'.')
+        _OS_PATCH_VERSION=$(printf '%s' "$_OS_VERSION" | cut -f3 -d'.')
+
+        case $_OS_MAJOR_VERSION in
+            9)
+                _sudo dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm
+                ;;
+            8)
+                _sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
+                ;;
+            7)
+                printf '[azure-cli]\n' | write /etc/yum.repos.d/azure-cli.repo
+                printf 'name=Azure CLI\n' | write /etc/yum.repos.d/azure-cli.repo
+                printf 'baseurl=https://packages.microsoft.com/yumrepos/azure-cli\n' | write /etc/yum.repos.d/azure-cli.repo
+                printf 'enabled=1\n' | write /etc/yum.repos.d/azure-cli.repo
+                printf 'gpgcheck=1\n' | write /etc/yum.repos.d/azure-cli.repo
+                printf 'gpgkey=https://packages.microsoft.com/keys/microsoft.asc\n' | write /etc/yum.repos.d/azure-cli.repo
+                
+                ;;
+            *)
+                _ERROR "Unsupported OS Version: $_OS_MAJOR_VERSION"
+                ;;
+        esac
+
+            _sudo dnf install azure-cli
+        ;;
+    *)
+        _ERROR "Unsupported Linux Distribution: $_SUB_PLATFORM"
+        ;;
+esac

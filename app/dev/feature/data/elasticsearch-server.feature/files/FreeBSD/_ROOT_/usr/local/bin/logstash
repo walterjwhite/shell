@@ -1,0 +1,18 @@
+#!/bin/sh
+
+for _ARG in $@; do
+	case $_ARG in
+	--start)
+		$_SUDO_CMD service logstash onestart
+		;;
+	--stop)
+		$_SUDO_CMD service logstash onestop
+		;;
+	--restart)
+		$_SUDO_CMD service logstash onerestart
+		;;
+	--status)
+		$_SUDO_CMD service logstash onestatus
+		;;
+	esac
+done

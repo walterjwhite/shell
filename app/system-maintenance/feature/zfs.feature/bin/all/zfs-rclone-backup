@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lib feature:zfs.rclone.sh
+lib fs/zfs.sh
+
+_ZFS_RCLONE_BACKUP() {
+	_ZFS_LATEST_SNAPSHOT=$(zfs list -t snapshot $_ZFS_VOLUME | tail -1 | awk {'print$1'})
+	[ -z "$_ZFS_LATEST_SNAPSHOT" ] && continue
+
+	_DETAIL "$_ZFS_LATEST_SNAPSHOT"
+
+	zfs send $_ZFS_LATEST_SNAPSHOT | rclone rcat $_RCLONE_TARGET:$_ZFS_VOLUME
+}
+
+_zfs_rclone backup

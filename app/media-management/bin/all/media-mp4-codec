@@ -1,0 +1,12 @@
+#!/bin/sh
+
+for f in $(find . -type l -name '*.mp4'); do
+	codec=$(ffprobe $f 2>&1 | grep -o 'Video:.*' | sed -e 's/Video: //' -e 's/ .*//')
+	if [ "$codec" != "h264" ] && [ "$codec" != "hevc" ]; then
+		_WARN "Converting $f to $_CONF_MEDIA_MANAGEMENT_VIDEO_CODEC"
+		ffmpeg -i $f -c:v $_CONF_MEDIA_MANAGEMENT_VIDEO_CODEC -vtag $_CONF_MEDIA_MANAGEMENT_VIDEO_CODEC_TAG $f.new
+
+		mv $f.new $f
+		git annex add $f
+	fi
+done

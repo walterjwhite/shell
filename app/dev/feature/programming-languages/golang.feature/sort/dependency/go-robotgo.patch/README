@@ -1,0 +1,1 @@
+These packages are required by robotgo, again, rather than require it here, why not require it there as part of the setup script?

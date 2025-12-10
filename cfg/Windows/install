@@ -1,0 +1,2 @@
+: ${_CONF_INSTALL_STAT_ARGUMENTS:='-c %a'}
+: ${_CONF_INSTALL_SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}

@@ -1,0 +1,4 @@
+lib Image
+
+im = Image.open('./media/pictures/photos/2001-2010/2006/05.May/25/Ohiopyle + MidOhio/20060521 MidOhio/FormulaBMW gimp/img_2134_800x241.png')
+im.save('./media/pictures/photos/2001-2010/2006/05.May/25/Ohiopyle + MidOhio/20060521 MidOhio/FormulaBMW gimp/img_2134_800x241.jpeg')

@@ -1,0 +1,1 @@
+_PF_TABLE_SCHEDULE_EXEC="$_CONF_APPLICATION_LIBRARY_PATH/bin/_pf_table_schedule {} ;"

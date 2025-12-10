@@ -1,0 +1,11 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_CF_SPACE:CF Space|_CF_ENVIRONMENT:CF Environment"
+
+lib feature/cloud-tooling/cf-cli.feature/cf-utils.sh
+lib io/file.sh
+
+_cf_endpoint
+_cf_space_index
+
+$_CONF_APPLICATION_LIBRARY_PATH/cf-login.expect

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+
+java -jar $_QSY7_COMMENT_REMOVER_JAR -Path "$PWD" $_CONF_DEV_JAVA_QSY7_COMMENT_REMOVER_OPTIONS "$@"

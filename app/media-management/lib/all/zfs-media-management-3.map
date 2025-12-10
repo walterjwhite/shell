@@ -1,0 +1,23 @@
+#!/bin/sh
+
+_ROOT=/media/raw
+cd $_ROOT
+
+_INDEX=0
+
+_CONTENTS=$(cat /media/raw-backup/index.map)
+
+while read _ANNEX_LINE; do
+	_INFO "disc: $_INDEX"
+	if [ -z "$_ANNEX_LINE" ]; then
+		continue
+	fi
+
+	for _PATTERN in $_ANNEX_LINE; do
+		_CONTENTS=$(printf '%s' "$_CONTENTS" | sed -e "s/ $_PATTERN/ $_INDEX\/$_PATTERN/")
+	done
+
+	_INDEX=$((_INDEX + 1))
+done </media/raw-backup/index
+
+printf '%s\n' "$_CONTENTS" >/media/raw-backup/index.map.disc

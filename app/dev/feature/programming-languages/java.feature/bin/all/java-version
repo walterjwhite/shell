@@ -1,0 +1,24 @@
+#!/bin/sh
+
+_java_class_version() {
+	if [ $(find . -type f -name '*.class' -path '*/target/*' | wc -l) -gt 0 ]; then
+		find . -type f -name '*.class' -path '*/target/*' -exec javap -v {} \; | grep major
+		return 0
+	fi
+
+	_WARN "No classes to analyze"
+	return 1
+}
+
+_java_jar_version() {
+	if [ $(find . -type f -name '*.jar' -path '*/target/*' | wc -l) -gt 0 ]; then
+		find . -type f -name '*.jar' -path '*/target/*' -exec jar xf {} \;
+
+		_java_class_version
+		return 0
+	fi
+
+	_WARN "No jars to analyze"
+}
+
+_java_class_version || _java_jar_version

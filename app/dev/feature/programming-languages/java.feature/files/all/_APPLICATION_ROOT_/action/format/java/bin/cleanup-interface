@@ -1,0 +1,9 @@
+#!/bin/sh
+
+for _JAVA_INTERFACE in $(grep -l '^public interface ' $@); do
+	$_CONF_GNU_SED -i 's/public //' $_JAVA_INTERFACE
+
+	_JAVA_INTERFACE_NAME=$(basename $_JAVA_INTERFACE | sed -e "s/\.java$//")
+
+	$_CONF_GNU_SED -i "s/interface $_JAVA_INTERFACE_NAME/public interface $_JAVA_INTERFACE_NAME/" $_JAVA_INTERFACE
+done

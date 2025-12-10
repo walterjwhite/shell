@@ -1,0 +1,32 @@
+#!/bin/sh
+
+lib exit.sh
+lib git/include.sh
+lib logging.sh
+
+_git_diff() {
+	if [ $# -eq 0 ]; then
+		_git-is-clean && _ERROR "No changes"
+	fi
+
+	if [ "$(git log -1 2>/dev/null | grep commit | wc -l)" -gt "0" ]; then
+		if [ $# -gt 0 ]; then
+			git diff --unified -w "$@"
+		else
+			git diff HEAD --unified -w
+		fi
+	else
+		find . -type f ! -path '*/.git/*' -exec $EDITOR {} \;
+	fi
+}
+
+if [ -z "$_GIT_RECURSIVE" ]; then
+	_git_in_working_directory || {
+		_GIT_RECURSIVE=1
+		find . \( -type d -or -type f \) -and -name '.git' -execdir gd "$@" \;
+
+		exit
+	}
+fi
+
+_git_diff "$@"

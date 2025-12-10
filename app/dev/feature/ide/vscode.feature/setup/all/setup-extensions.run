@@ -1,0 +1,18 @@
+#!/bin/sh
+
+cfg feature:.
+
+
+_vscode_install_extensions() {
+	if [ -z "$_FEATURE_VSCODE_EXTENSIONS" ]; then
+		_WARN "_FEATURE_VSCODE_EXTENSIONS is empty"
+		return 1
+	fi
+
+	local vscode_extension
+	for vscode_extension in $(printf '%s\n' "$_FEATURE_VSCODE_EXTENSIONS"); do
+		$_CONF_DEV_VSCODE_EXECUTABLE --install-extension $vscode_extension > /dev/null 2>&1 || _WARN "Install $vscode_extension failed"
+	done
+}
+
+_vscode_install_extensions

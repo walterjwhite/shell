@@ -1,0 +1,24 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_TABLE_FILENAME:Table Filename"
+
+lib io/file.sh
+lib net/firewall.sh
+
+
+_TABLE_OUTPUT_FILE=$_TABLE_FILENAME.data
+
+dig +short +timeout=$_CONF_FIREWALL_DNS_TIMEOUT -f$_TABLE_FILENAME |
+	$_CONF_GNU_GREP -Po '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$' |
+	sort -u >$_TABLE_OUTPUT_FILE
+
+dig +short +timeout=$_CONF_FIREWALL_DNS_TIMEOUT $(dig +short +timeout=$_CONF_FIREWALL_DNS_TIMEOUT -f$_TABLE_FILENAME |
+	$_CONF_GNU_GREP -Pv '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$' | sed -e 's/\.$//') |
+	$_CONF_GNU_GREP -Po '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$' |
+	sort -u >>$_TABLE_OUTPUT_FILE
+
+TABLE_NAME=$(basename $(dirname $_TABLE_FILENAME))_$(basename $_TABLE_FILENAME)
+TABLE_NAME=$(printf '%s' $TABLE_NAME | tr '/' '_' | tr '-' '_' | sed -e 's/\.[[:alnum:]]*$//')
+_DETAIL "Updating $TABLE_NAME -> $_TABLE_OUTPUT_FILE"
+
+_firewall_update_table_from_file $_TABLE_OUTPUT_FILE

@@ -1,0 +1,5 @@
+sqlline
+    -url=project/dev
+    -c=project/dev/read-only-user
+    -o=csv
+    -f=project/queries/find-users.sql

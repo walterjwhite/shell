@@ -1,0 +1,16 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_ACTION:Action to perform (list,scale,unique,units,shopping)"
+
+lib .
+
+_INFO "$(basename $PWD | sed -e 's/-/ /g')"
+
+case $_ACTION in
+list | scale | unique | units | shopping)
+	${_ACTION}_ingredients "$@"
+	;;
+*)
+	_ERROR "Unknown action: $_ACTION"
+	;;
+esac

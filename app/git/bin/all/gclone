@@ -1,0 +1,36 @@
+#!/bin/sh
+
+_REQUIRED_ARGUMENTS="_GIT_URL:The git url of the project to clone"
+
+lib git/include.sh
+
+
+_git_get_project_path() {
+	local project_relative_path=$(printf '%s' "$_GIT_URL" | sed -e 's/^.*@//' -e 's/\.git//' -e 's/^.*:\/\///' -e 's/:/\//')
+	local project_prefix
+	local project_host
+	local is_data
+
+	printf '%s' "$_GIT_URL" | grep -c "data/$SYSTEM/$USER/" >/dev/null 2>&1 && {
+		project_prefix=$_CONF_DATA_PATH
+		project_relative_path=$(basename $project_relative_path)
+
+		is_data=1
+	} || {
+		project_prefix=$_PROJECT_BASE_PATH
+	}
+
+	printf '%s' "$_GIT_URL" | $_CONF_GNU_GREP -Pc '(@|://)' >/dev/null 2>&1 || {
+		_GIT_URL=$_CONF_GIT_MIRROR/$_GIT_URL
+
+		if [ -z "$is_data" ]; then
+			project_host=$(printf '%s' "$_CONF_GIT_MIRROR" | sed -e 's/^.*@//' -e 's/\:.*$//')
+		fi
+	}
+
+	_PROJECT_FULL_PATH=$project_prefix/$project_host/$project_relative_path
+}
+
+_git_get_project_path
+
+git clone $_GIT_URL "$@" $_PROJECT_FULL_PATH

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_elasticsearch_install() {
+    _ELASTICSEARCH_VERSION=8.2.0
+    _ELASTICSEARCH_ARCHITECTURE=linux-x86_64
+
+    _ELASTICSEARCH_FILENAME=elasticsearch-$_ELASTICSEARCH_VERSION-$_ELASTICSEARCH_ARCHITECTURE.tar.gz
+    _ELASTICSEARCH_SIGNATURE_FILENAME=elasticsearch-$_ELASTICSEARCH_VERSION-$_ELASTICSEARCH_ARCHITECTURE.tar.gz.sha512
+
+    _download https://artifacts.elastic.co/downloads/elasticsearch/$_ELASTICSEARCH_FILENAME
+    _download https://artifacts.elastic.co/downloads/elasticsearch/$_ELASTICSEARCH_SIGNATURE_FILENAME
+
+    _verify $_ELASTICSEARCH_SIGNATURE_FILENAME || return 1
+
+    tar -xzf $_ELASTICSEARCH_FILENAME >/dev/null 2>&1
+
+    $_SUDO_CMD rm -rf $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch
+    $_SUDO_CMD mkdir -p $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch
+    $_SUDO_CMD mv elasticsearch-$_ELASTICSEARCH_VERSION/ $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch/$_ELASTICSEARCH_VERSION
+}
+
+_elasticsearch_platform_check() {
+    case $_SUB_PLATFORM in
+        Gentoo)
+            _WARN "OS Package is available"
+            return 1
+            ;;
+    esac
+}
+
+_elasticsearch_architecture_check() {
+    case $_ARCHITECTURE in
+        amd64|aarch64)
+            ;;
+        *)
+            _WARN "Unsupported architecture: $_ARCHITECTURE"
+            return 1
+            ;;
+    esac
+}
+
+_elasticsearch_platform_check && _elasticsearch_architecture_check && _elasticsearch_install

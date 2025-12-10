@@ -1,0 +1,11 @@
+: ${_CONF_LOG_BEEP_TIMEOUT:=5}
+
+: ${_CONF_LOG_BEEP_ERR:='-f 1000 -l 1000'}
+: ${_CONF_LOG_BEEP_ALRT:='-f 1000 -l 100 -n -f 1000 -l 100'}
+: ${_CONF_LOG_BEEP_SCS:='-f 1600 -l 100'}
+: ${_CONF_LOG_BEEP_WRN:='-f 1500 -l 100 -n -f 1000'}
+: ${_CONF_LOG_BEEP_INFO:=''}
+: ${_CONF_LOG_BEEP_DETAIL:=''}
+: ${_CONF_LOG_BEEP_DEBUG:=''}
+: ${_CONF_LOG_BEEP_STDIN:='-f 1000 -l 100 -n -f 1400'}
+: ${_CONF_LOG_SUDO_BEEP_TONE:='-f 1000 -l 100 -n -f 1400 -l 50 -n -f 1200'}

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+update-domain-allow
+update-domain-blocks
+
+update-aggregate-domain-blocks
+
+dnsmasq-update-domain-blocks

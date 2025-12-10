@@ -1,0 +1,24 @@
+#!/bin/sh
+
+
+if [ -n "$_INSTALLER" ]; then
+	_WARN "Using $_INSTALLER to install this package"
+	return
+fi
+
+_ELASTICSEARCH_VERSION=8.2.0
+_ELASTICSEARCH_ARCHITECTURE=windows-x86_64
+
+_ELASTICSEARCH_FILENAME=elasticsearch-$_ELASTICSEARCH_VERSION-$_ELASTICSEARCH_ARCHITECTURE.zip
+_ELASTICSEARCH_SIGNATURE_FILENAME=${_ELASTICSEARCH_FILENAME}.sha512
+
+_download https://artifacts.elastic.co/downloads/elasticsearch/$_ELASTICSEARCH_FILENAME
+_download https://artifacts.elastic.co/downloads/elasticsearch/$_ELASTICSEARCH_SIGNATURE_FILENAME
+
+_verify $_ELASTICSEARCH_SIGNATURE_FILENAME || return 1
+
+unzip $_ELASTICSEARCH_FILENAME >/dev/null 2>&1
+
+$_SUDO_CMD rm -rf $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch
+$_SUDO_CMD mkdir -p $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch
+$_SUDO_CMD mv elasticsearch-$_ELASTICSEARCH_VERSION/ $_CONF_APPLICATION_LIBRARY_PATH/elasticsearch/$_ELASTICSEARCH_VERSION

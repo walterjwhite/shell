@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib io/write.sh
+cfg feature:
+
+for _CONSOLE in $(find $_CONF_APPLICATION_LIBRARY_PATH/shell -mindepth 1 -maxdepth 1 -type d); do
+  printf 'export LESSOPEN="| %s %s"\n' "$_CONF_CONSOLE_SOURCE_HIGHTLIGHT" '%s' | _append $_CONSOLE/source-highlight-less
+  printf 'export LESS=" -R "\n' | _append $_CONSOLE/source-highlight-less
+done

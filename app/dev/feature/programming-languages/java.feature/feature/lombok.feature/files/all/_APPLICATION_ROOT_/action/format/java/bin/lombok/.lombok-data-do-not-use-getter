@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ $(grep -c "@ToString(.*doNotUseGetters = true.*)" $1) -eq 0 ]; then
+	_DETAIL "$_JAVA_FORMATTER_NAME - Fixing $1"
+
+	$_CONF_GNU_SED -i '/@ToString/d' $1
+
+	$_CONF_GNU_SED -i '/^@Data/i @ToString(doNotUseGetters = true)' $1
+
+	if [ $(grep -c "import lombok.ToString" $1) -eq 0 ]; then
+		$_CONF_GNU_SED -i '/^import lombok.Data;/i import lombok.ToString;' $1
+	fi
+fi

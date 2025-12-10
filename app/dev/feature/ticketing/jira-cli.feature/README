@@ -1,0 +1,6 @@
+_CONF_DEV_JIRA_TRANSITIONS is required as follows
+ex:
+_CONF_DEV_JIRA_TRANSITIONS="71:in-progress|51:code-review"
+
+each transition must be separated by a pipe '|'
+the transition id must be separate with a colon ':' from the name to be entered on the command-line to trigger that transition

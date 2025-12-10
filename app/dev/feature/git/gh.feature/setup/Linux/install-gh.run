@@ -1,0 +1,23 @@
+#!/bin/sh
+
+lib net/download.sh
+
+case $_SUB_PLATFORM in
+    Ubuntu)
+        if [ "$_ARCHITECTURE" = "amd64" ]; then
+            _GITHUB_DESKTOP_LINUX_VERSION=3.1.5-linux2
+            _download https://github.com/shiftkey/desktop/releases/download/release-$_GITHUB_DESKTOP_LINUX_VERSION/GitHubDesktop-linux-$_GITHUB_DESKTOP_LINUX_VERSION.deb
+
+            $_SUDO_CMD package_install gdebi-core 
+            $_SUDO_CMD gdebi $_DOWNLOADED_FILE
+        else
+            _WARN "Unsupported architecture: $_ARCHITECTURE"
+        fi
+        ;;
+    Gentoo)
+        _WARN "Using package"
+        ;;
+    *)
+        _WARN "Unsupported distribution: $_SUB_PLATFORM"
+        ;;
+esac

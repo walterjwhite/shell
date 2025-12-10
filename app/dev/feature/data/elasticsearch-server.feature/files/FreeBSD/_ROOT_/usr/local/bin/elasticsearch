@@ -1,0 +1,18 @@
+#!/bin/sh
+
+for _ARG in $@; do
+	case $_ARG in
+	--start)
+		$_SUDO_CMD service elasticsearch onestart
+		;;
+	--stop)
+		$_SUDO_CMD service elasticsearch onestop
+		;;
+	--restart)
+		$_SUDO_CMD service elasticsearch onerestart
+		;;
+	--status)
+		$_SUDO_CMD service elasticsearch onestatus
+		;;
+	esac
+done

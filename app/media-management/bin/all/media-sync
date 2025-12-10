@@ -1,0 +1,54 @@
+#!/bin/sh
+
+_DEVICE=$(sysctl kern.disks | sed -e "s/^.*://" | tr ' ' '\n' | grep -v "^$" | grep -v ada)
+_DEVICES=$(printf '%s' $_DEVICE | wc -l)
+
+if [ $_DEVICES -ne 1 ]; then
+	_ERROR "More than 1 device detected, aborting: $_DEVICE ($_DEVICES)" 1
+fi
+
+_MEDIA_VOLUME=$(zfs list | grep media$ | awk {'print$1'})
+if [ -z $_MEDIA_VOLUME ]; then
+	_ERROR "media volume not found" 2
+fi
+
+_MEDIA_DEVICE=$(zpool status $_MEDIA_VOLUME | grep ONLINE | head -1 | awk {'print$1'})
+if [ -z $_MEDIA_DEVICE ]; then
+	_ERROR "media device not found" 3
+fi
+
+_UID=$(id -u)
+if [ "$_UID" -gt 0 ]; then
+	if [ -n $_SUDO_CMD ]; then
+		_INFO "Enter sudo password to run this program as root"
+
+		$_SUDO_CMD $0 $@
+		exit $?
+	else
+		_ERROR "You must be root to run this cmd (and _SUDO_CMD was undefined): $_UID" 4
+	fi
+fi
+
+_wait_until_resilvered() {
+	while [ $(zpool status $_MEDIA_VOLUME | grep -c "action: Wait for the resilver") -eq 1 ]; do
+		_DEBUG "sleeping $_CONF_MEDIA_MANAGEMENT_ZFS_POOL_STATUS_INTERVAL - waiting for $_DEVICE to resilver"
+
+		sleep $_CONF_MEDIA_MANAGEMENT_ZFS_POOL_STATUS_INTERVAL
+	done
+}
+
+_INFO "Unlocking $_DEVICE"
+geli attach -p -k _DEVICE_KEY_PATH _DEVICE
+
+_INFO "Onlining $_DEVICE into $_MEDIA_VOLUME"
+zpool online $_MEDIA_VOLUME $_MEDIA_DEVICE ${_DEVICE}.elip1
+
+_wait_until_resilvered
+
+_INFO "Offlining $_DEVICE into $_MEDIA_VOLUME"
+zpool offline ${_DEVICE}.elip1
+
+_INFO "Locking $_DEVICE"
+geli detach ${_DEVICE}
+
+_INFO "Completed synchronization for $_DEVICE - safe to remove"

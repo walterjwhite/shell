@@ -1,0 +1,8 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_QSY7_COMMENT_REMOVER_JAR_URL=https://repo1.maven.org/maven2/io/github/qsy7/java/utilities/${_QSY7_COMMENT_REMOVER_VERSION}/$_QSY7_COMMENT_REMOVER_JAR_FILENAME
+
+_download $_QSY7_COMMENT_REMOVER_JAR_URL
+_download_install_file ${_CONF_APPLICATION_LIBRARY_PATH}/qsy7/comment-remover.jar

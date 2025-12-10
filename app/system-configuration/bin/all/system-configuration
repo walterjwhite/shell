@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib ./configuration.sh
+lib extension.sh
+
+
+_INFO "Configuring system"
+
+_configure_devices
+_run_extensions
+
+_INFO "Configured system"

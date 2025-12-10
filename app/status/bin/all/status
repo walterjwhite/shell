@@ -1,0 +1,30 @@
+#!/bin/sh
+
+lib alert.sh
+lib extension.sh
+lib feature.sh
+lib net/mail.sh
+lib system-alert.sh
+
+
+
+_run_extension() {
+	_is_feature_enabled "$_EXTENSION_NAME" || return 0
+
+	_INFO "checking: $_EXTENSION_NAME"
+	${_EXTENSION_FUNCTION_NAME} || {
+		local function_status=$?
+		_system_alert "$_EXTENSION_NAME" "$_STATUS_MESSAGE"
+
+		return $function_status
+	}
+
+	[ "$_STATUS_MESSAGE" ] || _STATUS_MESSAGE="OK"
+	_DETAIL "$_STATUS_MESSAGE"
+}
+
+_after_extension() {
+	unset _STATUS_MESSAGE
+}
+
+_run_extensions _run_extension _after_extension

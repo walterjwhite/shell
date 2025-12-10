@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -n "$_INSTALLER" ]; then
+	_WARN "Using $_INSTALLER to install this package"
+	return
+fi
+
+_JQ_VERSION=1.6
+_JQ_ARCHITECTURE=win64
+
+_JQ_FILENAME=jq-${_JQ_ARCHITECTURE}.exe
+_JQ_TARGET_FILE=$_INSTALL_BIN_PATH/$_JQ_FILENAME
+
+_download https://github.com/stedolan/jq/releases/download/jq-$_JQ_VERSION/$_JQ_FILENAME 
+_download_install_file $_JQ_TARGET_FILE
+return $?

@@ -1,0 +1,52 @@
+#!/bin/sh
+
+lib ./bootstrap
+lib ./run.sh
+
+_INFO "Installing $_DETECTED_PLATFORM $(uname -r) [$(_application_version)]"
+
+_cleanup_prior_installation
+_select_disk
+
+_validate
+_init_net
+
+_run_init
+_run _init_disk_layout
+_init_disk_encryption_get_device
+_run _init_disk_encryption
+_open_disk_encryption && _defer _close_encrypted_disks
+
+_run _init_disk_zfs
+_zpool_import && _defer _cleanup_zfs
+_zfs_mount
+
+_setup_git
+_validate_conf
+
+_run _init_chroot
+_run _init_disk_backup
+
+_init_chroot_net
+_init_chroot_other
+
+_init_chroot_app_conf
+_init_chroot_apps
+
+_init_chroot_ssh
+_init_chroot_system_git_workspace
+
+_run _prepare_chroot
+
+
+_run _write_system
+_run _write_fstab
+
+_mounts && _defer _cleanup_mounts
+_defer _cleanup_processes
+
+_run _boot_loader
+
+_CHILD=1 chroot $_CONF_OS_INSTALLER_MOUNTPOINT $_CONF_APPLICATION_LIBRARY_PATH/bin/chroot "$@" 2>&1
+
+_post_install

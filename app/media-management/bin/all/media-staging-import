@@ -1,0 +1,46 @@
+#!/bin/sh
+
+lib sudo.sh
+
+_UID=$(id -u)
+if [ "$_UID" -gt 0 ]; then
+	if [ -n _sudo ]; then
+		_INFO "Enter sudo password to run this program as root"
+
+		_sudo $0 $@
+		exit $?
+	else
+		_ERROR "You must be root to run this cmd (and _CONF_SUDO_CMD was undefined): $_UID" 4
+	fi
+fi
+
+if [ "$#" -eq "0" ]; then
+	_ERROR "Date / Name is required: 2021/01.January/15.snow-forts" 1
+fi
+
+_DATE_NAME=$1
+shift
+
+_ELEMENTS=$(printf '%s' $_DATE_NAME | tr '/' '\n' | wc -l | awk {'print$1'})
+if [ $_ELEMENTS -ne 3 ]; then
+	_ERROR "Date / Name is in an invalid format: $_DATE_NAME ($_ELEMENTS)" 2
+fi
+
+_move() {
+	_SOURCE=$_CONF_MEDIA_MOUNTPOINT/DCIM
+	if [ ! -e $_SOURCE ]; then
+		_unmount
+		_ERROR "$_SOURCE does not exist" 5
+	fi
+
+	_TARGET=$_STAGING_AREA/$_DATE_NAME
+	mkdir -p $(dirname _TARGET)
+
+	mv $_SOURCE $_TARGET
+
+	chown -R $_CONF_MEDIA_USER:$_CONF_MEDIA_USER $_TARGET
+}
+
+_mount
+_move
+_unmount

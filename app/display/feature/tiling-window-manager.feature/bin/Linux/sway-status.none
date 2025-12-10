@@ -1,0 +1,20 @@
+#!/bin/sh
+
+_INTERVAL=5
+
+_get_status() {
+	[ -z "$_BATTERY_DEVICE" ] && _BATTERY_DEVICE=$(upower -e | grep 'battery_BAT' | head -1)
+
+	local battery_status=$(upower -i $_BATTERY_DEVICE | grep percentage | sed -e 's/^.*: *//')
+
+	local net=$(ip -4 -br addr show | sed -e '1d' -e 's/ $//' | awk {'print$1" "$2" "$3'} | tr '\n' ' ')
+
+	local date_time=$(date +"%Y/%m/%d %H:%M:%S" | sed -e 's/\n$//')
+
+	printf '%s | %s | %s\n' "$battery_status" "$net" "$date_time"
+}
+
+while [ 1 ]; do
+	_get_status
+	sleep $_INTERVAL
+done

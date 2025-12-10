@@ -1,0 +1,20 @@
+#!/bin/sh
+
+lib time.sh
+
+case $_SUB_PLATFORM in
+    Ubuntu)
+        case $_ARCHITECTURE in
+            aarch64|arm64)
+                _WARN "Unsupported architecture, $_ARCHITECTURE"
+                break
+                ;;
+        esac
+
+        _DETAIL "installing mockoon on $_ARCHITECTURE"
+        _SUDO_REQUIRED=1 _timeout $_CONF_INSTALL_STEP_TIMEOUT "snap install mockoon" snap install mockoon
+        ;;
+    *)
+        _WARN "Unsupported distribution, $_SUB_PLATFORM"
+        ;;
+esac

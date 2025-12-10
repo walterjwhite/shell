@@ -1,0 +1,16 @@
+#!/bin/sh
+
+_cleanup_xk6_disruptor() {
+  rm -rf /tmp/xk6-disruptor
+}
+
+cd /tmp
+
+git clone https://github.com/grafana/xk6-disruptor.git 2>/dev/null || _ERROR "Error cloning https://github.com/grafana/xk6-disruptor.git"
+_defer _cleanup_xk6_disruptor
+
+cd xk6-disruptor
+
+unset GOPATH
+xk6 build --output xk6-disruptor --with github.com/grafana/xk6-disruptor=. 2>/dev/null || _ERROR "Error building xk6-disruptor"
+_sudo cp xk6-disruptor $_CONF_BIN_PATH/k6

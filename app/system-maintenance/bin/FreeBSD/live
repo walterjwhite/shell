@@ -1,0 +1,17 @@
+#!/bin/sh
+
+lib extension.sh
+lib root.sh
+lib service.sh
+
+_require_root
+
+_ACTION=LIVE
+[ $# -gt 0 ] && _ACTION=OFF
+
+_INFO "Making system $_ACTION"
+
+_EXTENSION_FUNCTION_SUFFIX=_${_ACTION}
+extension_path=/usr/local/etc/walterjwhite/live _run_extensions
+
+_INFO "System is $_ACTION"

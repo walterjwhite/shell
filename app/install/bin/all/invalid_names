@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib install/build/unused-functions/list.sh
+
+cfg install
+
+for APP_BUILD_OUTPUT_FILE in $(find . -type f \( -path '*/lib/*' -or -path '*/init/*' -or -path '*/bin/*' \) ! -path '*/*.secret/*' ! -path '*/*.archived/*'); do
+	_WARN=1 _invalid_functions
+done

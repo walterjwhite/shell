@@ -1,0 +1,17 @@
+#!/bin/sh
+
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/defaults.sh
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/actions.sh
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/secrets.sh
+
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/args.sh
+
+_secrets_init_uninitialized
+_httpie_action pre
+
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/logging.sh
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/request.sh
+
+_httpie_action post
+
+. $_CONF_APPLICATION_LIBRARY_PATH/tool/httpie/less.sh
