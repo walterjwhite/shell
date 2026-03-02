@@ -9,12 +9,12 @@ _github_sync() {
   _github_remove_contents
   _github_copy_source
 
- _git_remove_app_framework
- _git_remove_secrets
- _git_remove_artifacts
- _git_remove_comments
- _git_remove_patterns
- _git_remove_time
+  _git_remove_app_framework
+  _git_remove_secrets
+  _git_remove_artifacts
+  _git_remove_comments
+  _git_remove_patterns
+  _git_remove_time
 
   if [ -n "$_OPTN_GITHUB_IGNORE" ]; then
     log_info "removing other filtered content: $_OPTN_GITHUB_IGNORE"
@@ -32,6 +32,6 @@ _github_copy_source() {
   [ -e $git_project_path/.app ] && cp -Rp $git_project_path/.app .
   [ -e $git_project_path/.github ] && cp -Rp $git_project_path/.github .
   [ -e $git_project_path/.gitignore ] && cp -Rp $git_project_path/.gitignore .
-  
+
   find $git_project_path -mindepth 1 -maxdepth 1 ! -name '.*' ! -name '*.secret*' ! -name github ! -name system-configuration -exec cp -Rp {} $setup_github_clone_project_path/ \;
 }

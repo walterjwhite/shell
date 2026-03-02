@@ -1,8 +1,8 @@
 #!/bin/sh
 
+lib git/remove.sh
 lib ./iterate.sh
 lib ./sync
-lib git/remove.sh
 
 cfg .
 

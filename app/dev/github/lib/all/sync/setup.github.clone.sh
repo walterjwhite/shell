@@ -1,6 +1,4 @@
 _github_setup_clone() {
-  setup_github_clone_source_project=$PWD
-
   [ -e .github-project-name ] && git_project_name=$(head -1 .github-project-name)
 
   setup_github_clone_sync_path=$APP_DATA_PATH

@@ -1,6 +1,5 @@
 _github_iterate() {
-  cd $APP_DATA_PATH
-  cd $git_project_name
+  cd $APP_DATA_PATH/$git_project_name
   file_require .git
 
   gcommit -am "$conf_github_commit_message"
@@ -29,11 +28,11 @@ _github_iterate() {
 }
 
 _github_push_tags() {
-  cd $setup_github_clone_source_project
+  cd $_pwd
   git tag github.com/$(date $conf_github_date_tag_format)
   git push --tags
 
-  cd $_pwd
+  cd $APP_DATA_PATH/$git_project_name
 }
 
 _github_iterate_cleanup() {
