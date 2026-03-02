@@ -1,0 +1,23 @@
+#!/bin/sh
+
+lib feature:./net.sh
+
+cfg feature:.
+
+_get_status() {
+  local battery_status="no battery"
+  [ -n "$_BATTERY_DEVICE" ] && battery_status=$(upower -i $_BATTERY_DEVICE | grep percentage | sed -e 's/^.*: *//')
+
+  local net=$(_get_non_local_ips)
+
+  local date_time=$(date +"%Y/%m/%d %H:%M:%S" | sed -e 's/\n$//')
+
+  printf '%s | %s | %s\n' "$battery_status" "$net" "$date_time"
+}
+
+_BATTERY_DEVICE=$(upower -e | grep 'battery_BAT' | head -1)
+
+while [ 1 ]; do
+  _get_status
+  sleep $conf_display_sway_tiling_wm_refresh_interval
+done

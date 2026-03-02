@@ -1,0 +1,33 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_RUN_FILE:The file to compile and run"
+
+lib ./build-file
+lib io/file.sh
+lib shell-script.sh
+
+cfg ./install
+
+constant ./install
+
+file_require "$_RUN_FILE" _RUN_FILE
+log_info "running $_RUN_FILE"
+
+_tmpdir=$(mktemp -d) || exit_with_error "failed to create temporary directory"
+exit_defer rm -rf "$_tmpdir"
+
+_compiled_file="$_tmpdir/$(basename "$_RUN_FILE")"
+project_root=$(git rev-parse --show-toplevel)
+
+target_platform=$APP_PLATFORM_PLATFORM
+
+target_application_name=$(basename $PWD)
+run_preserve_build_vars=1 _app_build_package_file $_RUN_FILE
+
+cp "$buildfile_output_package_file" "$_compiled_file" || exit_with_error "failed to copy file to temporary directory"
+
+chmod +x "$_compiled_file"
+
+log_detail "running $_RUN_FILE @ $_compiled_file"
+
+"$_compiled_file" "$@"

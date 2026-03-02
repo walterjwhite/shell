@@ -1,51 +1,77 @@
-_prepare_ssh_conf() {
-	_sudo mkdir -p $1/.ssh/socket
-	_sudo chmod 700 $1/.ssh/socket
+_ssh_prepare_ssh_conf() {
+  local _path=$1
+  local _user=$2
 
-	printf 'StrictHostKeyChecking no\n' | _sudo tee -a $1/.ssh/config >/dev/null
+  mkdir -p "$_path/.ssh/socket"
+  chmod 700 "$_path/.ssh/socket"
 
-	[ -n "$_HOST_IP" ] && _ssh_init_bastion_host $1
+  printf 'StrictHostKeyChecking no\n' >>"$_path/.ssh/config"
 
-	if [ -e /tmp/HOST-SSH ]; then
-		_INFO "Copying host ssh -> $1/.ssh"
+  _ssh_init_bastion_host "$_path"
 
-		_sudo cp /tmp/HOST-SSH/id* $1/.ssh
-	fi
+  [ "$_user" = "root" ] && return
 
-	if [ -e /tmp/CONFIG-WALTERJWHITE ]; then
-		_INFO "Copying walterjwhite conf -> $1/.config/walterjwhite/shell"
+  if [ -e /root/.ssh ]; then
+    log_info "copying host ssh -> $_path/.ssh"
 
-		_sudo mkdir -p $1/.config/walterjwhite
-		_sudo cp -r /tmp/CONFIG-WALTERJWHITE $1/.config/walterjwhite/shell
-	fi
+    cp /root/.ssh/id* /root/.ssh/config /root/.ssh/known_hosts "$_path/.ssh"
+  fi
 
-	[ "$2" != "root" ] && _sudo chown -R $2:$2 $1
+  if [ -e /root/.config/walterjwhite/shell ]; then
+    log_info "copying walterjwhite conf -> $_path/.config/walterjwhite/shell"
+
+    rm -rf "$_path/.config/walterjwhite/shell" && mkdir -p "$_path/.config/walterjwhite"
+    cp -r /root/.config/walterjwhite/shell "$_path/.config/walterjwhite/shell"
+  else
+    log_warn "no walterjwhite conf found"
+    find /tmp -maxdepth 1
+  fi
+
+  chown -R "$_user:$_user" "$_path"
 }
 
 _ssh_init_bastion_host() {
-	_INFO "Setting up SSH Bastion host: $1"
+  local _path=$1
 
-	printf 'Host host-proxy\n' | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' Hostname %s\n' "$_HOST_IP" | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' User root\n' | _sudo tee -a $1/.ssh/config >/dev/null
+  [ -z "$bastion_host" ] && return 1
 
-	printf 'Host git\n' | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' ProxyJump host-proxy:%s\n' $_SSH_HOST_PORT | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' User root\n' | _sudo tee -a $1/.ssh/config >/dev/null
+  log_info "setting up SSH Bastion host: $_path"
 
-	printf 'Host freebsd-package-cache\n' | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' ProxyJump host-proxy:%s\n' $_SSH_HOST_PORT | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' User root\n' | _sudo tee -a $1/.ssh/config >/dev/null
+  _ssh_bastion_host "$_path"
+  _ssh_bastion_proxies "$_path"
 
-	printf 'Host %s\n' "$_PACKAGE_CACHE" | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' ProxyJump host-proxy:%s\n' $_SSH_HOST_PORT | _sudo tee -a $1/.ssh/config >/dev/null
-	printf ' User root\n' | _sudo tee -a $1/.ssh/config >/dev/null
+  chmod 600 "$_path/.ssh/config"
+}
 
-	if [ "$_PACKAGE_CACHE" != "$_GIT_MIRROR" ]; then
-		printf 'Host %s\n' "$_GIT_MIRROR" | _sudo tee -a $1/.ssh/config >/dev/null
-		printf ' ProxyJump host-proxy\n' | _sudo tee -a $1/.ssh/config >/dev/null
-		printf ' User root\n' | _sudo tee -a $1/.ssh/config >/dev/null
-	fi
+_ssh_bastion_host() {
+  local _path=$1
 
-	_sudo chmod 600 $1/.ssh/config
+  log_info "setting up SSH Bastion host: $_path"
+
+  printf 'Host host-proxy\n' >>"$_path/.ssh/config"
+  printf ' Hostname %s\n' "$bastion_host" >>"$_path/.ssh/config"
+  printf ' User root\n' >>"$_path/.ssh/config"
+}
+
+_ssh_bastion_proxies() {
+  local _path=$1
+
+  for bastion_hostname in $(printf '%s' "$bastion_hostnames" | sort -u); do
+    _ssh_bastion_proxy "$_path"
+  done
+}
+
+_ssh_bastion_proxy() {
+  local _path=$1
+
+  log_info "setting up SSH host proxy: $_path"
+
+  printf 'Host %s\n' "$bastion_hostname" >>"$_path/.ssh/config"
+  printf ' ProxyJump host-proxy:%s\n' "$bastion_port" >>"$_path/.ssh/config"
+  printf ' User root\n' >>"$_path/.ssh/config"
+}
+
+_ssh_use_host_ssh_conf() {
+  rm -rf "$target/tmp/HOST-SSH" && mkdir -p "$target/tmp"
+  cp -R /root/.ssh "$target/tmp/HOST-SSH"
 }

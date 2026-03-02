@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib net/download.sh
+
+if [ -n "$_INSTALLER" ]; then
+	log_warn "using $_INSTALLER to install this package"
+	return
+fi
+
+_VERSION=2.0.10
+_download_fetch https://github.com/zyedidia/micro/releases/download/v$_VERSION/micro-$_VERSION-win64.zip micro.zip
+
+unzip micro.zip
+
+mv micro-$_VERSION/micro.exe $APP_PLATFORM_BIN_PATH
+

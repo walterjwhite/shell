@@ -1,1 +1,1 @@
-: ${_CONF_TRANSFER_SUFFIX:=png}
+: ${conf_transfer_suffix:=png}

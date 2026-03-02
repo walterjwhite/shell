@@ -1,0 +1,33 @@
+#!/bin/sh
+
+lib git/include.sh
+lib ./git-template.sh
+
+
+_git_is_run_hooks || {
+  log_debug "not running hooks as _git_is_run_hooks return false"
+
+  exit 0
+}
+
+_action=$1
+shift
+
+_run_all() {
+  if [ -d "$1" ]; then
+    log_debug ".git-hooks.sh" "running hook:$_action"
+
+    for _file in $(find $1 ! -type d ! -type b ! -type c ! -type p ! -type s | sort -g); do
+      _run_file
+    done
+  fi
+}
+
+_run_file() {
+  log_debug ".git-hooks.sh" "running $_file"
+  . $_file
+}
+
+_run_all ".hooks/$_action"
+_run_all ".git/system-hooks/$_action"
+

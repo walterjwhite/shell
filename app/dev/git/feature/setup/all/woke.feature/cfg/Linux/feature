@@ -1,0 +1,10 @@
+_PACKAGE_IS_INSTALLED x11-base/xorg-server
+_has_xorg=$?
+
+_PACKAGE_IS_INSTALLED dev-libs/wayland
+_has_wayland=$?
+
+if [ $_has_xorg -ne 0 ] && [ $_has_wayland -ne 0 ]; then
+    log_warn "disabling woke as no graphical environment was detected"
+    feature_woke_disabled=1
+fi

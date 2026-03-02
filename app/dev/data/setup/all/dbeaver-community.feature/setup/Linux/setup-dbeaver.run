@@ -1,0 +1,41 @@
+#!/bin/sh
+
+
+lib net/download.sh
+lib extract.sh
+lib io/link.sh
+
+: ${conf_dev_dbeaver_edition:=ce}
+
+_dbeaver_install() {
+    dbeaver_install_path=/usr/local/dbeaver/community
+
+    _download_fetch "https://dbeaver.io/files/dbeaver-${conf_dev_dbeaver_edition}-latest-linux.gtk.$APP_PLATFORM_ARCHITECTURE-nojdk.tar.gz"
+
+    clean=$dbeaver_install_path sudo_required=1 _extract_extract "$download_file" "$dbeaver_install_path"
+
+    $_link $BIN_PATH/dbeaver $dbeaver_install_path/dbeaver
+    $_SUDO_CMD chmod +x $BIN_PATH/dbeaver
+}
+
+_dbeaver_platform_check() {
+    case $APP_PLATFORM_SUB_PLATFORM in
+        Gentoo)
+            log_warn "oS Package is available"
+            return 1
+            ;;
+    esac
+}
+
+_dbeaver_architecture_check() {
+    case $APP_PLATFORM_ARCHITECTURE in
+        amd64|aarch64)
+            ;;
+        *)
+            log_warn "unsupported architecture: $APP_PLATFORM_ARCHITECTURE"
+            return 1
+            ;;
+    esac
+}
+
+_dbeaver_platform_check && _dbeaver_architecture_check && _dbeaver_install

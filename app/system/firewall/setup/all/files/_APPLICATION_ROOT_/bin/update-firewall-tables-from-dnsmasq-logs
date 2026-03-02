@@ -1,0 +1,21 @@
+cfg .
+
+#!/bin/bash
+
+processes_restrict_to_single_process
+sudo_ensure_root
+
+. /usr/local/etc/walterjwhite/network/dynamic-tables.sh || exit_with_error "unable to load table resolution script"
+
+tail -f $conf_firewall_dnsmasq_log_file |
+  grep --line-buffered -P '(reply|cached) .*([0-9]{1,3}\.){3}[0-9]{1,3}' |
+  while read -r dnsmasq_dns_response_line; do
+    dnsmasq_dns_response_hostname=$(printf '%s' "$dnsmasq_dns_response_line" | awk '{print $6}')
+    dnsmasq_dns_response_ip=$(printf '%s' "$dnsmasq_dns_response_line" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
+
+    _dynamic_tables_resolve
+
+    [ -z "$nftables_table" ] && continue
+
+    nft add element ip global dynamic_$nftables_table { $dnsmasq_dns_response_ip }
+  done

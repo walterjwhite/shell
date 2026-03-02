@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sudo_run systemctl enable update-system.timer

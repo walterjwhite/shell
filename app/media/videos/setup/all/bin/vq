@@ -1,0 +1,23 @@
+#!/bin/sh
+
+lib ./videos.sh
+
+cfg git
+
+_action=queue
+: ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
+_data_app_init
+
+if [ -z "$videos_url" ]; then
+  _videos_clipboard_get
+
+  [ -z "$videos_url" ] && exit_with_error "no video URL was found on the clipboard"
+fi
+
+if [ -z "$force" ]; then
+  grep "$videos_url" queued downloaded extracted watched -rqm1 2>/dev/null && exit_with_error "$videos_url was previously queued, to queue again, please force queue (-force)" 2
+fi
+
+_video_fetch_metadata
+
+vd

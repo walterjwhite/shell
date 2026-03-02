@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lib ./iterate.sh
+
+cfg .
+
+_github_iterate() {
+  gf $conf_github_commits -m="$conf_github_commit_message"
+  gpush --force
+
+  cd $_START
+  rm -rf $github_project_path
+}
+
+_github_iterate_main

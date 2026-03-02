@@ -1,7 +1,7 @@
 _notify() {
-	local title=$1
-	local message=$2
+  local _title=$1
+  local _message=$2
 
-	zenity --_INFO --text="$_APPLICATION_NAME - $_APPLICATION_CMD - $title\n$message"
+  zenity --log_info --text="$APPLICATION_NAME - $APPLICATION_CMD - $_title\n$_message"
 }
 

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+lib ./die.sh
+lib net/network.sh
+
+_network_check() {
+  _online && exit_with_success "connected to Internet"
+
+  log_warn "unable to establish network connection"
+  log_warn "powering off"
+
+  [ -n "$_OPTN_REMOTE_SIMULATE_POWEROFF" ] && exit_with_error "simulating poweroff"
+
+  _die
+}
+
+processes_restrict_to_single_process
+
+_network_check

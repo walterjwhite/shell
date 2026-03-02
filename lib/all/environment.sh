@@ -1,27 +1,49 @@
-_variable_is_set() {
-	env | grep -cqm1 "^$1=.*$"
+_environment_variable_is_set() {
+  set | grep -cqm1 "^$1=.*$"
 }
 
 _environment_filter() {
-	$_CONF_GNU_GREP -P "(^_CONF_|^_OPTN_|^_INSTALL_|^${_TARGET_APPLICATION_NAME}_)"
+  $GNU_GREP -P "(^conf_|^optn_|^install_|^${target_application_name}_)"
 }
 
 _environment_dump() {
-	[ -z "$_APPLICATION_PIPE_DIR" ] && return
+  [ -z "$application_pipe_dir" ] && return
 
-	[ -z "$_ENVIRONMENT_FILE" ] && _ENVIRONMENT_FILE=$_APPLICATION_PIPE_DIR/environment
+  [ -z "$environment_file" ] && environment_file=$application_pipe_dir/environment
 
-	mkdir -p $(dirname $_ENVIRONMENT_FILE)
-	env | _environment_filter | sort -u | grep -v '^$' | sed -e 's/=/="/' -e 's/$/"/' >>$_ENVIRONMENT_FILE
+  mkdir -p $(dirname $environment_file)
+  set | _environment_filter | sort -u | grep -v '^$' | sed -e 's/=/="/' -e 's/$/"/' >>$environment_file
 }
 
 _environment_load() {
-	[ -z "$_ENVIRONMENT_FILE" ] && return 1
+  [ -z "$environment_file" ] && return 1
 
-	[ ! -e "$_ENVIRONMENT_FILE" ] && {
-		_WARN "$_ENVIRONMENT_FILE does not exist!"
-		return 2
-	}
+  [ ! -e "$environment_file" ] && {
+    log_warn "$environment_file does not exist!"
+    return 2
+  }
 
-	. $_ENVIRONMENT_FILE 2>/dev/null
+  . $environment_file 2>/dev/null
+}
+
+_environment_export_matching_vars() {
+  local _var
+  local _oifs
+  _oifs=$IFS
+  IFS=$'\n'
+
+  for _var in $(set | $GNU_GREP -P "${1}.*=" | sed -e 's/=.*$//'); do
+    log_debug "exporting: $_var"
+    export "$_var"
+  done
+  IFS=$_oifs
+
+  [ $conf_log_level -eq 0 ] && set >>$log_logfile.env
+}
+
+_environment_export_vars() {
+  local _var
+  for _var in "$@"; do
+    export $_var
+  done
 }

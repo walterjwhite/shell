@@ -1,47 +1,37 @@
-_interactive_alert_if() {
-	_is_interactive_alert_enabled && _interactive_alert "$@"
+_stdin_interactive_alert_if() {
+  _stdin_is_interactive_alert_enabled && _interactive_alert "$@"
 }
 
-_is_interactive_alert_enabled() {
-	grep -cq '^_OPTN_LOG_INTERACTIVE_ALERT=1$' $_CONF_APPLICATION_CONFIG_PATH 2>/dev/null
+_stdin_is_interactive_alert_enabled() {
+  grep -cq '^optn_log_interactive_alert=1$' $APP_CONFIG_PATH 2>/dev/null
 }
 
-_read_ifs() {
-	stty -echo
-	_read_if "$@"
-	stty echo
+_stdin_read_ifs() {
+  stty -echo
+  _stdin_read_if "$@"
+  stty echo
 }
 
-_continue_if() {
+_stdin_continue_if() {
+  _stdin_read_if "$1" _proceed "$2"
+  if [ -z "$_proceed" ]; then
+    _default=$(printf '%s' $2 | awk -F'/' {'print$1'})
+    _proceed=$_default
+  fi
 
-	_read_if "$1" _PROCEED "$2"
-
-	local proceed="$_PROCEED"
-	unset _PROCEED
-
-	if [ -z "$proceed" ]; then
-		_DEFAULT=$(printf '%s' $2 | awk -F'/' {'print$1'})
-		proceed=$_DEFAULT
-	fi
-
-	local proceed=$(printf '%s' "$proceed" | tr '[:lower:]' '[:upper:]')
-	if [ $proceed = "N" ]; then
-		return 1
-	fi
-
-	return 0
+  printf '%s' "$_proceed" | tr '[:lower:]' '[:upper:]' | $GNU_GREP -Pcqm1 '^Y$'
 }
 
-_read_if() {
-	if [ $(env | grep -c "^$2=.*") -eq 1 ]; then
-		_DEBUG "$2 is already set"
-		return 1
-	fi
+_stdin_read_if() {
+  if [ $(set | grep -c "^$2=.*") -eq 1 ]; then
+    log_debug "$2 is already set"
+    return 1
+  fi
 
-	[ -z "$INTERACTIVE" ] && _ERROR "Running in non-interactive mode and user input was requested: $@" 10
+  [ -z "$interactive" ] && exit_with_error "running in non-interactive mode and user input was requested: $@" 10
 
-	_print_log 9 STDI "$_CONF_LOG_C_STDIN" "$_CONF_LOG_BEEP_STDIN" "$1 $3"
-	_interactive_alert_if $1 $3
+  log_print_log 9 STDI "$conf_log_c_stdin" "$conf_log_beep_stdin" "$1 $3"
+  _stdin_interactive_alert_if $1 $3
 
-	read -r $2
+  read -r $2
 }

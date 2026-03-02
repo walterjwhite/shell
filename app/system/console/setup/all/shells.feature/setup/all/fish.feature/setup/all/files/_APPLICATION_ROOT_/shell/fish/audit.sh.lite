@@ -1,0 +1,20 @@
+lib feature:.
+
+cfg .
+cfg context
+cfg feature:
+cfg logging
+cfg platform
+
+constant platform
+constant platform.resolved
+
+set -g HISTSIZE $conf_console_zsh_session_history_size
+set -g SAVEHIST $conf_console_zsh_disk_history_size
+
+
+function _console_fish_hook_after --on-event fish_prompt
+end
+
+function _console_fish_hook_before --on-event fish_preexec
+end

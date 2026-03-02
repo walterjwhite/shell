@@ -1,0 +1,5 @@
+readonly BUILDFILE_FULL_LIB="beep.sh context.sh environment.sh exec.sh exit.sh help.sh io/file.sh include.sh log.sh metadata.sh mktemp.sh platform.sh processes.sh stdin.sh syslog.sh sudo.sh time.sh wait.sh validation.sh net/mail.sh alert.sh"
+
+readonly BUILDFILE_FULL_CFG="beep context logging net paths platform wait"
+
+readonly BUILDFILE_FULL_INIT="full platform.sh full"

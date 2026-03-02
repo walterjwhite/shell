@@ -1,7 +1,9 @@
-_beep() {
-	beep $1 &
+_beep_beep() {
+  [ "$EUID" -eq 0 ] && return 1
+
+  beep $1 &
 }
 
-_sudo_precmd() {
-	_beep "$_CONF_LOG_SUDO_BEEP_TONE"
+sudo_precmd() {
+  _beep_beep "$conf_log_sudo_beep_tone"
 }

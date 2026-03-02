@@ -1,0 +1,6 @@
+#!/bin/sh
+lib ./blocks.sh
+
+cfg .
+
+_domain_blocks_install https://blocklistproject.github.io/Lists/alt-version/abuse-nl.txt

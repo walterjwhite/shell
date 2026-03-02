@@ -1,47 +1,142 @@
-_run_extensions() {
-	[ $extension_path ] || extension_path=$_CONF_APPLICATION_LIBRARY_PATH/provider
-	[ ! -e $extension_path ] && return 1
+lib feature.sh
+lib io/file.sh
 
-	_increase_indent
+_extension_main() {
+  extension_action=$APPLICATION_CMD
 
-	_APPLICATION_NAME_PREFIX=$(printf '%s' $_APPLICATION_NAME | tr '-' '_' | tr '.' '_' | tr '[:lower:]' '[:upper:]')
+  required_message="$extension_action is not yet implemented by any extensions" file_require "__LIBRARY_PATH__/install/extensions/extension/$extension_action"
 
-	for _EXTENSION in $(find $extension_path -type f | sort); do
-		_EXTENSION_NAME=$(basename $_EXTENSION | sed -e 's/\.sh$//')
+  extension_opwd=$PWD
 
-		_EXTENSION_FUNCTION_NAME=$(printf '%s' $_EXTENSION_NAME | tr '-' '_' | tr '.' '_' | tr '[:lower:]' '[:upper:]')
-		_EXTENSION_CLEAR_KEY=$(printf '%s' $_EXTENSION_NAME | tr '[:lower:]' '[:upper:]' | tr '-' '_' | tr '.' '_')
+  local _error_count=0
+  for extension_run_type_path in $(find __LIBRARY_PATH__/install/extensions/extension/$extension_action -mindepth 1 -maxdepth 1 -type d | sort -V); do
+    extension_run_type=$(basename $extension_run_type_path | sed 's/^[[:digit:]]\{2\}\.//')
+    extension_run_type="${extension_run_type#*.}"
 
-		_add_logging_context $_EXTENSION_NAME
+    log_add_context $extension_run_type
 
-		_call _${_APPLICATION_NAME_PREFIX}_BEFORE_EACH
+    _extension_is_run_type || {
+      log_debug "skipping $extension_run_type"
+      log_remove_context
 
-		. $_EXTENSION
+      continue
+    }
 
-		if [ "$#" -eq 0 ]; then
-			_${_APPLICATION_NAME_PREFIX}_${_EXTENSION_FUNCTION_NAME}${_EXTENSION_FUNCTION_SUFFIX}
-		else
-			[ -n "$1" ] && $1
-			[ -n "$2" ] && $2
-		fi
+    extension_feature_name=${extension_action}_${extension_run_type}
+    extension_run_type_name=$(printf '%s' $extension_run_type | tr '-' '_')
 
-		_call _${_APPLICATION_NAME_PREFIX}_AFTER_EACH
+    _is_feature_enabled $extension_feature_name || {
+      log_debug "skipping feature: $extension_feature_name | $extension_run_type - disabled"
+      unset extension_feature_name
+      log_remove_context
 
-		_remove_logging_context
-		unset _EXTENSION_NAME _EXTENSION_FUNCTION_NAME _EXTENSION_CLEAR_KEY
-	done
+      continue
+    }
 
-	_decrease_indent
+    _extension_load_type
+
+    _extension_is_runnable || {
+      log_debug "skipping $extension_run_type, no files"
+      log_remove_context
+
+      continue
+    }
+
+    log_detail "$extension_action [$extension_run_type]"
+
+    _extension_run "$@" || _error_count=$(($_error_count + 1))
+
+    log_remove_context
+
+    [ -n "$fail_fast" ] && [ $_error_count -gt 0 ] && exit_with_error "$extension_run_type failed with $_error_count error(s)"
+
+    cd $extension_opwd
+  done
+
+  [ $_error_count -gt 0 ] && exit_with_error "encountered $_error_count error(s), check logs for errors"
 }
 
-_load_extension() {
-	[ $# -lt 1 ] && _ERROR "Extension name is required, ie. firefox"
+_extension_is_run_type() {
+  [ -z "$types" ] && return 0
 
-	local extension_name=$1
-	shift
+  local _run_type
+  for _run_type in $types; do
+    [ "$_run_type" = "$extension_run_type" ] && return 0
+  done
 
-	[ $extension_path ] || extension_path=$_CONF_APPLICATION_LIBRARY_PATH/provider
+  return 1
+}
 
-	local extension_file=$(find $extension_path -type f -name "$extension_name.sh" | head -1)
-	_include $extension_file || _ERROR "Unable to load $plugin_name"
+_extension_is_runnable() {
+  exec_call ${extension_run_type}_is_runnable || {
+    [ $? -eq 255 ] && {
+      _extension_is_runnable_default
+    }
+  }
+}
+
+_extension_is_runnable_default() {
+  _extension_find_default -print -quit | grep -cqm1 '.'
+}
+
+_extension_find_default() {
+  local _name_pattern=$(set | $GNU_GREP -P "^${extension_run_type}_name_pattern=" | sed -e "s/^${extension_run_type}_name_pattern=//")
+  [ -z "$_name_pattern" ] && {
+    case $extension_run_type in
+    [a-z][a-z] | [a-z][a-z][a-z] | [a-z][a-z][a-z][a-z])
+      _name_pattern="*.$extension_run_type"
+      ;;
+    *)
+      _name_pattern=$extension_run_type
+      ;;
+    esac
+  }
+
+  _extension_find_default_files "$@"
+}
+
+_extension_find_default_files() {
+  find . -type f -and -name "$_name_pattern" \
+    ! -path '*/*.archived/*' \
+    ! -path '*/*.secret/*' \
+    ! -path '*/node_modules/*' \
+    ! -path '*/target/*' \
+    ! -path '*/.idea/*' \
+    ! -path '*/.git/*' "$@"
+}
+
+extension_find_dirs_containing() {
+  _extension_find_default -exec dirname {} \; | sort -uV
+}
+
+_extension_load_type() {
+  [ -e __LIBRARY_PATH__/install/extensions/type/$extension_run_type.sh ] && {
+    . __LIBRARY_PATH__/install/extensions/type/$extension_run_type.sh
+    cd $extension_opwd
+  }
+}
+
+_extension_run() {
+  local _error_count=0
+  [ ! -e $extension_run_type_path ] && return
+
+  for extension_executor in $(find $extension_run_type_path -mindepth 1 -maxdepth 1 -type f ! -name '.*' 2>/dev/null | sort -V); do
+    extension_sub_feature_name=${extension_feature_name}_$(basename $extension_executor | tr '-' '_' | sed -e "s/\..*$//")
+    _is_feature_enabled $extension_sub_feature_name || {
+      unset exec_cmd extension_sub_feature_name
+      continue
+    }
+
+    log_add_context $extension_sub_feature_name
+    log_detail $extension_sub_feature_name
+
+    cd $extension_opwd
+
+    . $extension_executor || _error_count=$(($_error_count + 1))
+
+    log_remove_context
+    [ -n "$fail_fast" ] && [ $_error_count -gt 0 ] && exit_with_error "$extension_run_type failed with $_error_count error(s)"
+  done
+
+  return $_error_count
 }

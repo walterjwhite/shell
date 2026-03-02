@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib .
+lib git/data.app.sh
+
+cfg git
+
+_data_app_init
+
+_browser_configure
+web_browser_launch

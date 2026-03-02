@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS='_activity_filename:Activity Filename'
+
+lib .
+lib io/file.sh
+
+_activity_init $_OPTN_ACTIVITY_NAME
+file_require $_activity_directory/$_activity_filename
+
+cat $_activity_directory/$_activity_filename

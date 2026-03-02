@@ -1,36 +1,39 @@
-_require_file() {
-	_require "$1" filename _require_file
+file_require() {
+  local _filename=$1
+  local _message=$2
+  validation_require "$_filename" "filename file_require"
 
-	local level=_ERROR
-	[ -n "$_WARN_ON_ERROR" ] && level=_WARN
+  [ -e "$_filename" ] && return
 
-	if [ ! -e $1 ]; then
-		$level "File: $1 does not exist | $2"
-		return 1
-	fi
+  [ -z "$warn_on_error" ] && exit_with_error "file: $_filename does not exist | $_message"
+
+  log_warn "file: $_filename does not exist | $_message"
+  return 1
 }
 
-_readlink() {
-	if [ $# -lt 1 ] || [ -z "$1" ]; then
-		return 1
-	fi
+_file_readlink() {
+  local _path=$1
+  if [ $# -lt 1 ] || [ -z "$_path" ]; then
+    return 1
+  fi
 
-	if [ "$1" = "/" ]; then
-		printf '%s\n' "$1"
-		return
-	fi
+  if [ "$_path" = "/" ]; then
+    printf '%s\n' "$_path"
+    return
+  fi
 
-	if [ ! -e $1 ]; then
-		if [ -z $_MKDIR ] || [ $_MKDIR -eq 1 ]; then
-			_sudo mkdir -p $1 >/dev/null 2>&1
-		fi
-	fi
+  if [ ! -e "$_path" ]; then
+    if [ -z $mkdir ] || [ $mkdir -eq 1 ]; then
+      mkdir -p "$_path" >/dev/null 2>&1
+    fi
+  fi
 
-	readlink -f $1
+  readlink -f "$_path"
 }
 
-_has_contents() {
-	_require_file "$1" "_has_contents:$1"
+_file_has_contents() {
+  local _filename=$1
+  file_require "$_filename" "_file_has_contents:$_filename"
 
-	[ $(_sudo wc -l <$1) -gt 0 ]
+  [ $(wc -l <"$_filename") -gt 0 ]
 }

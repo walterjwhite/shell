@@ -1,5 +1,5 @@
-_random() {
-	local random_length=$1
+_random_random() {
+  local _random_length=$1
 
-	openssl rand -base64 $random_length
+  openssl rand -base64 $_random_length
 }

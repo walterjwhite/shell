@@ -1,3 +1,3 @@
 _interactive_alert() {
-	:
+  :
 }

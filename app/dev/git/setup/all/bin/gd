@@ -1,0 +1,21 @@
+#!/bin/sh
+
+lib git/include.sh
+
+if [ -z "$git_recursive" ]; then
+  _git_in_working_directory || {
+    export git_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir gd "$@" \;
+
+    exit
+  }
+fi
+
+[ $# -eq 0 ] && _git-is-clean && exit_with_error "no changes"
+
+git rev-parse --quiet --verify HEAD >/dev/null || {
+  find . -type f ! -path '*/.git/*' -exec $EDITOR {} \;
+  return
+}
+
+git diff HEAD --unified -w "$@"

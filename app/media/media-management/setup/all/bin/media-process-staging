@@ -1,0 +1,90 @@
+#!/bin/sh
+
+lib sudo.sh
+
+_STAGING_AREA=$conf_media_mountpoint/staging
+
+
+
+
+_remove_spaces() {
+  local media_directory
+  for media_directory in $(find $_STAGING_AREA -maxdepth 1 -type d -name '*[0-9]*' -name '*-*'); do
+    find $media_directory -type f -name '* *' -exec replace-space {} \;
+  done
+}
+
+_media_process_staging() {
+  local media_directory
+  for media_directory in $(find $_STAGING_AREA -maxdepth 1 -type d -name '*[0-9]*' -name '*-*'); do
+    for f in $(find $media_directory -type f | grep $2 CR2); do
+      _process_event_file $1
+    done
+  done
+}
+
+_process_staging() {
+  _media_process_staging output -v
+  _media_process_staging raw
+}
+
+_process_event_file() {
+  local _target_volume=$1
+
+  local _event_file=$(printf '%s' $f | sed -e "s/^.*staging\///")
+  local _event_directory=$(dirname $_event_file | sed -e "s/^\///" -e "s/converted\///")
+
+  local _event_target_directory=${conf_media_mountpoint}/${_target_volume}/by-time/${_event_directory}
+
+  log_info "moving $f -> $_event_target_directory"
+
+  chown $conf_media_user:$conf_media_user $f
+
+  _SUDO_USER=$conf_media_user sudo_run mkdir -p $_event_target_directory
+  mv $f $_event_target_directory
+}
+
+_do_git_annex() {
+  _do_do_git_annex output
+  _do_do_git_annex raw
+}
+
+_do_do_git_annex() {
+  cd $conf_media_mountpoint/$1
+
+  _SUDO_USER=$conf_media_user sudo_run git annex add .
+  _SUDO_USER=$conf_media_user sudo_run git commit -am "added media - media-process-staging"
+}
+
+_cleanup_staging() {
+  local media_directory
+  for media_directory in $(find $_STAGING_AREA -maxdepth 1 -type d -name '*[0-9]*' -name '*-*'); do
+    if [ $(find $media_directory -type f | wc -l) -eq 0 ]; then
+      log_info "memoving empty directories: $media_directory"
+      rm -rf $media_directory/*
+    else
+      log_warn "staging area is not empty, not cleaning up: $media_directory"
+    fi
+  done
+}
+
+_has_media() {
+  local media_directory
+  for media_directory in $(find $_STAGING_AREA -maxdepth 1 -type d -name '*[0-9]*' -name '*-*'); do
+    [ $(find $media_directory -type f | wc -l) -eq 0 ] && return 1
+  done
+
+  return 0
+}
+
+sudo_ensure_root "$@"
+_has_media || exit_with_error "no media files found @ $_STAGING_AREA" 1
+
+_remove_spaces
+
+_process_staging
+_do_git_annex
+
+zap snap $conf_media_retention $conf_media_volume
+
+_cleanup_staging

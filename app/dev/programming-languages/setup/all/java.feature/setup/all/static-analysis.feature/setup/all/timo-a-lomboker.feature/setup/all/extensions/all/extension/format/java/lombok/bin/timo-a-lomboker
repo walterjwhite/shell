@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cfg .
+
+
+_extension_find_default |
+  xargs -P$conf_dev_format_parallel timo-a-lomboker

@@ -1,11 +1,15 @@
-_XDOTOOL_INIT() {
-	:
+_xdotool_init() {
+  :
 }
 
-_XDOTOOL_MOVE() {
-	xdotool mousemove $X $Y
+_xdotool_move() {
+  local _x=$1
+  local _y=$2
+  xdotool mousemove $_x $_y
 }
 
-_XDOTOOL_KEY() {
-	xdotool key$2 "$1"
+_xdotool_key() {
+  local _key=$1
+  local _key_action=$2
+  xdotool key${_key_action} "$_key"
 }

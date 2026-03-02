@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cfg .
+
+
+
+sed -e "s/^/address=\//" -e 's/#.*$//' -e 's/$/\//' $conf_domain_blocks_aggregate |
+  sudo_run tee $conf_domain_blocks_dnsmasq_blocks >/dev/null

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="agent_job:Agent Task"
+
+lib ./git.sh
+lib ./remote.sh
+lib ./worker
+
+cfg .
+
+sudo_ensure_not_root
+
+_agent_run_remotely $agent_job "$@" && exit $remote_exit_status
+
+agent_job_name=$(basename $agent_job)
+log_add_context $agent_job_name
+
+_agent_git_init_workspace
+
+_worker_init_job
+_worker_run_agent

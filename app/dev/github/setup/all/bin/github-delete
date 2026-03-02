@@ -1,0 +1,13 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_REPOSITORIES:Repositories to delete"
+
+lib ./auth.sh
+
+cfg .
+
+_github_auth
+
+for r in $_REPOSITORIES; do
+  gh repo delete $r --yes
+done

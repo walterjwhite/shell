@@ -1,13 +1,7 @@
-_PLATFORM="Linux"
+: ${emerge_portage_refresh_period:=3600}
 
-: ${_CONF_GNU_GREP:=grep}
-: ${_CONF_GNU_SED:=sed}
+: ${pacman_refresh_period:=3600}
 
-_ARCHITECTURE=$(uname -m)
 
-PORTAGE_REFRESH_PERIOD=3600
+: ${pacman_bootstrap_install:=}
 
-: ${_EMERGE_FLAGS:="-q --quiet-build --quiet-fail"}
-[ -n "$_ROOT" ] && [ "$_ROOT" != "/" ] && _EMERGE_OPTIONS="--root=$_ROOT"
-
-_SUDO_CMD="sudo"

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+spring_cli_version=4.0.0
+
+_download_fetch https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/$spring_cli_version/spring-boot-cli-$spring_cli_version-bin.tar.gz
+
+spring_cli_contents=$(_mktemp_options=d _mktemp_mktemp)
+
+_cleanup_spring() {
+	rm -rf $spring_cli_contents
+}
+
+_extract_extract $downloaded_file $spring_cli_contents
+exit_defer _cleanup_spring
+
+$_SUDO_CMD mkdir -p ${APP_LIBRARY_PATH}/$feature_name
+$_SUDO_CMD mv $spring_cli_contents/spring-${spring_cli_version}/lib/spring-boot-cli-${spring_cli_version}.jar \
+	${APP_LIBRARY_PATH}/$feature_name/spring-boot-cli.jar

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib feature:.
+
+cfg feature:.
+
+_wireguard_client_run

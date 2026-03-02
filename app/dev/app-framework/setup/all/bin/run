@@ -1,0 +1,30 @@
+#!/bin/sh
+
+lib .
+
+cfg .
+
+_dev_run_do() {
+  cd $_opwd
+
+  . .run/$extension_run_type
+
+  log_set_logfile .log/$(date +%Y.%m.%d.%H.%M.%S)
+  _run_application_runner "$@"
+  exit $?
+}
+
+[ ! -e .run ] && exit_with_error ".run does not exist, unable to run" 1
+
+[ $_CLEAR_LOG ] && rm -rf .log
+
+_opwd=$PWD
+if [ $types ]; then
+  for extension_run_type in $types; do
+    _dev_run_do
+  done
+else
+  for extension_run_type in $(ls .run); do
+    _dev_run_do
+  done
+fi

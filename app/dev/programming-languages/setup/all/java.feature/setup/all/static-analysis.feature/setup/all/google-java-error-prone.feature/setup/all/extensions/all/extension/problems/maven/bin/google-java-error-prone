@@ -1,0 +1,6 @@
+#!/bin/sh
+
+mvn help:effective-pom | grep -csq com.google.errorprone || {
+  log_warn "please install Google Error Prone into $PWD"
+  log_detail "https://errorprone.info/docs/installation"
+}

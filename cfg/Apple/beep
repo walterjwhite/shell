@@ -1,12 +1,12 @@
-: ${_CONF_LOG_BEEP_TIMEOUT:=5}
+: ${conf_log_beep_timeout:=5}
 
-: ${_CONF_LOG_BEEP_ERR:=''}
-: ${_CONF_LOG_BEEP_ALRT:=''}
-: ${_CONF_LOG_BEEP_SCS:=''}
-: ${_CONF_LOG_BEEP_WRN:=''}
-: ${_CONF_LOG_BEEP_INFO:=''}
-: ${_CONF_LOG_BEEP_DETAIL:=''}
-: ${_CONF_LOG_BEEP_DEBUG:=''}
-: ${_CONF_LOG_BEEP_STDIN:=''}
+: ${conf_log_beep_ERR:=''}
+: ${conf_log_beep_ALRT:=''}
+: ${conf_log_beep_SCS:=''}
+: ${conf_log_beep_WRN:=''}
+: ${conf_log_beep_info:=''}
+: ${conf_log_beep_detail:=''}
+: ${conf_log_beep_debug:=''}
+: ${conf_log_beep_STDIN:=''}
 
-: ${_CONF_LOG_SUDO_BEEP_TONE:=''}
+: ${conf_log_sudo_beep_tone:=''}

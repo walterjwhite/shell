@@ -1,0 +1,33 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_SOURCE_FILENAME:Source Filename"
+
+if [ $(grep -c ^@Slf4j$ $_SOURCE_FILENAME) -gt 0 ]; then
+  exit_with_success "$_JAVA_FORMATTER_NAME already fixed $_SOURCE_FILENAME"
+fi
+
+if [ -e ${1}.no-slf4j ]; then
+  log_warn "lombok - slf4j is disabled on $_SOURCE_FILENAME"
+  exit 0
+fi
+
+project_directory=$(printf '%s' $_SOURCE_FILENAME | $GNU_SED -e "s/\/src\/main\/java.*\.java$//")
+if [ -e $project_directory/.no-lombok ]; then
+  log_warn "lombok is disabled"
+  exit 0
+fi
+
+log_detail "$_JAVA_FORMATTER_NAME Fixing $_SOURCE_FILENAME"
+
+$GNU_SED -i '/.* Logger LOGGER = LoggerFactory.getLogger.*/Id' $_SOURCE_FILENAME
+
+lombok_classname=$(basename $_SOURCE_FILENAME | sed -e 's/\.java$//')
+$GNU_SED -i "/class $lombok_classname/i @Slf4j" $_SOURCE_FILENAME
+$GNU_SED -i "/interface $lombok_classname/i @Slf4j" $_SOURCE_FILENAME
+
+$GNU_SED -i '/^import org.slf4j.Logger;/i import lombok.extern.slf4j.Slf4j;' $_SOURCE_FILENAME
+
+$GNU_SED -i '/import org.slf4j.Logger/d' $_SOURCE_FILENAME
+
+$GNU_SED -i "s/logger\./$conf_dev_lombok_slf4j_logger_name\./Ig" $_SOURCE_FILENAME
+$GNU_SED -i "s/log\./$conf_dev_lombok_slf4j_logger_name\./Ig" $_SOURCE_FILENAME

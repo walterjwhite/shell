@@ -1,0 +1,26 @@
+#!/bin/sh
+
+lib extract.sh
+lib net/download.sh
+
+windsurf_version=1.12.36
+windsurf_sha_version=9472213c2b01d64c024e510cd6fe81abd9b16fb7
+windsurf_filename=Windsurf-linux-x64-$windsurf_version.tar.gz
+windsurf_installation_path=/opt/windsurf
+
+_install_windsurf() {
+    _download_fetch https://windsurf-stable.codeiumdata.com/linux-x64/stable/$windsurf_sha_version/$windsurf_filename
+
+    clean=$windsurf_installation_path _extract_extract $download_file $windsurf_installation_path
+
+    mv $windsurf_installation_path/Windsurf/* $windsurf_installation_path
+    rm -rf $windsurf_installation_path/Windsurf
+
+    ln -sf $windsurf_installation_path/windsurf $APP_PLATFORM_BIN_PATH/windsurf
+}
+
+if [ ! -e $APP_PLATFORM_BIN_PATH/windsurf ]; then
+    _install_windsurf
+else
+    log_detail "windsurf is already installed"
+fi

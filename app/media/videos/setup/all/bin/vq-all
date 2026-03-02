@@ -1,0 +1,14 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_QUEUE_FILE:File containing individual links to queue"
+
+lib io/file.sh
+lib ./videos.sh
+
+cfg git
+
+file_require "$_QUEUE_FILE" _QUEUE_FILE
+
+for videos_url in $($GNU_GREP -Pvh '(^$|^#)' $_QUEUE_FILE); do
+  vq "$@"
+done

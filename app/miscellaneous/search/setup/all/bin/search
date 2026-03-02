@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib .
+lib git/project.directory.sh
+
+cfg .
+cfg git
+
+[ $# -eq 0 ] && exit_with_error "expecting at least 1 argument, search term"
+
+[ -z "$types" ] && {
+  _search_do "$@"
+  exit $?
+}
+
+for search_type in "$types"; do
+  _search_do "$@"
+done

@@ -1,0 +1,3 @@
+qsy7_comment_remover_version=0.3.4
+qsy7_comment_remover_jar_filename=cli-comment-remover-${qsy7_comment_remover_version}-shaded.jar
+qsy7_comment_remover_jar=${APP_LIBRARY_PATH}/qsy7/comment-remover.jar

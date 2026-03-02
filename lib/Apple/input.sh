@@ -1,9 +1,9 @@
-_interactive_alert() {
-	[ -n "$SSH_CLIENT" ] && {
-		_WARN "remote connection detected, not beeping"
-		_WARN "$*"
-		return 1
-	}
+_input_interactive_alert() {
+  [ -n "$SSH_CLIENT" ] && {
+    log_warn "remote connection detected, not beeping"
+    log_warn "$*"
+    return 1
+  }
 
-	say "$*"
+  say "$*"
 }

@@ -1,45 +1,75 @@
 #!/bin/sh
 
-_load_directory() {
+
+loaded_resources=""
+
+load_directory() {
   local import_type=$1
   shift
 
   local file import_path import_file
   for file in "$@"; do
-    for platform in all $_PLATFORM; do
-      import_path=$PROJECT_ROOT_DIR/$import_type/$platform/$file
+    for resource_platform in all $APP_PLATFORM_PLATFORM; do
+      if [ -n "$is_global_resource" ]; then
+        import_path=$project_root_dir/$import_type/$resource_platform/$file
+      else
+        import_path=$import_type/$resource_platform/$file
+      fi
 
       [ ! -e $import_path ] && continue
 
+      import_path=$(readlink -f $import_path)
+
       for import_file in $(find $import_path -type f ! -name '*.test' | sort -u); do
-        . $import_file || {
-          printf 'Unable import: %s\n' $import_file
-        }
+        case $loaded_resources in
+          *"|$import_file|"*)
+            [ -n "$debug" ] && printf 'file already imported: %s\n' "$import_file"
+            ;;
+          *)
+            loaded_resources="${loaded_resources}|$import_file|"
+            . $import_file || {
+              printf 'Unable import: %s\n' $import_file
+            }
+            ;;
+        esac
       done
     done
   done
 }
 
-set -a
-[ -n "$_DEBUG" ] && set -x
+[ -n "$debug" ] && set -x
 
-OPWD=$PWD
-PROJECT_ROOT_DIR=$(git rev-parse --show-toplevel)
+build_wd=$PWD
+project_root_dir=$(git rev-parse --show-toplevel)
+readonly APPLICATION_NAME=$(basename $PWD)
 
-. $PROJECT_ROOT_DIR/cfg/all/platform
-_PLATFORM=$_DETECTED_PLATFORM
+. $project_root_dir/constant/all/application
+. $project_root_dir/constant/all/platform
+. $project_root_dir/constant/all/platform.resolved
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/application)|"
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/platform)|"
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/platform.resolved)|"
 
-_load_directory cfg .
+is_global_resource=1 load_directory constant .
+load_directory constant build
+is_global_resource=1 load_directory constant $APPLICATION_NAME
 
-_load_directory lib platform.sh install/build context.sh environment.sh exec.sh exit.sh help.sh include.sh processes.sh \
-  mktemp.sh logging.sh syslog.sh beep.sh stdin.sh sudo.sh wait.sh validation.sh app.sh git.sh
+load_directory lib build build-file install/settings.sh
+is_global_resource=1 load_directory lib $BUILDFILE_FULL_LIB include.sh app.sh git.sh
 
-_load_directory lib io/file.sh sed.sh shell-script.sh
+load_directory constant $APPLICATION_NAME
 
-_load_directory cfg install logging paths
+is_global_resource=1 load_directory lib io/file.sh shell-script.sh
 
-_include install
+is_global_resource=1 load_directory cfg .
+load_directory cfg $APPLICATION_NAME
+is_global_resource=1 load_directory cfg $APPLICATION_NAME
 
-_load_directory init platform full
+load_directory cfg install
+is_global_resource=1 load_directory cfg $BUILDFILE_FULL_CFG
 
-_app_build
+_include_optional install
+
+load_directory init $BUILDFILE_FULL_INIT
+
+sequential_build=1 _app_build

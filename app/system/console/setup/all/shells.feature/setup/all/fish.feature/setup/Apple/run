@@ -1,0 +1,5 @@
+#!/bin/sh
+
+lib ./setup/console.sh
+
+shell_type=fish _HOME=$HOME _USER=$USER _console_conf

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+lib io/file.sh
+
+[ $# -eq 0 ] && exit_with_error "at least 1 path is required"
+
+_gapath_append_message() {
+  log_warn "$1"
+
+  [ -z "$archive_message" ] && {
+    archive_message="$1"
+    return
+  }
+
+  archive_message="${archive_message}\n$1"
+}
+
+_project_directory_get_project_directory
+
+for arg in "$@"; do
+  file_require "$arg" exec_wrap || continue
+
+  _filepath=$(_file_readlink $arg)
+
+  case $_filepath in
+  */.archived/*)
+    _filepath=$(printf '%s' $_filepath | sed -e "s|^$git_project_path/.archived|$git_project_path|")
+    _gapath_append_message "unarchiving - $arg"
+    ;;
+  *)
+    _filepath=$(printf '%s' $_filepath | sed -e "s|^$git_project_path|$git_project_path/.archived|")
+    _gapath_append_message "archiving - $arg"
+    ;;
+  esac
+
+  target_parent_directory=$(dirname "$_filepath")
+
+  mkdir -p $target_parent_directory
+  git mv "$arg" $_filepath
+done
+
+gcommit -am "$(printf '%b' "$archive_message")"

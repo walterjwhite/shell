@@ -1,0 +1,3 @@
+: ${conf_system_configuration_path:=/usr/local/etc/walterjwhite/system-configuration}
+
+: ${conf_router_setup_coredns_configuration_directory:=/usr/local/etc/coredns}

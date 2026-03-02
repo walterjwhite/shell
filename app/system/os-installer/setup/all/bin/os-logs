@@ -1,0 +1,52 @@
+#!/bin/sh
+
+lib ./bootstrap
+
+cfg .
+
+_read_logs() {
+  for f in $($1); do
+    less -c $f
+  done
+}
+
+_find_install_logs() {
+  [ ! -e $conf_os_installer_mountpoint/var/log/walterjwhite ] && return
+
+  find $conf_os_installer_mountpoint/var/log/walterjwhite -maxdepth 1 -mindepth 1 -type f | sort -V
+}
+
+_find_container_logs() {
+  [ ! -e $conf_os_installer_mountpoint/$_OS_CONTAINER_MOUNTPOINT ] && return
+
+  find $conf_os_installer_mountpoint/$_OS_CONTAINER_MOUNTPOINT/*/var/log/walterjwhite -type f | sort -V
+}
+
+_is_live_running_system() {
+  local root_zfs_pool=$(mount | grep ' on / ' | awk {'print$1'} | cut -f1 -d/)
+  [ "$root_zfs_pool" = "$_os_installer_zfs_pool_name" ]
+}
+
+sudo_ensure_root "$@"
+
+_select_disk
+_is_live_running_system
+
+if [ $? -gt 0 ]; then
+  log_warn "setting up os-install disk"
+
+  _init_disk_encryption_get_device
+  _open_disk_encryption
+  _zpool_import
+  _zfs_mount
+  _setup_disks_efi
+  _bootstrap_mounts
+else
+  log_warn "using running disk"
+
+  unset conf_os_installer_mountpoint
+fi
+
+log_warn "reading logs"
+_read_logs _find_install_logs
+_read_logs _find_container_logs

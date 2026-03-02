@@ -1,0 +1,10 @@
+#!/bin/sh
+
+lib alert.sh
+lib install
+lib io/write.sh
+lib system-alert.sh
+
+_PACKAGE_UPDATE
+
+app-update

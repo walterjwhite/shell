@@ -1,0 +1,3 @@
+cfg .
+
+shell_find | xargs -P$conf_dev_format_parallel -I % sh-app-fmt %

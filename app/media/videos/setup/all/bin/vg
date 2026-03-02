@@ -1,0 +1,13 @@
+#!/bin/sh
+
+lib ./videos.sh
+
+cfg git
+
+_data_app_init
+for video_file in $(find downloaded -type f); do
+  _video_read_meta
+  _video_meta
+
+  unset videos_url video_key video_date video_duration video_title video_uploader_id video_uploader_name
+done

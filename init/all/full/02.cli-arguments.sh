@@ -1,46 +1,50 @@
 for _ARG in "$@"; do
-	case $_ARG in
-	-h | --help)
-		_print_help_and_exit
-		;;
-	-w=*)
-		_WAITER_PID="${1#*=}"
-		shift
-		;;
-	-w)
-		_WAITEE=1
-		shift
-		;;
-	-conf-* | -[a-z0-9][a-z0-9][a-z0-9]*)
-		_configuration_name=${_ARG#*-}
-		_configuration_name=${_configuration_name%%=*}
+  case $_ARG in
+  -h | --help)
+    _help_print_and_exit
+    ;;
+  -w=*)
+    wait_waiter_pid="${1#*=}"
+    shift
+    ;;
+  -w)
+    readonly WAIT_WAITEE=1
+    shift
+    ;;
+  -conf-* | -[a-z0-9][a-z0-9][a-z0-9]*)
+    _configuration_name=${_ARG#*-}
+    _configuration_name=${_configuration_name%%=*}
 
-		if [ $(printf '%s' "$_configuration_name" | grep -c '_') -eq 0 ]; then
-			if [ $(printf '%s' "$_configuration_name" | grep -c '^conf') -gt 0 ]; then
-				_configuration_name=$(printf '%s' "$_configuration_name" | sed -e "s/-/-$_APPLICATION_NAME-/" -e 's/--/-/')
-			else
-				_configuration_name=$(printf '%s' "$_configuration_name" | sed -e "s/^/$_APPLICATION_NAME-/" -e 's/--/-/')
-			fi
-		fi
+    printf '%s' "$_configuration_name" | grep -cqm1 '_$' && {
+      _configuration_name=${_configuration_name%%_*}
 
-		_configuration_name=$(printf '%s' $_configuration_name | tr '-' '_' | tr '[:lower:]' '[:upper:]')
-		if [ $(printf '%s' "$_ARG" | grep -c '=') -eq 0 ]; then
-			_configuration_value=1
-		else
-			_configuration_value=${_ARG#*=}
-		fi
+      printf '%s' "$_configuration_name" | grep -cqm1 '^conf' && {
+        _configuration_name=$(printf '%s' "$_configuration_name" | sed -e "s/-/-$APPLICATION_NAME-/" -e 's/--/-/')
+      } || {
+        _configuration_name=$(printf '%s' "$_configuration_name" | sed -e "s/^/$APPLICATION_NAME-/" -e 's/--/-/')
+      }
+    }
 
-		export _$_configuration_name="$_configuration_value"
-		unset _configuration_name
-		shift
-		;;
-	--last-arg)
-		shift
-		break
-		;;
+    _configuration_name=$(printf '%s' $_configuration_name | tr '-' '_' | tr '[:upper:]' '[:lower:]')
+    if [ $(printf '%s' "$_ARG" | grep -c '=') -eq 0 ]; then
+      _configuration_value=1
+    else
+      _configuration_value=${_ARG#*=}
+    fi
 
-	*)
-		break
-		;;
-	esac
+    eval "${_configuration_name}=\"$_configuration_value\""
+    unset _configuration_name _configuration_value
+    shift
+    ;;
+  --last-arg)
+    shift
+    break
+    ;;
+
+  *)
+    break
+    ;;
+  esac
 done
+
+log_enable_debug_mode

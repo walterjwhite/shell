@@ -1,0 +1,34 @@
+#!/bin/sh
+
+lib ./videos-download.sh
+lib ./videos.sh
+
+cfg git
+
+processes_restrict_to_single_process
+: ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
+
+_action=download
+_prefix=downloaded
+
+videos_downloaded=0
+_data_app_init
+while :; do
+  video_file=$(find queued -type f -print -quit)
+  if [ -z "$video_file" ]; then
+    if [ $videos_downloaded -gt 0 ]; then
+      exit_with_success "download queue is empty, processed $videos_downloaded video(s)"
+    fi
+
+    exit_with_error "no videos downloaded"
+  fi
+
+  if [ $videos_downloaded -gt 0 ]; then
+    printf '\n'
+  fi
+
+  _video_download
+  videos_downloaded=$(($videos_downloaded + 1))
+
+  unset extract_audio video_profiles is_playlist _options videos_url video_key video_title video_duration video_date video_uploader_id video_uploader_name
+done

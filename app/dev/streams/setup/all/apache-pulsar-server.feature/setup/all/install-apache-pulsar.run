@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib net/download.sh
+
+apache_pulsar_version=4.1.2
+apache_pulsar_install_path=/opt/apache/pulsar
+
+_download_fetch "https://www.apache.org/dyn/closer.lua/pulsar/pulsar-$apache_pulsar_version/apache-pulsar-$apache_pulsar_version-bin.tar.gz?action=download"
+
+clean=$apache_pulsar_install_path _extract_extract "$download_file" "$apache_pulsar_install_path"
+

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+_fix() {
+    sed -i "s/\$$_VARIABLE_NAME/\$_$_VARIABLE_NAME/g" $(search -l "\$$_VARIABLE_NAME")
+    sed -i "s/^$_VARIABLE_NAME=/_$_VARIABLE_NAME=/g" $(search -l "$_VARIABLE_NAME=")
+    sed -i "s/ $_VARIABLE_NAME=/ _$_VARIABLE_NAME=/g" $(search -l "$_VARIABLE_NAME=")
+    sed -i "s/\t$_VARIABLE_NAME=/\t_$_VARIABLE_NAME=/g" $(search -l "$_VARIABLE_NAME=")
+    sed -i "s/^: \${$_VARIABLE_NAME:=/: \${_$_VARIABLE_NAME:=/" $(search -l "$_VARIABLE_NAME:=")
+    sed -i "s/\${$_VARIABLE_NAME}/\${_$_VARIABLE_NAME}/" $(search -l "\${$_VARIABLE_NAME}")
+    sed -i "s/\"$_VARIABLE_NAME:/\"_$_VARIABLE_NAME:/" $(search -l "\"$_VARIABLE_NAME:")
+    sed -i "s/|$_VARIABLE_NAME:/|_$_VARIABLE_NAME:/" $(search -l "|$_VARIABLE_NAME:")
+
+    gd
+    printf 'commit changes: Y/n'
+    read -r _continue
+
+    gcommit -am "fix $_VARIABLE_NAME" && gpush
+}
+
+for _VARIABLE_NAME in $(cat variable-names); do
+    _fix
+done

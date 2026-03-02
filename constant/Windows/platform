@@ -1,0 +1,5 @@
+readonly GNU_GREP=grep
+readonly GNU_SED=sed
+
+readonly LIBRARY_PATH=$HOME/lib
+readonly BIN_PATH=$HOME/bin

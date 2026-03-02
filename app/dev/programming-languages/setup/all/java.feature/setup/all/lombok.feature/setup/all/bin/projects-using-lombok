@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find . -type f -name '*.java' -exec grep -l 'import lombok.' {} + | sed -e 's/\/src\/.*$//' | sort -u

@@ -1,3 +1,3 @@
-_waitee_init
+wait_waitee_init
 
-_waiter
+wait_waiter

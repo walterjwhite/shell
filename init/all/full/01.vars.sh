@@ -1,8 +1,2 @@
-_is_backgrounded && _BACKGROUNDED=1
-_init_logging
-
-unset _DEFERS _EXIT
-
-_APPLICATION_START_TIME=$(date +%s)
-
-_APPLICATION_CMD=$(basename $0)
+_processes_is_backgrounded && backgrounded=1
+log_init

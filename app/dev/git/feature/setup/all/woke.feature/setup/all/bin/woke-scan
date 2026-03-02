@@ -1,0 +1,25 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+
+_woke_cleanup() {
+  rm -f "$woke_output_file"
+}
+
+_project_directory_get_project_directory
+cd $git_project_path
+
+woke_output_file="$(_mktemp_mktemp)"
+exit_defer _woke_cleanup
+
+woke --exit-1-on-failure 2>/dev/null |
+  sed 's/[[:cntrl:]]//g' |
+  $GNU_GREP -Pv '[\d]{4}-[\d]{2}-[\d]{2}' \
+    >"$woke_output_file" 2>/dev/null
+
+if [ $? -gt 0 ]; then
+  log_warn "woke findings"
+  cat "$woke_output_file"
+else
+  log_info "woke found no issues"
+fi

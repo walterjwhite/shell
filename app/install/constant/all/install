@@ -1,0 +1,5 @@
+readonly APPLICATION_METADATA_PATH=$APP_LIBRARY_PATH/install/.metadata
+
+readonly ARTIFACTS_PATH=/tmp/$USER/walterjwhite/$APPLICATION_NAME/artifacts
+readonly REGISTRY_PATH=$DATA_PATH/$APPLICATION_NAME/registry
+readonly WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX=github.com/walterjwhite/go-code/lib/application

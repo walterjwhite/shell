@@ -1,0 +1,3 @@
+: ${conf_dev_vscode_ide:=/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron}
+
+conf_dev_vscode_executable=code

@@ -1,0 +1,11 @@
+readonly _TAR_ARGS=" -f - "
+
+readonly GNU_GREP=/usr/local/bin/ggrep
+readonly GNU_SED=gsed
+
+readonly _SUDO_CMD="sudo"
+
+readonly PLATFORM_SYSTEM_ID_PATH=/usr/local/etc/walterjwhite/system
+readonly IO_STAT_ARGS='-f %OLp'
+readonly LIBRARY_PATH=/usr/local/walterjwhite
+readonly BIN_PATH=/usr/local/bin

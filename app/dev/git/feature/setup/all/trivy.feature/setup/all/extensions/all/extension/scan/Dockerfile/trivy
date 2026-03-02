@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib feature:.
+
+exit_defer _trivy_cleanup
+
+_extension_find_default -exec trivy -q conf {} \;

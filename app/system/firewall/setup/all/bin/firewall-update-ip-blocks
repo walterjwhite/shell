@@ -1,0 +1,32 @@
+#!/bin/sh
+
+lib ./ip-block
+lib net/firewall.sh
+
+sudo_ensure_root "$@"
+
+_firewall_update_ip_block_update_firewall() {
+  _has_contents $1 || {
+    log_warn "updating ${_IP_BLOCK_PROVIDER} IP blocks failed"
+    rm -f $1
+    continue
+  }
+
+  rm -f /usr/local/etc/walterjwhite/network/ip-blocks/$provider_name
+  sort -u $1 >/usr/local/etc/walterjwhite/network/ip-blocks/$provider_name
+  rm -f $1
+
+  [ -n "$_OS_INSTALLER_CHROOT" ] && {
+    log_warn "in install chroot - skipping update of running firewall table"
+    return
+  }
+
+  _firewall_update_table_from_file $table_name /usr/local/etc/walterjwhite/network/ip-blocks/$provider_name
+}
+
+mkdir -p /usr/local/etc/walterjwhite/network/ip-blocks
+for _IP_BLOCK_PROVIDER in $conf_firewall_ip_block_providers; do
+  provider_name=$(printf '%s' $_IP_BLOCK_PROVIDER | tr '[:upper:]' '[:lower:]')
+  table_name=ip_blocks_$provider_name
+  _FIREWALL_IP_BLOCK_${_IP_BLOCK_PROVIDER}
+done

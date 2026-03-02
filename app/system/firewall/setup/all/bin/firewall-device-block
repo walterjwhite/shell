@@ -1,0 +1,22 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_BLOCK_ACTION:Block Action (add or del)"
+
+lib net/firewall.sh
+
+_firewall_blocked_devices_table="blocked_devices"
+
+case $_BLOCK_ACTION in
+add | del) ;;
+*)
+  exit_with_error "unrecognized action: $_BLOCK_ACTION"
+  ;;
+esac
+
+_device_grep_expression=$(printf 'args:(%s)' "$*" | tr ' ' '|')
+_devices=$($GNU_GREP -P "$_device_grep_expression" /etc/ethers | awk {'print$2'})
+
+[ -z "$_devices" ] && exit_with_error "no devices matched: $*"
+
+log_info "$_BLOCK_ACTION [$_devices]"
+_firewall_update_table_element $_firewall_blocked_devices_table $_BLOCK_ACTION $_devices

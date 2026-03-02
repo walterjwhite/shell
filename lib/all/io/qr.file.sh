@@ -1,29 +1,30 @@
-_send_file() {
-	_require_file "$_DATA_FILENAME"
-	_DATA_FILENAME=$(readlink -f $_DATA_FILENAME)
+_qr_file_send_file() {
+  local _data_filename=$1
+  file_require "$_data_filename"
+  qr_file_data_filename=$(readlink -f "$_data_filename")
 
-	local file_size=$(wc -c <$_DATA_FILENAME | awk {'print$1'})
-	if [ $file_size -gt $_CONF_TRANSFER_MAX_DATA_SIZE ]; then
-		_ERROR "$_DATA_FILENAME is too large to send [$file_size] > $_CONF_TRANSFER_MAX_DATA_SIZE"
-	fi
+  local _file_size=$(wc -c <"$qr_file_data_filename" | awk {'print$1'})
+  if [ "$_file_size" -gt "$conf_transfer_max_data_size" ]; then
+    exit_with_error "$qr_file_data_filename is too large to send [$_file_size] > $conf_transfer_max_data_size"
+  fi
 
-	secret_value="filename=$_DATA_FILENAME" _qr_write
+  secret_value="filename=$qr_file_data_filename" _qr_write
 
-	_send_file_data
+  _qr_file_send_file_data
 }
 
-_send_file_data() {
-	temp_dir=$(_MKTEMP_OPTIONS=d _mktemp)
-	_defer _cleanup_temp "$temp_dir"
+_qr_file_send_file_data() {
+  qr_file_temp_dir=$(_mktemp_options=d _mktemp_mktemp)
+  exit_defer _tmp_cleanup_temp "$qr_file_temp_dir"
 
-	local opwd=$PWD
-	cd $temp_dir
+  local _old_pwd=$PWD
+  cd "$qr_file_temp_dir"
 
-	$_CONF_TRANSFER_SPLIT_FUNCTION
-	for _FILE_SEGMENT in $(ls); do
-		_qr_write_from_file $_FILE_SEGMENT.png $_FILE_SEGMENT
-		_continue_if "Press enter when complete:" "Y/n"
-	done
+  $conf_transfer_split_function
+  for file_segment in $(ls); do
+    _qr_write_from_file "$file_segment.png" "$file_segment"
+    _stdin_continue_if "Press enter when complete:" "Y/n"
+  done
 
-	cd $opwd
+  cd "$_old_pwd"
 }

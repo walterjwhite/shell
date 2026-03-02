@@ -1,5 +1,3 @@
-_is_app() {
-	[ ! -e .app ] && return 1
-
-	return 0
+_app_is_app() {
+  [ -e .app ]
 }

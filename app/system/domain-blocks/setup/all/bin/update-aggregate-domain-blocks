@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cfg .
+
+sudo_ensure_root
+
+mkdir -p $conf_domain_blocks_allowlist $conf_domain_blocks_blocklist
+touch $conf_domain_blocks_allowlist_aggregate
+
+cat $conf_domain_blocks_blocklist_aggregate |
+  grep -vf $conf_domain_blocks_allowlist_aggregate > \
+  $conf_domain_blocks_aggregate

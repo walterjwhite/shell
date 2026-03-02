@@ -1,0 +1,30 @@
+#!/bin/sh
+
+cfg .
+
+for arg in "$@"; do
+  case "$arg" in
+  -m=* | --message=*)
+    git_commit_message="${arg#*=}"
+
+    if [ -n "$_CONSOLE_CONTEXT_ID" ]; then
+      git_commit_message="$_CONSOLE_CONTEXT_ID - $git_commit_message"
+    fi
+
+    shift
+    ;;
+  *)
+    conf_git_squash_commits=$arg
+    shift
+    ;;
+  esac
+done
+
+if [ -z "$git_commit_message" ]; then
+  git_commit_message=$(git rev-list --pretty=format:'%s' --max-count=$conf_git_squash_commits $(git rev-parse HEAD) | tail -1)
+
+  _stdin_continue_if "Use message: $git_commit_message" "Y/n" || exit_with_error "commit message is required"
+fi
+
+git reset --soft HEAD~$conf_git_squash_commits &&
+  git commit -m "$git_commit_message"

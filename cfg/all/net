@@ -1,2 +1,2 @@
-: ${_CONF_NETWORK_TEST_TIMEOUT:=5}
-: ${_CONF_NETWORK_TEST_TARGETS:="http://connectivity-check.ubuntu.com http://example.org http://www.google.com http://telehack.com http://lxer.com"}
+: ${conf_network_test_timeout:=5}
+: ${conf_network_test_targets:="http://connectivity-check.ubuntu.com http://example.org http://www.google.com http://telehack.com http://lxer.com"}

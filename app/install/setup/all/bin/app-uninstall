@@ -1,0 +1,17 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_APPLICATIONS:Applications to remove"
+
+lib ./install
+lib io/file.sh
+lib ./uninstall
+
+cfg install
+
+constant ./install
+
+_settings_init
+
+for target_application_name in "$_APPLICATIONS"; do
+  uninstall_app
+done

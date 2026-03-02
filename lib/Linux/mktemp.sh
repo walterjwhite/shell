@@ -1,9 +1,6 @@
-_mktemp() {
-	local suffix=$1
-	[ -n "$suffix" ] && suffix=".$suffix"
+_mktemp_mktemp() {
+  local _suffix=$1
+  [ -n "$_suffix" ] && _suffix=".$_suffix"
 
-	local sudo_prefix
-	[ -n "$_SUDO_USER" ] && sudo_prefix=_sudo
-
-	$sudo_prefix mktemp -${_MKTEMP_OPTIONS}t ${_APPLICATION_NAME}.${_APPLICATION_CMD}${suffix}.XXXXXXXX
+  mktemp -${_mktemp_options}t ${APPLICATION_NAME}.${APPLICATION_CMD}${_suffix}.XXXXXXXX
 }

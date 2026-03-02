@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+sed -e "s/^/0.0.0.0 /" $conf_domain_blocks_aggregate |
+  sudo_run tee $conf_domain_blocks_coredns_blocks >/dev/null

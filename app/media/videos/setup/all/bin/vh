@@ -1,0 +1,26 @@
+#!/bin/sh
+
+lib ./videos.sh
+
+cfg git
+
+: ${_SEARCH_CATEGORIES:="downloaded exit_with_error queued watched"}
+_data_app_init
+if [ -n "$_SEARCH_RELATIVE" ]; then
+  log_info "listing videos watched ${_SEARCH_RELATIVE} day(s) ago"
+
+  relative_time=$(printf '%s - %s\n' "$(date +%s)" "(${_SEARCH_RELATIVE} * 24 * 60 *60)" | bc)
+  search_date=$(date -r $relative_time +%Y/%m/%d)
+fi
+
+if [ -n "$search_date" ]; then
+  for _CATEGORY in $_CATEGORIES; do
+    for video_file in $(find $_CATEGORY/$search_date -type f 2>/dev/null); do
+      _video_meta
+    done
+  done
+else
+  for video_file in $(find $_CATEGORIES -type f 2>/dev/null | sort -n); do
+    _video_meta
+  done
+fi

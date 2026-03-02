@@ -1,0 +1,23 @@
+#!/bin/sh
+
+lib io/file.sh
+lib ./prepare.sh
+
+cfg .
+
+required_message="os_installer_drive [$os_installer_drive] does not exist" file_require "/dev/$os_installer_drive"
+
+sudo_ensure_root "$@"
+
+_mount_install_media && exit_defer umount:$os_installer_drive_mount_point
+_copy_conf
+
+APP_PLATFORM_ROOT=$os_installer_drive_mount_point app-install install os-installer
+
+_enable_sshd
+
+_os_prepare
+
+zfs-zap-maintenance daily
+
+exit_with_success "updated USB, it is safe to remove"

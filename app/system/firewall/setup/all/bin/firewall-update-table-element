@@ -1,0 +1,8 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_table_name:Table name|_TABLE_ACTION:Table Action (add/del)"
+
+lib io/file.sh
+lib net/firewall.sh
+
+_firewall_update_table_element $_table_name $_TABLE_ACTION "$@"

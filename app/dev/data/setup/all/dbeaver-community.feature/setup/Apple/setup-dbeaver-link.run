@@ -1,0 +1,6 @@
+#!/bin/sh
+
+lib io/link.sh
+
+dbeaver_install_path=/Applications/DBeaver.app/Contents/MacOS
+_link $dbeaver_install_path/dbeaver $BIN_PATH/dbeaver

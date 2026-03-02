@@ -1,0 +1,4 @@
+#!/bin/sh
+
+syndaemon -i 1 -t -K -R -d
+

@@ -1,3 +1,3 @@
-_open() {
-	xdg-open $1
+_open_open() {
+  xdg-open $1
 }

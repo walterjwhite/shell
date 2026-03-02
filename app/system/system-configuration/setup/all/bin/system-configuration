@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lib ./configuration.sh
+lib provider.sh
+
+cfg .
+
+sudo_ensure_root "$@"
+
+log_info "configuring system"
+
+_configure_devices
+_provider_run_all
+
+log_info "configured system"

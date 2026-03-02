@@ -1,0 +1,32 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_date:Date of bike ride|_index:ride number of day|_bike:name of bike|_distance:distance in km"
+
+lib ./add.sh
+lib git/data.app.sh
+
+cfg git
+
+_data_app_init
+_tags=$1
+
+_add_validate_date
+
+_distance=$(printf "%s *0.6213712\n" $_distance | bc)
+_distance=$(printf "%.2f" "$_distance")
+
+case $_distance in
+*.00)
+  _distance="${_distance%.00}"
+  ;;
+*.*0)
+  _distance=$(printf '%s' $_distance | sed -e 's/0$//')
+  ;;
+esac
+
+_add_file
+_add_exists
+
+printf '%s|%s|%s|%s|%s\n' "$_date" "$_index" "$_bike" "$_distance" "$_tags" >>$_file
+
+_data_app_save "add - $_decade/$_date,$_index,$_bike" $_file

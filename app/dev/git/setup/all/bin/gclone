@@ -1,0 +1,44 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="git_url:The git url of the project to clone"
+
+lib git/include.sh
+lib system.sh
+
+cfg git
+
+
+case $git_url in
+data/*)
+  project_relative_path=$(basename $git_url)
+  project_full_path=$DATA_PATH/$project_relative_path
+  git_url=$conf_git_mirror/$git_url
+  ;;
+*)
+  case $git_url in
+  *@* | *://*)
+    project_relative_path=${git_url%.git}
+    project_relative_path=${project_relative_path#*@*:}
+    project_relative_path=${project_relative_path#*://}
+    project_relative_path=${project_relative_path#*/}
+    ;;
+  *)
+    project_relative_path=${git_url%.git}
+
+    project_mirror_host=$conf_git_mirror
+    project_mirror_host=${project_mirror_host#*@}
+    project_mirror_host=${project_mirror_host%:*}
+    project_mirror_host=${project_mirror_host#*://}
+    project_mirror_host=${project_mirror_host%%/*}
+
+    project_relative_path=$project_mirror_host/$project_relative_path
+    git_url=$conf_git_mirror/$git_url
+    ;;
+  esac
+
+  project_full_path=$GIT_PROJECT_BASE_PATH/$project_relative_path
+  ;;
+esac
+
+log_detail "cloning $git_url into $project_full_path"
+git clone $git_url "$@" $project_full_path

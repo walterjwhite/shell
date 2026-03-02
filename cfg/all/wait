@@ -1,1 +1,1 @@
-: ${_CONF_WAIT_INTERVAL:=30}
+: ${conf_wait_interval:=30}

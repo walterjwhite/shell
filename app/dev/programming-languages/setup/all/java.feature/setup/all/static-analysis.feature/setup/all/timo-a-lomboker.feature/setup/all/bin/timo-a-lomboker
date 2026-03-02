@@ -1,0 +1,14 @@
+#!/bin/sh
+
+_timo_a_lomboker() {
+  $conf_dev_java_timo_a_lomboker_jdk -jar $conf_dev_java_timo_a_lomboker_jar "$@"
+}
+
+_timo_a_lomboker reduce getter $1
+_timo_a_lomboker reduce setter $1
+
+_timo_a_lomboker reduce equalsAndHashCode $1
+_timo_a_lomboker reduce toString $1
+_timo_a_lomboker reduce no-args-constructor $1
+
+_timo_a_lomboker summarize gs $1

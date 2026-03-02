@@ -1,18 +1,22 @@
-_DISABLE_SERVICE() {
-	SERVICE_ACTION=stop SERVICE_ENABLED=NO _service "$@"
+service_disable_service() {
+  local _service_action=stop
+  local _service_enabled=NO
+  _service_service "$@"
 }
 
-_ENABLE_SERVICE() {
-	SERVICE_ACTION=start SERVICE_ENABLED=YES _service "$@"
+service_enable_service() {
+  local _service_action=start
+  local _service_enabled=YES
+  _service_service "$@"
 }
 
-_service() {
-	local service
-	for service in "$@"; do
-		if [ -z "$SYSTEM_INSTALL" ]; then
-			service $service one${SERVICE_ACTION}
-		fi
+_service_service() {
+  local _service
+  for _service in "$@"; do
+    [ -z "$os_installer_chroot" ] && {
+      service "$_service" "one${_service_action}"
+    }
 
-		sysrc ${service}_enable=${SERVICE_ENABLED}
-	done
+    sysrc "${_service}_enable=${_service_enabled}"
+  done
 }

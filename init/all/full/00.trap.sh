@@ -1,17 +1,9 @@
-_is_backgrounded && _BACKGROUNDED=1
-_init_logging
+trap '_exit_on_hup $LINENO' 1
+trap '_exit_on_int $LINENO' 2
+trap '_exit_on_quit $LINENO' 3
+trap '_exit_on_illegal $LINENO' 4
+trap '_exit_on_abort $LINENO' 6
+trap '_exit_on_alarm $LINENO' 14
+trap '_exit_on_term $LINENO' 15
 
-unset _DEFERS _EXIT
-
-_APPLICATION_START_TIME=$(date +%s)
-
-_APPLICATION_CMD=$(basename $0)
-
-trap _on_hup 1
-trap _on_int 2
-trap _on_quit 3
-trap _on_illegal 4
-trap _on_abort 6
-trap _on_alarm 14
-trap _on_term 15
-trap _success 0
+trap exit_with_success 0

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_SHELL_FILE_TO_FMT:Shell file to format"
+
+_sh_app_fmt_cleanup() {
+  rm -f $sh_app_fmt_out_file
+}
+
+sh_app_fmt_out_file=$(mktemp)
+exit_defer _sh_app_fmt_cleanup
+
+
+grep '^#!/bin/sh' $_SHELL_FILE_TO_FMT >>$sh_app_fmt_out_file
+grep -cqm1 '^#!/bin/sh' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep '^readonly REQUIRED_ARGUMENTS=' $_SHELL_FILE_TO_FMT >>$sh_app_fmt_out_file
+grep -cqm1 '^readonly REQUIRED_ARGUMENTS=' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep '^lib ' $_SHELL_FILE_TO_FMT | sort -k 2 >>$sh_app_fmt_out_file
+grep -cqm1 '^lib ' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep '^constant ' $_SHELL_FILE_TO_FMT | sort -k 2 >>$sh_app_fmt_out_file
+grep -cqm1 '^constant ' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep '^cfg ' $_SHELL_FILE_TO_FMT | sort -k 2 >>$sh_app_fmt_out_file
+grep -cqm1 '^cfg ' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep '^init ' $_SHELL_FILE_TO_FMT | sort -k 2 >>$sh_app_fmt_out_file
+grep -cqm1 '^init ' $_SHELL_FILE_TO_FMT && printf '\n' >>$sh_app_fmt_out_file
+
+grep -Pv '^(lib |cfg |constant |init |#!/bin/sh|readonly REQUIRED_ARGUMENTS=)' $_SHELL_FILE_TO_FMT >>$sh_app_fmt_out_file
+
+chmod --reference=$_SHELL_FILE_TO_FMT $sh_app_fmt_out_file
+mv $sh_app_fmt_out_file $_SHELL_FILE_TO_FMT
+
+sed -i '/^$/N;/\n$/D' $_SHELL_FILE_TO_FMT

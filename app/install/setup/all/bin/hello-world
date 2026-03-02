@@ -1,0 +1,7 @@
+#!/bin/sh
+
+log_debug 'log_debug - hello world'
+log_info 'info - hello world'
+log_detail 'log_detail - hello world'
+log_warn 'log_warn - hello world'
+exit_with_success 'success - hello world'

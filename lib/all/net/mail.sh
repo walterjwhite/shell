@@ -1,17 +1,25 @@
-_mail() {
-	if [ $# -lt 3 ]; then
-		_WARN "recipients[0], subject[1], message[2] is required - $# arguments provided"
-		return 1
-	fi
+_mail_send() {
+  [ -n "$conf_log_mail_disabled" ] && {
+    log_warn "mail is disabled"
+    return 1
+  }
 
-	local recipients=$(printf '%s' "$1" | tr '|' ' ')
-	shift
+  if [ $# -lt 3 ]; then
+    log_warn "recipients[0], subject[1], message[2] is required - $# arguments provided"
+    return 2
+  fi
 
-	local subject="$1"
-	shift
+  local _recipients
+  _recipients=$(printf '%s' "$1" | tr '|' ' ')
+  shift
 
-	local message="$1"
-	shift
+  local _subject
+  _subject="$1"
+  shift
 
-	printf "$message" | mail -s "$subject" $recipients
+  local _message
+  _message="$1"
+  shift
+
+  printf '%s\n' "$_message" | mail -s "$_subject" $_recipients
 }

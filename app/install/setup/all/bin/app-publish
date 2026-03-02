@@ -1,0 +1,22 @@
+#!/bin/sh
+
+lib app.sh
+lib ./git.sh
+lib git.sh
+lib ./install/git.sh
+lib io/file.sh
+lib ./publish
+
+cfg install
+
+constant ./install
+
+processes_restrict_to_single_process
+_is_registry_online || readonly INSTALL_REGISTRY_OFFLINE=1
+
+if [ ! -e .app ]; then
+  _app_publish_recursive
+  exit $?
+fi
+
+_app_publish_instance

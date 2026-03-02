@@ -1,0 +1,28 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_DOCKERFILE:path to Dockerfile"
+
+case $_DOCKERFILE in
+*/.run/Dockerfile)
+  log_debug "ignoring run configuration for Dockerfile as this is building an image"
+  exit 0
+  ;;
+esac
+
+cd $(dirname $(dirname $_DOCKERFILE))
+
+
+dockerfile_path=$PWD/.build/Dockerfile
+docker_application_name=$(basename $PWD)
+
+log_detail "building Dockerfile: $docker_application_name"
+
+find . -type f -name '*.go' -print -quit | grep -cqm1 . && {
+  log_debug "detected go files, switching to repo root"
+  log_debug "[ENSURE FILES USING THE COPY CMD ARE RELATIVE TO REPO ROOT]"
+
+  project_root=$(git rev-parse --show-toplevel)
+  cd $project_root
+}
+
+docker buildx build -f $dockerfile_path -t $docker_application_name .

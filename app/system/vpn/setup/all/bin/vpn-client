@@ -1,0 +1,13 @@
+#!/bin/sh
+
+lib .
+
+processes_restrict_to_single_process
+_vpn_client_ip
+
+_vpn_firewall_cleanup
+_vpn_firewall_update && exit_defer _vpn_firewall_cleanup
+
+_vpn_firewall_wait_conf
+
+$APP_LIBRARY_PATH/bin/${_VPN_PROVIDER}-client "$@"

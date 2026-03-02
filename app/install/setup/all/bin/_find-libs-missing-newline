@@ -1,0 +1,6 @@
+#!/bin/sh
+
+find . -type f \
+  -name '*.sh' \
+  -exec grep -P '^}' {} + |
+  grep -Pv '}$'

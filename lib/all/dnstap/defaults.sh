@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ -z "$_DNSTAP_FILE" ]; then
-	_DNSTAP_FILE="-r /var/log/dnstap/dnstap.log"
+if [ -z "$dnstap_file" ]; then
+  dnstap_file="-r /var/log/dnstap/dnstap.log"
 fi
 
-if [ -z "$_INCLUDE_SELF" ]; then
-	_append "\$3!=\"127.0.0.1\""
+if [ -z "$dnstap_include_self" ]; then
+  _write_append "\$3!=\"127.0.0.1\""
 fi

@@ -1,71 +1,71 @@
-_call() {
-	local function_name=$1
+exec_call() {
+  local _function_name=$1
 
-	type $function_name >/dev/null 2>&1 || {
-		_DEBUG "${function_name} does not exist"
+  type $_function_name >/dev/null 2>&1 || {
+    log_debug "${_function_name} does not exist"
 
-		return 255
-	}
+    return 255
+  }
 
-	[ $# -gt 1 ] && {
-		shift
-		$function_name "$@"
-		return $?
-	}
+  [ $# -gt 1 ] && {
+    shift
+    $_function_name "$@"
+    return $?
+  }
 
-	$function_name
+  $_function_name
 }
 
-_() {
-	_reset_indent
+exec_wrap() {
+  if [ -n "$exec_attempts" ]; then
+    local _attempt=1
 
-	if [ -n "$_EXEC_ATTEMPTS" ]; then
-		local attempt=1
+    while [ $_attempt -le $exec_attempts ]; do
+      [ $_attempt -gt 1 ] && [ -n "$exec_delay" ] && sleep $exec_delay
+      
+      warn_on_error=1 _exec_do_exec "$@" && return
 
-		while [ $attempt -le $_EXEC_ATTEMPTS ]; do
-			_WARN_ON_ERROR=1 _do_exec "$@" && return
+      _attempt=$(($_attempt + 1))
+    done
 
-			attempt=$(($attempt + 1))
-		done
+    exit_with_error "failed after $_attempt attempts: $*"
+  fi
 
-		_ERROR "Failed after $attempt attempts: $*"
-	fi
-
-	_do_exec "$@"
+  _exec_do_exec "$@"
 }
 
-_do_exec() {
-	local successful_exit_status=0
-	if [ -n "$_SUCCESSFUL_EXIT_STATUS" ]; then
-		successful_exit_status=$_SUCCESSFUL_EXIT_STATUS
+_exec_do_exec() {
+  local _successful_exit_status=0
+  if [ -n "$successful_exit_status" ]; then
+    _successful_exit_status=$successful_exit_status
 
-		unset _SUCCESSFUL_EXIT_STATUS
-	fi
+    unset successful_exit_status
+  fi
 
-	_INFO "## $*"
-	local exit_status
-	if [ -z "$_DRY_RUN" ]; then
-		"$@"
-		exit_status=$?
-	else
-		_WARN "using dry run status: $_DRY_RUN"
-		exit_status=$_DRY_RUN
-	fi
+  log_info "$*"
+  local _exit_status
+  if [ -z "$dry_run" ]; then
+    "$@"
+    _exit_status=$?
+  else
+    log_warn "using dry run status: $dry_run"
+    _exit_status=$dry_run
+  fi
 
-	if [ $exit_status -ne $successful_exit_status ]; then
-		if [ -n "$_ON_FAILURE" ]; then
-			$_ON_FAILURE
-			return
-		fi
+  if [ $_exit_status -ne $_successful_exit_status ]; then
+    if [ -n "$on_failure" ]; then
+      $on_failure
+      return
+    fi
 
-		if [ -z "$_WARN_ON_ERROR" ]; then
-			_ERROR "Previous cmd failed: $* - $exit_status"
-		else
-			unset _WARN_ON_ERROR
-			_WARN "Previous cmd failed: $* - $exit_status"
-			_ENVIRONMENT_FILE=$(_mktemp error) _environment_dump
+    if [ -z "$warn_on_error" ]; then
+      exit_with_error "previous cmd failed: $* - $_exit_status"
+    else
+      unset warn_on_error
+      log_warn "previous cmd failed: $* - $_exit_status"
+      environment_file=$(_mktemp_mktemp error) _environment_dump
 
-			return $exit_status
-		fi
-	fi
+      return $_exit_status
+    fi
+  fi
 }

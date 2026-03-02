@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib .
+
+if [ $# -eq 2 ]; then
+  gh_pr_options="-B $1 -H $2"
+fi
+
+pr_url=$(gh pr create $gh_pr_options --title="$_CONSOLE_CONTEXT_ID - $_CONSOLE_CONTEXT_DESCRIPTION" --body="$_CONSOLE_CONTEXT_ID - $_CONSOLE_CONTEXT_DESCRIPTION" 2>&1 | $GNU_GREP -Po '^https://github.com.*$') ||
+  exit_with_error "error opening PR"
+
+if [ -n "$conf_github_gh_notification" ]; then
+  on_gh_open_pr_$conf_github_gh_notification
+else
+  log_warn "no notification configured: conf_github_gh_notification"
+fi

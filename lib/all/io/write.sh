@@ -1,42 +1,47 @@
-_append() {
-	_sudo tee -a "$1" >/dev/null
+_write_append() {
+  local _filename=$1
+  sudo_run mkdir -p $(dirname $_filename)
+  sudo_run tee -a "$_filename" >/dev/null
 }
 
-_write() {
-	_sudo tee "$1" >/dev/null
+_write_write() {
+  local _filename=$1
+  sudo_run mkdir -p $(dirname $_filename)
+  sudo_run tee "$_filename" >/dev/null
 }
 
-_conf_write() {
-	_require "$1" "$1 - _CONF_* must not be empty"
+_write_conf_write() {
+  local _conf_var=$1
+  validation_require "$_conf_var" "$_conf_var - conf_* must not be empty"
 
-	local conf_name
+  local _conf_name
 
-	case $1 in
-	_CONF_*)
-		conf_name="${1#*_CONF_}"
-		;;
-	_OPTN_*)
-		conf_name="${1#*_OPTN_}"
-		;;
-	_ST_*)
-		conf_name="${1#*_ST_}"
-		;;
-	*)
-		_ERROR "$1 is not a conf (_CONF_), option (_OPTN_), or state (_ST_)"
-		;;
-	esac
+  case $_conf_var in
+  conf_*)
+    _conf_name="${_conf_var#*conf_}"
+    ;;
+  optn_*)
+    _conf_name="${_conf_var#*optn_}"
+    ;;
+  st_*)
+    _conf_name="${_conf_var#*st_}"
+    ;;
+  *)
+    exit_with_error "$_conf_var is not a conf (conf_), option (optn_), or state (st_)"
+    ;;
+  esac
 
-	local conf_file_name="${conf_name%%_*}"
-	local conf_value=$(env | grep "$1" | sed -e 's/=.*//')
+  local _conf_file_name="${_conf_name%%_*}"
+  local _conf_value=$(env | grep "$_conf_var" | sed -e 's/=.*//')
 
-	[ -f $HOME/.config/walterjwhite/shell/$conf_file_name ] && {
-		grep -qm1 $1=.* $HOME/.config/walterjwhite/shell/$conf_file_name && {
-			_WARN "Updating existing configuration: $1"
-			$_CONF_GNU_SED -i "s/$1=.*/$1=$conf_value/" $HOME/.config/walterjwhite/shell/$conf_file_name
-			return
-		}
-	}
+  [ -f $HOME/.config/walterjwhite/shell/$_conf_file_name ] && {
+    grep -qm1 $_conf_var=.* $HOME/.config/walterjwhite/shell/$_conf_file_name && {
+      log_warn "updating existing configuration: $_conf_var"
+      $GNU_SED -i "s/$_conf_var=.*/$_conf_var=$_conf_value/" $HOME/.config/walterjwhite/shell/$_conf_file_name
+      return
+    }
+  }
 
-	_DETAIL "Setting configuration: $1"
-	printf '%s=%s\n' "$1" "$conf_value" >>$HOME/.config/walterjwhite/shell/$conf_file_name
+  log_detail "setting configuration: $_conf_var"
+  printf '%s=%s\n' "$_conf_var" "$_conf_value" >>$HOME/.config/walterjwhite/shell/$_conf_file_name
 }

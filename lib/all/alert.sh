@@ -1,29 +1,45 @@
-_alert() {
-	_print_log 5 ALRT "$_CONF_LOG_C_ALRT" "$_CONF_LOG_BEEP_ALRT" "$1"
+_alert_alert() {
+  local _recipients
+  local _subject
+  local _log_color
+  case $exit_status in
+  0)
+    _log_color=$conf_log_c_scs
+    ;;
+  *)
+    _log_color=$conf_log_c_err
+    ;;
+  esac
 
-	local recipients="$_OPTN_LOG_ALERT_RECIPIENTS"
-	local subject="Alert: $0 - $1"
+  log_print_log 5 ALRT "$_log_color" "$conf_log_beep_alrt" "$1"
 
-	if [ -z "$recipients" ]; then
-		_WARN "recipients is empty, aborting"
-		return 1
-	fi
+  _recipients="$optn_log_alert_recipients"
+  _subject="Alert: $0 - $1"
 
-	_mail "$recipients" "$subject" "$2"
+  if [ -z "$_recipients" ]; then
+    log_debug "recipients is empty, aborting"
+    return 1
+  fi
+
+  _mail "$_recipients" "$_subject" "$2"
 }
 
-_long_running_cmd() {
-	[ -n "$_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION" ] && return
+_alert_long_running_cmd() {
+  [ -n "$optn_disable_long_running_cmd_notification" ] && return
 
-	_APPLICATION_END_TIME=$(date +%s)
-	_APPLICATION_RUNTIME=$(($_APPLICATION_END_TIME - $_APPLICATION_START_TIME))
-	[ $_APPLICATION_RUNTIME -lt $_CONF_LOG_LONG_RUNNING_CMD ] && return
+  local _application_end_time
+  local _application_runtime
+  local _subject
+  local _message
+  _application_end_time=$(date +%s)
+  _application_runtime=$(($_application_end_time - $APPLICATION_START_TIME))
+  [ $_application_runtime -lt $conf_log_long_running_cmd ] && return
 
-	local subject="[$_APPLICATION_NAME] - $_EXIT_MESSAGE - ($_EXIT_STATUS)"
-	local message=""
-	if [ -n "$_LOGFILE" ]; then
-		message=$(tail -$_CONF_LOG_LONG_RUNNING_CMD_LINES $_LOGFILE | _sed_remove_nonprintable_characters)
-	fi
+  _subject="[$APPLICATION_NAME] - $exit_message - ($exit_status)"
+  _message=""
+  if [ -n "$log_logfile" ]; then
+    _message=$(tail -$conf_log_long_running_cmd_lines $log_logfile)
+  fi
 
-	_alert "$subject" "$message"
+  _alert_alert "$_subject" "$_message"
 }

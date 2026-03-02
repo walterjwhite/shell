@@ -1,115 +1,141 @@
-_ERROR() {
-	[ -n "$_EXIT_STATUS" ] && return
+exit_with_error() {
+  [ -n "$exit_status" ] && return
 
-	if [ $# -ge 2 ]; then
-		_EXIT_STATUS=$2
-	else
-		_EXIT_STATUS=1
-	fi
+  if [ $# -ge 2 ]; then
+    exit_status=$2
+  else
+    exit_status=1
+  fi
 
-	_EXIT_LOG_LEVEL=4
-	_EXIT_STATUS_CODE="ERR"
-	_EXIT_COLOR_CODE="$_CONF_LOG_C_ERR"
+  [ -n "$3" ] && {
+    _exit_print_line $3
+  }
 
-	_EXIT_MESSAGE="$1 ($_EXIT_STATUS)"
-	_EXIT_BEEP="$_CONF_LOG_BEEP_ERR"
+  exit_log_level=4
+  exit_status_code="ERR"
+  exit_color_code="$conf_log_c_err"
 
-	_defer _environment_dump
-	_defer _log_app_exit
+  exit_message="$1 ($exit_status)"
+  exit_beep="$conf_log_beep_err"
 
-	_run_defers
+  exit_defer _environment_dump
+  exit_defer _exit_log_app_exit
 
-	exit $_EXIT_STATUS
+  _exit_run_defers
+
+  exit $exit_status
 }
 
-_success() {
-	[ -n "$_EXIT_STATUS" ] && return
+exit_with_success() {
+  [ -n "$exit_status" ] && return
 
-	_EXIT_STATUS=0
+  exit_status=0
 
-	_EXIT_LOG_LEVEL=1
-	_EXIT_STATUS_CODE="SCS"
-	_EXIT_COLOR_CODE="$_CONF_LOG_C_SCS"
+  exit_log_level=1
+  exit_status_code="SCS"
+  exit_color_code="$conf_log_c_scs"
 
-	_EXIT_MESSAGE="$1"
-	[ -z "$_EXIT_MESSAGE" ] && _EXIT_MESSAGE="success"
+  exit_message="$1"
+  [ -z "$exit_message" ] && exit_message="success"
 
-	_EXIT_BEEP="$_CONF_LOG_BEEP_SCS"
+  exit_beep="$conf_log_beep_scs"
 
-	_defer _long_running_cmd
-	_defer _log_app_exit
+  exit_defer _alert_long_running_cmd
+  exit_defer _exit_log_app_exit
 
-	_run_defers
+  _exit_run_defers
 
-	exit $_EXIT_STATUS
+  exit $exit_status
 }
 
-_on_hup() {
-	:
+_exit_on_hup() {
+  log_info "hup received"
 }
 
-_on_int() {
-	_ERROR "interrupted"
+_exit_on_int() {
+  exit_with_error "interrupted" $? $1
 }
 
-_on_quit() {
-	_ERROR "quit"
+_exit_on_quit() {
+  exit_with_error "quit" $? $1
 }
 
-_on_illegal() {
-	_ERROR "illegal instruction"
+_exit_on_illegal() {
+  exit_with_error "illegal instruction" $? $1
 }
 
-_on_abort() {
-	_ERROR "abort"
+_exit_on_abort() {
+  exit_with_error "abort" $? $1
 }
 
-_on_alarm() {
-	_ERROR "alarm"
+_exit_on_alarm() {
+  exit_with_error "alarm" $? $1
 }
 
-_on_term() {
-	_ERROR "term"
+_exit_on_term() {
+  exit_with_error "term" $? $1
 }
 
-_defer() {
-	if [ -n "$_DEFERS" ]; then
-		local defer
-		for defer in $_DEFERS; do
-			[ "$defer" = "$1" ] && {
-				_DEBUG "not deferring: $1 as it was already deferred"
-				return
-			}
-		done
-	fi
 
-	_DEBUG "deferring: $1"
-	_DEFERS="$1 $_DEFERS"
+_exit_print_line() {
+  log_warn "unhandled error"
+
+  local _exception_line
+  _exception_line=$($GNU_SED -n "${1}p" $0)
+  printf '  %s @ %s:%s\n' "$_exception_line" $0 $1
 }
 
-_run_defers() {
-	[ -z "$_DEFERS" ] && return 1
-
-	local defer
-	for defer in $_DEFERS; do
-		_call $defer
-	done
-
-	unset _DEFERS
+exit_defer() {
+  log_debug "deferring: $1"
+  if [ $# -gt 1 ]; then
+    local _defer_with_args
+    _defer_with_args=$(printf '%s' "$*" | sed -e 's/ /:/' -e 's/ /,/g')
+    exit_defers="$_defer_with_args $exit_defers"
+  else
+    exit_defers="$1 $exit_defers"
+  fi
 }
 
-_log_app_exit() {
-	[ "$_EXIT_MESSAGE" ] && {
-		local current_time=$(date +%s)
-		local timeout=$(($_APPLICATION_START_TIME + $_CONF_LOG_BEEP_TIMEOUT))
-		[ $current_time -le $timeout ] && unset _EXIT_BEEP
+_exit_run_defers() {
+  [ -z "$exit_defers" ] && return 1
 
-		_print_log $_EXIT_LOG_LEVEL "$_EXIT_STATUS_CODE" "$_EXIT_COLOR_CODE" "$_EXIT_BEEP" "$_EXIT_MESSAGE"
-	}
+  for exit_defer in $exit_defers; do
+    case "$exit_defer" in
+    *:*)
+      local _func_name=$(printf '%s' "$exit_defer" | cut -d':' -f1)
+      local _args=$(printf '%s' "$exit_defer" | cut -d':' -f2 | tr ',' ' ')
 
-	_log_app exit
+      exec_call $_func_name $_args 2>/dev/null
+      ;;
+    *)
+      exec_call $exit_defer 2>/dev/null
+      ;;
+    esac
+  done
 
-	[ -n "$_LOGFILE" ] && [ -n "$_OPTN_LOG_EXIT_CMD" ] && {
-		$_OPTN_LOG_EXIT_CMD -file $_LOGFILE
-	}
+  unset exit_defers
 }
+
+_exit_log_app_exit() {
+  [ "$exit_message" ] && {
+    if [ -z "$APPLICATION_START_TIME" ]; then
+      unset exit_beep
+    else
+      local _current_time
+      local _timeout
+      _current_time=$(date +%s)
+
+      _timeout=$(($APPLICATION_START_TIME + $conf_log_beep_timeout))
+      [ $_current_time -le $_timeout ] && unset exit_beep
+    fi
+
+    log_print_log $exit_log_level "$exit_status_code" "$exit_color_code" "$exit_beep" "$exit_message"
+  }
+
+  log_app exit
+
+  [ -n "$log_logfile" ] && [ -n "$optn_log_exit_cmd" ] && {
+    $optn_log_exit_cmd -file $log_logfile
+  }
+}
+

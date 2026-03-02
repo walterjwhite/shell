@@ -1,0 +1,6 @@
+[Unit]
+Description=Update system
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/update-system

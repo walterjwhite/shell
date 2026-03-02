@@ -1,0 +1,4 @@
+: ${conf_install_crontab_root_path:=/bin:/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin}
+: ${conf_install_CRONTAB_user_path:=/usr/local/bin:/usr/bin:/bin:/opt/bin}
+
+conf_cron_provider=dcron

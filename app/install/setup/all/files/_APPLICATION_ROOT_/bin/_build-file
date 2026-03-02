@@ -1,0 +1,18 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_BUILD_FILE:Build file"
+
+lib ./build-file
+lib git.sh
+lib ./install/git.sh
+lib ./install/settings.sh
+lib io/file.sh
+lib shell-script.sh
+
+cfg ./build
+cfg install
+
+constant ./install
+constant ./build
+
+_app_build_package_file $_BUILD_FILE

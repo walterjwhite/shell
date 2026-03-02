@@ -1,0 +1,32 @@
+readonly APP_PLATFORM_ARCHITECTURE=$(uname -m)
+
+readonly APP_PLATFORM_OS_NAME=$(uname)
+case "$APP_PLATFORM_OS_NAME" in
+  Darwin)
+    readonly APP_PLATFORM_PLATFORM="Apple"
+    ;;
+  MINGW64_NT-*)
+    readonly APP_PLATFORM_PLATFORM="Windows"
+    ;;
+  *)
+    readonly APP_PLATFORM_PLATFORM="$APP_PLATFORM_OS_NAME"
+    ;;
+esac
+
+if [ -z "$APP_PLATFORM_ROOT" ]; then
+  APP_PLATFORM_ROOT=/
+else
+  APP_PLATFORM_ROOT=$(_file_readlink $APP_PLATFORM_ROOT)
+fi
+
+readonly CACHE_PATH=$HOME/.cache
+readonly CONFIG_PATH=$HOME/.config/walterjwhite/shell
+readonly DATA_PATH=$HOME/.data
+readonly RUN_PATH=/tmp/$USER/walterjwhite/app
+
+readonly APP_CONTEXT="default"
+readonly APPLICATION_CONTEXT_GROUP=$RUN_PATH/$APP_CONTEXT
+readonly APPLICATION_CMD_DIR=$APPLICATION_CONTEXT_GROUP/$APPLICATION_NAME/$APPLICATION_CMD
+
+readonly APPLICATION_PIPE=$APPLICATION_CMD_DIR/$$
+readonly APPLICATION_PIPE_DIR=$(dirname $APPLICATION_PIPE)

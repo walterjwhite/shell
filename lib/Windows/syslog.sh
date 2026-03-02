@@ -1,3 +1,3 @@
-_syslog() {
-	:
+_syslog_syslog() {
+  :
 }

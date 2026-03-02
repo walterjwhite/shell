@@ -1,27 +1,32 @@
 _firewall_flush_table() {
-	_require "$1" "table name is required"
+  local _table_name=$1
 
-	_pfctl -t $1 -T flush
+  validation_require "$_table_name" "table name is required"
+
+  pfctl -t "$_table_name" -T flush
 }
 
 _firewall_update_table() {
-	local table_name=$1
-	shift
+  local _table_name=$1
+  shift
 
-	_require "$table_name" "table name is required"
-	[ $# -eq 0 ] && _ERROR "IP address(es) to add is required"
+  validation_require "$_table_name" "table name is required"
+  [ $# -eq 0 ] && exit_with_error "iP address(es) to add is required"
 
-	_pfctl -t $table_name -T add "$*"
+  pfctl -t "$_table_name" -T add "$*"
 }
 
 _firewall_update_table_from_file() {
-	_pfctl -t $TABLE_NAME -T replace -f $1
+  local _table_name=$1
+  local _file=$2
+
+  pfctl -t "$_table_name" -T replace -f "$_file"
 }
 
 _firewall_check() {
-	service pf check
+  service pf check
 }
 
 _firewall_restart() {
-	service pf restart
+  service pf restart
 }

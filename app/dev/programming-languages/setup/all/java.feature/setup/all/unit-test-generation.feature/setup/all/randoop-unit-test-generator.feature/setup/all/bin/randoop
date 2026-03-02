@@ -1,0 +1,36 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_RANDOOP_CMD:Randoop Command (gen,min,help)"
+
+lib io/file.sh
+
+case $_RANDOOP_CMD in
+gen)
+  if [ $# -lt 1 ]; then
+    exit_with_error "class name is required"
+  fi
+
+  test_class_name=$1
+  shift
+
+  if [ -e $test_class_name ]; then
+    test_class_name=$(printf '%s\n' "$test_class_name" | sed -e 's/^src\/main\/java\///' -e 's/\//./g' -e 's/\.java$//')
+  fi
+
+  test_jar=$(find target -mindepth 1 -maxdepth 1 -type f -name '*.jar' ! -name '*sources*' | head -1)
+  lib_jars=$(find target/lib -type f -name '*.jar' 2>/dev/null | tr '\n' ':' | sed -e 's/\:$//')
+  file_require $test_jar test_jar
+
+  java $conf_dev_randoop_heap \
+    -classpath $test_jar:$lib_jars:${APP_LIBRARY_PATH}/randoop-all.jar \
+    randoop.main.Main gentests --testclass $test_class_name $conf_dev_randoop_options $@
+  ;;
+help)
+  java $conf_dev_randoop_heap \
+    -classpath ${APP_LIBRARY_PATH}/randoop-all.jar \
+    randoop.main.Main $_RANDOOP_CMD
+  ;;
+*)
+  exit_with_error "unrecognized command: $_RANDOOP_CMD"
+  ;;
+esac

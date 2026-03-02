@@ -1,3 +1,3 @@
-_open() {
-	open $1
+_open_open() {
+  open $1
 }

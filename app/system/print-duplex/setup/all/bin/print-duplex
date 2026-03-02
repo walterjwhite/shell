@@ -1,0 +1,45 @@
+#!/bin/sh
+
+_PRINTER=$(grep DefaultPrinter -i $_CUPS_PATH/printers.conf | awk {'print$2'} | sed -e "s/>//")
+
+_DOCUMENT_COUNT=$#
+_INDEX=1
+
+if [ "$#" -lt "1" ]; then
+  exit_with_error "document to print is required."
+fi
+
+_print_document() {
+  log_detail "printing even pages"
+  print-even
+
+  _stdin_read_if "Place paper back into the printer in EXACT OUTPUT ORDER (face down in tray) then press ENTER" _CONTINUE
+
+  log_detail "printing odd pages"
+  print-odd
+}
+
+_wait_between_documents() {
+  if [ "$_INDEX" -lt "$_DOCUMENT_COUNT" ]; then
+    _stdin_read_if "Press ENTER when document is finished printing ($_INDEX) $_DOCUMENT_COUNT" _CONTINUE
+
+    ( (_INDEX++))
+  fi
+}
+
+_print() {
+  $_LPR -P $_PRINTER -o $@ "$_DOCUMENT"
+}
+
+_print_even() {
+  _print page-set=even -o outputorder=reverse -o orientation-requested=6
+}
+
+_print_odd() {
+  _print page-set=odd
+}
+
+for _DOCUMENT in $@; do
+  _print_document
+  _wait_between_documents
+done

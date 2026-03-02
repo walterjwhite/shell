@@ -1,0 +1,6 @@
+_secrets_encrypt() {
+
+  [ -z "$_ENCRYPTION_RECIPIENTS" ] && _ENCRYPTION_RECIPIENTS="-r $(whoami)"
+
+  gpg --encrypt $_ENCRYPTION_ARGS $_ENCRYPTION_RECIPIENTS $_ENCRYPTION_SOURCE_FILE
+}

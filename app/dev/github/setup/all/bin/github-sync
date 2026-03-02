@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib ./iterate.sh
+lib ./sync
+lib git/remove.sh
+
+cfg .
+
+_github_iterate_main

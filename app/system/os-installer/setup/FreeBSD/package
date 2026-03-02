@@ -1,0 +1,8 @@
+rsync
+checkrestart
+dmidecode
+wgetpaste
+smartmontools
+
+
+fusefs-sshfs

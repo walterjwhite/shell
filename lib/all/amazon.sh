@@ -1,3 +1,5 @@
 _amazon_href() {
-	printf '%s' "$1" | sed -e "s/\/ref=.*$//"
+  [ -z "$1" ] && return 1
+
+  printf '%s' "$1" | sed -e "s/\/ref=.*$//"
 }

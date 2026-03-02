@@ -1,3 +1,3 @@
-_hostname() {
-	hostname
+_hostname_get() {
+  hostname
 }

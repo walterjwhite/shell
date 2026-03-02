@@ -1,0 +1,17 @@
+#!/bin/sh
+
+lib net/download.sh
+
+git_bash_version=2.53.0
+
+_install_git_bash() {
+	_download_fetch "https://github.com/git-for-windows/git/releases/download/v${git_bash_version}.windows.1/Git-${git_bash_version}-64-bit.exe"
+}
+
+if [ -n "$software_center" ]; then
+	log_warn "git bash *MUST* be installed through software center"
+else
+	log_detail "downloading and installing git bash"
+
+	_install_git_bash
+fi

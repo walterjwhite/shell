@@ -1,0 +1,50 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_JAIL_PATH:The path to the jail configuration directory"
+
+lib ./bootstrap
+lib install/freebsd-update.sh
+lib ./jail
+lib ssh.sh
+
+cfg .
+cfg git
+
+_jail_configure
+
+log_warn "_os_installer_jail_zfs_mountpoint.jail-setup: $_os_installer_jail_zfs_mountpoint"
+log_warn "_os_installer_jail_zfs_dataset.jail-setup: $_os_installer_jail_zfs_dataset"
+
+_jail_create_zfs_datasets
+_jail_setup
+_jail_mounts
+
+_jail_install_app install os-installer
+
+_init_chroot_ssh
+_update_jails
+_setup_git
+_write_system
+
+service jail start $_jail_install_name
+
+_jail_do_setup pre
+
+unset SHELL
+
+unset _index
+
+freebsd_root=$_jail_root_path _freebsd_update
+
+_jail_enable_bastion_host
+_environment_export_matching_vars os_installer
+
+_in_container=1 \
+  conf_os_installer_system_name=$os_installer_jail_name \
+  _add_log_context=$os_installer_jail_name \
+  _os_installer_zfs_pool_name=$_os_installer_zfs_pool_name \
+  jexec $_jail_install_name $LIBRARY_PATH/$APPLICATION_NAME/bin/chroot
+
+_jail_execution_status=$?
+
+_jail_post

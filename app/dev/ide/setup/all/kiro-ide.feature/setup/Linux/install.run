@@ -1,0 +1,14 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+readonly KIRO_VERSION=0.10.0
+readonly KIRO_INSTALLATION_PATH=/opt/Kiro
+
+_download_fetch "https://prod.download.desktop.kiro.dev/releases/stable/linux-x64/signed/$KIRO_VERSION/tar/kiro-ide-$KIRO_VERSION-stable-linux-x64.tar.gz"
+clean=1 _extract_extract $download_file $KIRO_INSTALLATION_PATH
+mv $KIRO_INSTALLATION_PATH/Kiro/* $KIRO_INSTALLATION_PATH/
+rm -rf $KIRO_INSTALLATION_PATH/Kiro
+
+ln -sf $KIRO_INSTALLATION_PATH/bin/kiro $APP_PLATFORM_BIN_PATH/kiro

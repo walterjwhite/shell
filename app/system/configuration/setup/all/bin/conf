@@ -1,0 +1,47 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="action:Action to perform (backup, restore)"
+
+lib .
+lib provider.sh
+
+cfg git
+
+configuration_after_each() {
+  unset provider_path provider_include provider_exclude provider_path_is_dir provider_path_is_skip_prepare provider_no_root_user
+}
+
+case $action in
+backup | restore | clear)
+  log_info "$action on $APP_PLATFORM_PLATFORM"
+
+  _data_app_init
+
+  if [ $# -gt 0 ]; then
+    _provider_run_all_named _configuration_action "$@"
+  else
+    _provider_run_all _configuration_action
+  fi
+
+  configuration_${action}_sync
+  ;;
+user-clear)
+  log_warn "completely clearing user configuration"
+  _configuration_user_clear
+  ;;
+compare)
+  _data_app_init
+  _configuration_compare "$@"
+  ;;
+export)
+  _configuration_export "$@"
+  ;;
+create-from)
+  [ $# -eq 0 ] && exit_with_error "missing repository url"
+
+  _configuration_create_from "$1"
+  ;;
+*)
+  exit_with_error "invalid action: $action"
+  ;;
+esac

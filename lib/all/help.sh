@@ -1,19 +1,19 @@
-_print_help() {
-	if [ -e $2 ]; then
-		_INFO "$1:"
+_help_print() {
+  if [ -e $2 ]; then
+    log_info "$1:"
 
-		cat $2
-		printf '\n'
-	fi
+    cat $2
+    printf '\n'
+  fi
 }
 
-_print_help_and_exit() {
-	_print_help 'system-wide options' $_CONF_LIBRARY_PATH/install/help/default
+_help_print_and_exit() {
+  _help_print 'system-wide options' $LIBRARY_PATH/install/help/default
 
-	if [ "$_APPLICATION_NAME" != "install" ]; then
-		_print_help $_APPLICATION_NAME $_CONF_LIBRARY_PATH/$_APPLICATION_NAME/help/default
-		_print_help "$_APPLICATION_NAME/$_APPLICATION_CMD" $_CONF_LIBRARY_PATH/$_APPLICATION_NAME/help/$_APPLICATION_CMD
-	fi
+  if [ "$APPLICATION_NAME" != "install" ]; then
+    _help_print $APPLICATION_NAME $LIBRARY_PATH/$APPLICATION_NAME/help/default
+    _help_print "$APPLICATION_NAME/$APPLICATION_CMD" $LIBRARY_PATH/$APPLICATION_NAME/help/$APPLICATION_CMD
+  fi
 
-	exit 0
+  exit 0
 }

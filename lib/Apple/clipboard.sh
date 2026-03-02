@@ -1,11 +1,11 @@
 _clipboard_get() {
-	pbpaste
+  pbpaste
 }
 
 _clipboard_clear() {
-	pbcopy </dev/null
+  pbcopy </dev/null
 }
 
 _clipboard_put() {
-	cat - | pbcopy $1
+  cat - | pbcopy $1
 }

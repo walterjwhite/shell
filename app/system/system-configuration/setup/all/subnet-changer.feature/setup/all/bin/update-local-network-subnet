@@ -1,0 +1,16 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_FROM_SUBNET:From Subnet|_TO_SUBNET:To Subnet"
+
+_validate_subnet() {
+  printf '%s' "$1" | $GNU_GREP -Pcqm1 '^[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}$' || exit_with_error "invalid subnet: $1 - must match: ^[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}$"
+}
+
+_validate_subnet "$_FROM_SUBNET"
+_validate_subnet "$_TO_SUBNET"
+
+log_warn "updating local network: $_FROM_SUBNET -> $_TO_SUBNET"
+$GNU_SED -i "s/$_FROM_SUBNET/$_TO_SUBNET/g" \
+  $(find /etc /usr/local/etc -type f -exec grep -l "$_FROM_SUBNET" {} +)
+
+log_warn "updated local network: $_FROM_SUBNET -> $_TO_SUBNET, restart any services as required"

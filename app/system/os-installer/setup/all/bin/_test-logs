@@ -1,0 +1,11 @@
+#!/bin/sh
+
+_run() {
+  log_info "$*"
+  "$@"
+}
+
+log_set_logfile /tmp/test-logs
+log_info "test"
+
+_run_run lsusb

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib time.sh
+
+which az >/dev/null 2>&1 && {
+  time_timeout $conf_dev_azure_upgrade_timeout "Microsoft Azure conf, enable auto upgrade" az config set auto-upgrade.enable=yes
+  time_timeout $conf_dev_azure_upgrade_timeout "Microsoft Azure cli upgrade" az upgrade -y
+
+  time_timeout $conf_dev_azure_login_timeout "Microsoft Azure account clear" $_SUDO_NORMAL_USER_CMD az account clear
+  time_timeout $conf_dev_azure_login_timeout "Microsoft Azure login" $_SUDO_NORMAL_USER_CMD az login -o $conf_dev_azure_output_format
+}

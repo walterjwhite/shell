@@ -1,0 +1,24 @@
+#!/bin/sh
+
+lib ./bootstrap/git.sh
+lib ./chroot/configure.sh
+lib ./chroot/incus-live.sh
+
+cfg .
+cfg git
+
+
+grep -cqm1 container /proc/1/environ && exit_with_error 'detected container environment, will not provision a container within a container'
+
+conf_os_installer_system_name=$(head -1 /usr/local/etc/walterjwhite/system)
+
+exec_wrap _setup_git
+exec_wrap _configure_configure
+
+exec_wrap _incus_live_start
+conf_os_installer_install_path=/ _incus_live_pre
+
+for _INCUS_CONFIGURATION_FILE in $(find /tmp/os -type f -path '*/patch/incus' | sort); do
+  log_info "provisioning incus container: $_INCUS_CONFIGURATION_FILE"
+  _incus_live "$_INCUS_CONFIGURATION_FILE"
+done

@@ -1,6 +1,6 @@
-_notify() {
-	local title=$1
-	local message=$2
+_notification_notify() {
+  local _title=$1
+  local _message=$2
 
-	osascript -e "display notification \"$message\" with title \"$_APPLICATION_NAME - $_APPLICATION_CMD - $title\""
+  osascript -e "display notification \"$_message\" with title \"$APPLICATION_NAME - $APPLICATION_CMD - $_title\""
 }

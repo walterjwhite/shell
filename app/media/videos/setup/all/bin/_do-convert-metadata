@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib ./videos.sh
+
+if [ $(head -1 $1 | tr '|' '\n' | wc -l) -eq 1 ]; then
+  log_info "converting metadata for: $1"
+
+  videos_url=$(head -1 $1)
+  _video_fetch_metadata
+
+  $GNU_SED -i '1d;2d;3d' $1
+
+  if [ $(wc -l $1 | awk {'print$1'}) -eq 0 ]; then
+    printf '%s|%s\n' "$videos_url" "$video_metadata" >$1
+  else
+    $GNU_SED -i "1i $videos_url|$video_metadata" $1
+  fi
+fi

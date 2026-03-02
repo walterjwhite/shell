@@ -1,0 +1,5 @@
+#!/bin/sh
+
+_sudo_options="-E"
+
+_system_configuration_restart_services=1 sudo_options="--preserve-env=_system_configuration_restart_services" sudo_run system-configuration

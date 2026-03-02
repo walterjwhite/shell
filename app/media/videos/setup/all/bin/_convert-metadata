@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+cd $APP_DATA_PATH
+
+for _FILE in $(find queued watched exit_with_error -type f); do
+  $APP_LIBRARY_PATH/bin/do-convert-metadata $_FILE
+done

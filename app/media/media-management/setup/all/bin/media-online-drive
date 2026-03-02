@@ -1,0 +1,38 @@
+#!/bin/sh
+
+_online() {
+  log_info "onlining $conf_media_management_usb_device"
+  exec_wrap sudo_run geli attach -p -k $conf_media_management_encryption_key_file $conf_media_management_usb_device
+  exec_wrap sudo_run zpool online $conf_media_management_pool $_EXISTING_DEVICE $conf_media_management_usb_device.eli
+
+  log_info "onlined $conf_media_management_usb_device"
+}
+
+_offline() {
+  log_info "offlining $conf_media_management_usb_device"
+  exec_wrap sudo_run zpool offline $conf_media_management_pool $conf_media_management_usb_device.eli
+  exec_wrap sudo_run zpool export $conf_media_management_pool
+  exec_wrap sudo_run geli detach $conf_media_management_usb_device.eli
+  log_info "offlined $conf_media_management_usb_device"
+}
+
+_wait_for_resilver() {
+  while [ $(zpool status $conf_pool | $GNU_GREP -Pc 'scan: resilver in progress') -gt 0 ]; do
+    local resilver_status=$(zpool status $conf_pool | grep scan: -A2 | tr '\n' ',' | sed -e 's/scan: //' -e 's/  //' -e 's/,$//')
+    log_info "resilver in progress: $resilver_status"
+    sleep $conf_media_management_resilver_wait
+  done
+
+  log_info "resilver complete"
+}
+
+_EXISTING_DEVICE=$(zpool status $conf_media_management_pool | grep ONLINE | grep ada | awk {'print$1'})
+
+if [ $(zpool status $conf_media_management_pool | $GNU_GREP -P "[\t ]+$conf_media_management_usb_device" | grep -c ONLINE) -eq 0 ]; then
+  _online
+else
+  log_warn "$conf_media_management_usb_device appears to already be online in $conf_media_management_pool"
+fi
+
+_wait_for_resilver
+_offline

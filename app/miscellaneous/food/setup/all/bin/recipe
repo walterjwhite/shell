@@ -1,0 +1,13 @@
+#!/bin/sh
+
+_recipe_file() {
+  log_detail "$2 Recipe:"
+  cat -n $1
+
+  printf '\n'
+}
+
+_recipe_file recipe Main
+for _RECIPE_FILE in $(find . -maxdepth 1 -type f -name '*.recipe'); do
+  _recipe_file "$_RECIPE_FILE" "$(basename $_RECIPE_FILE | sed -e 's/\.recipe$//' | tr '-' ' ')"
+done

@@ -1,0 +1,61 @@
+#!/bin/sh
+
+_mockoon_cleanup() {
+  log_info "cleaning up"
+  kill -9 $tail_pid $run_pid $notify_pid 2>/dev/null
+}
+
+_mockoon_is_running() {
+  /bin/sh -c "printf '$$\n'; exec tail -f $_LOG_FILE" | {
+    IFS= read tail_pid
+    grep -q -m 1 -- "Server started on port"
+    kill -s PIPE $tail_pid
+  }
+
+  unset tail_pid
+}
+
+_mockoon_notify() {
+  _mockoon_is_running
+  _notify "$(basename $PWD)" "Mockoon Started ($$)" "$mockoon_requests"
+
+  printf 'started\n' >$_APPLICATION_PIPE &
+  notify_pid=$!
+}
+
+_mockoon_tail() {
+  $APP_LIBRARY_PATH/run/util/mockoon-tail &
+  tail_pid=$!
+
+}
+
+_mockoon_run() {
+  validation_require "$mockoon_requests" mockoon_requests
+
+  log_set_logfile=.log/mockoon/$(date +%Y.%m.%d.%H.%M.%S)
+
+  mockoon-cli start -D --data $mockoon_requests $mockoon_port >$log_logfile &
+  run_pid=$!
+}
+
+for _ARG in "$@"; do
+  case $_ARG in
+  --port=*)
+    mockoon_port="$_ARG"
+    ;;
+  --data=* | -d=*)
+    mockoon_requests="${mockoon_requests:+$mockoon_requests }${_ARG#*=}"
+    ;;
+  *)
+    log_warn "arg $_ARG was not understood"
+    ;;
+  esac
+done
+
+exit_defer _mockoon_cleanup
+
+_mockoon_run
+_mockoon_tail
+_mockoon_notify
+
+wait $run_pid

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+which ollama > /dev/null 2>&1 || {
+    _download_fetch https://ollama.ai/download/Ollama-darwin.zip
+
+    ollama_contents=$(_mktemp_options=d _mktemp_mktemp)
+    _extract_extract $download_file $ollama_contents
+
+    sudo_run mv $ollama_contents/Ollama.app /Applications
+    sudo_run chmod +x /Applications/Ollama.app/Contents/Resources/ollama
+
+    sudo_run ln -s /Applications/Ollama.app/Contents/Resources/ollama $BIN_PATH/ollama
+
+    rm -rf $ollama_contents
+}

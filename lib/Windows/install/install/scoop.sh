@@ -1,15 +1,15 @@
 _scoop_install() {
-	scoop install $@
+  scoop install $@
 }
 
 _scoop_update() {
-	scoop update $@
+  scoop update $@
 }
 
 _scoop_bootstrap() {
-	_ERROR "Scoop bootstrap is not yet implemented"
+  exit_with_error "scoop bootstrap is not yet implemented"
 }
 
 _scoop_is_installed() {
-	which scoop >/dev/null 2>&1
+  which scoop >/dev/null 2>&1
 }

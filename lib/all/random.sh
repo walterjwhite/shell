@@ -1,10 +1,10 @@
-_random() {
-	local length=$_CONF_INSTALL_RANDOM_DEFAULT_LENGTH
-	[ -n "$1" ] && {
-		length=$1
-		shift
-	}
+_random_random() {
+  local length=$conf_install_random_default_length
+  [ -n "$1" ] && {
+    length=$1
+    shift
+  }
 
-	openssl rand -base64 $length
+  openssl rand -base64 $length
 
 }

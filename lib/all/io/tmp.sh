@@ -1,12 +1,13 @@
-_defer_cleanup_tmp() {
-	[ -z "$_TMP_CLEANUP_DEFERS" ] && _defer _cleanup_tmp
+_tmp_defer_cleanup_tmp() {
+  local _defer_path=$1
+  [ -z "$tmp_cleanup_defers" ] && exit_defer _tmp_cleanup_temp
 
-	_TMP_CLEANUP_DEFERS="${_TMP_CLEANUP_DEFERS:+$_TMP_CLEANUP_DEFERS }$1"
+  tmp_cleanup_defers="${tmp_cleanup_defers:+$tmp_cleanup_defers }$_defer_path"
 }
 
-_cleanup_temp() {
-	[ -z "$_TMP_CLEANUP_DEFERS" ] && return 1
+_tmp_cleanup_temp() {
+  [ -z "$tmp_cleanup_defers" ] && return 1
 
-	rm -rf $_TMP_CLEANUP_DEFERS
-	unset _TMP_CLEANUP_DEFERS
+  rm -rf $tmp_cleanup_defers
+  unset tmp_cleanup_defers
 }

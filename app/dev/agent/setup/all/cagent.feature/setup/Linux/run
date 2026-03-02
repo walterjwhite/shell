@@ -1,0 +1,6 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_download_fetch https://github.com/docker/cagent/releases/download/v1.27.1/cagent-linux-amd64
+_install_file_chmod=755 _download_install_file $APP_PLATFORM_BIN_PATH/cagent

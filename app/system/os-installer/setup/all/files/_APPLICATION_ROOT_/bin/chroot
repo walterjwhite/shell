@@ -1,0 +1,45 @@
+#!/bin/sh
+
+lib ./chroot
+lib io/write.sh
+lib ./run.sh
+
+cfg .
+cfg git
+
+log_warn "conf_console_log: $conf_log_console"
+_chroot_init
+_configure_configure
+
+[ -z "$_in_container" ] && _start_ssh
+
+_hostname_hostname
+_chroot_timezone
+
+_run_run _system_main
+
+_original_log_file=$log_logfile
+
+_patches_patches download file
+
+_system_patches
+
+_run_parallel
+
+_patches_patches package_uninstall package
+
+_run_parallel_wait
+
+_patches_patches group user
+_patches_patches app go npm rust pypi
+_patches_patches link
+_patches_patches chown chmod run crontab
+_patches_patches service fstab cups_printer
+_patches_patches sysctl post_run
+
+$_updatedb_cmd
+
+log_set_logfile $_original_log_file
+if [ -z "$_in_container" ]; then
+  _stop_ssh
+fi

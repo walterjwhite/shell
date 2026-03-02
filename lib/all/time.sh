@@ -1,93 +1,105 @@
 _time_seconds_to_human_readable() {
-	_HUMAN_READABLE_TIME=$(printf '%02d:%02d:%02d' $(($1 / 3600)) $(($1 % 3600 / 60)) $(($1 % 60)))
+  local _human_readable_time
+  _human_readable_time=$(printf '%02d:%02d:%02d' $(($1 / 3600)) $(($1 % 3600 / 60)) $(($1 % 60)))
 }
 
 _time_human_readable_to_seconds() {
-	case $1 in
-	*w)
-		_TIME_IN_SECONDS=${1%%w}
-		_TIME_IN_SECONDS=$(($_TIME_IN_SECONDS * 3600 * 8 * 5))
-		;;
-	*d)
-		_TIME_IN_SECONDS=${1%%d}
-		_TIME_IN_SECONDS=$(($_TIME_IN_SECONDS * 3600 * 8))
-		;;
-	*h)
-		_TIME_IN_SECONDS=${1%%h}
-		_TIME_IN_SECONDS=$(($_TIME_IN_SECONDS * 3600))
-		;;
-	*m)
-		_TIME_IN_SECONDS=${1%%m}
-		_TIME_IN_SECONDS=$(($_TIME_IN_SECONDS * 60))
-		;;
-	*s)
-		_TIME_IN_SECONDS=${1%%s}
-		;;
-	*)
-		_ERROR "$1 was not understood"
-		;;
-	esac
+  local _time_in_seconds
+  case $1 in
+  *w)
+    _time_in_seconds=${1%%w}
+    _time_in_seconds=$(($_time_in_seconds * 3600 * 8 * 5))
+    ;;
+  *d)
+    _time_in_seconds=${1%%d}
+    _time_in_seconds=$(($_time_in_seconds * 3600 * 8))
+    ;;
+  *h)
+    _time_in_seconds=${1%%h}
+    _time_in_seconds=$(($_time_in_seconds * 3600))
+    ;;
+  *m)
+    _time_in_seconds=${1%%m}
+    _time_in_seconds=$(($_time_in_seconds * 60))
+    ;;
+  *s)
+    _time_in_seconds=${1%%s}
+    ;;
+  *)
+    exit_with_error "$1 was not understood"
+    ;;
+  esac
 }
 
 _time_decade() {
-	local year=$(date +%Y)
+  local _year
+  local _end_year
+  local _event_decade_prefix
+  local _event_decade_start
+  local _event_decade_end
 
-	local _end_year=$(printf '%s' $year | head -c 4 | tail -c 1)
-	local _event_decade_prefix=$(printf '%s' "$year" | $_CONF_GNU_GREP -Po "[0-9]{3}")
+  _year=$(date +%Y)
 
-	if [ "$_end_year" -eq "0" ]; then
-		_event_decade_start=${_event_decade_prefix}
-		_event_decade_start=$(printf '%s\n' "$_event_decade_start-1" | bc)
+  _end_year=$(printf '%s' $_year | head -c 4 | tail -c 1)
+  _event_decade_prefix=$(printf '%s' "$_year" | $GNU_GREP -Po "[0-9]{3}")
 
-		_event_decade_end=${_event_decade_prefix}0
-	else
-		_event_decade_start=$_event_decade_prefix
-		_event_decade_end=$_event_decade_prefix
+  if [ "$_end_year" -eq "0" ]; then
+    _event_decade_start=${_event_decade_prefix}
+    _event_decade_start=$(printf '%s\n' "$_event_decade_start-1" | bc)
 
-		_event_decade_end=$(printf '%s\n' "$_event_decade_end+1" | bc)
-		_event_decade_end="${_event_decade_end}0"
-	fi
+    _event_decade_end=${_event_decade_prefix}0
+  else
+    _event_decade_start=$_event_decade_prefix
+    _event_decade_end=$_event_decade_prefix
 
-	_event_decade_start=${_event_decade_start}1
+    _event_decade_end=$(printf '%s\n' "$_event_decade_end+1" | bc)
+    _event_decade_end="${_event_decade_end}0"
+  fi
 
-	printf '%s-%s' "$_event_decade_start" "$_event_decade_end"
+  _event_decade_start=${_event_decade_start}1
+
+  printf '%s-%s' "$_event_decade_start" "$_event_decade_end"
 }
 
-_current_time() {
-	date +$_CONF_LOG_DATE_TIME_FORMAT
+_time_current_time() {
+  date +$conf_log_date_time_format
 }
 
-_current_time_unix_epoch() {
-	date +%s
+_time_current_time_unix_epoch() {
+  date +%s
 }
 
-_timeout() {
-	local timeout=$1
-	shift
+time_timeout() {
+  local _timeout=$1
+  shift
 
-	local message=$1
-	shift
+  local _message=$1
+  shift
 
-	local timeout_units='s'
-	if [ $(printf '%s' "$timeout" | grep -c '[smhd]{1}') -gt 0 ]; then
-		unset timeout_units
-	fi
+  local _timeout_units='s'
+  if [ $(printf '%s' "$_timeout" | grep -c '[smhd]{1}') -gt 0 ]; then
+    unset _timeout_units
+  fi
 
-	local timeout_level=_ERROR
-	[ $_WARN ] && timeout_level=_WARN
+  local _sudo
+  [ -n "$sudo_required" ] || [ -n "$sudo_user" ] && _sudo=sudo_run
 
-	local sudo
-	[ -n "$_SUDO_REQUIRED" ] || [ -n "$_SUDO_USER" ] && sudo=_sudo
+  $_sudo timeout $options $_timeout "$@" || {
+    local _error_status=$?
+    local _error_message="Other error"
+    if [ $_error_status -eq 124 ]; then
+      _error_message="Timed Out"
+    fi
 
-	$sudo timeout $_OPTIONS $timeout "$@" || {
-		local error_status=$?
-		local error_message="Other error"
-		if [ $error_status -eq 124 ]; then
-			error_message="Timed Out"
-		fi
+    [ $timeout_err_function ] && $timeout_err_function
 
-		[ $_TIMEOUT_ERR_FUNCTION ] && $_TIMEOUT_ERR_FUNCTION
-		$timeout_level "_timeout: $error_message: ${timeout}${timeout_units} - $message ($error_status): $sudo timeout $_OPTIONS $timeout $* ($USER)"
-		return $error_status
-	}
+    local timeout_error_msg="time_timeout: $_error_message: ${_timeout}${_timeout_units} - $_message ($_error_status): $_sudo timeout $options $_timeout $* ($USER)"
+
+    [ $warn_on_error ] && {
+      log_warn "$timeout_error_msg"
+      return $_error_status
+    }
+
+    exit_with_error "$timeout_error_msg"
+  }
 }

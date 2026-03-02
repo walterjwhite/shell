@@ -1,17 +1,17 @@
-_beep() {
-	[ -n "$SSH_CLIENT" ] && {
-		_WARN "remote connection detected, not beeping"
-		return 1
-	}
+_beep_beep() {
+  [ -n "$SSH_CLIENT" ] && {
+    log_warn "remote connection detected, not beeping"
+    return 1
+  }
 
-	say $_OPTN_INSTALL_APPLE_SAY_OPTIONS $_CONF_INSTALL_APPLE_BEEP_MESSAGE
+  say $optn_install_apple_say_options $conf_install_apple_beep_message
 }
 
-_sudo_precmd() {
-	[ -n "$SSH_CLIENT" ] && {
-		_WARN "remote connection detected, not beeping"
-		return 1
-	}
+sudo_precmd() {
+  [ -n "$SSH_CLIENT" ] && {
+    log_warn "remote connection detected, not beeping"
+    return 1
+  }
 
-	say $_OPTN_INSTALL_APPLE_SAY_OPTIONS $_CONF_INSTALL_APPLE_SUDO_PRECMD_MESSAGE
+  say $optn_install_apple_say_options $conf_install_apple_sudo_precmd_message
 }

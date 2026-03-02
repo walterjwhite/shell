@@ -1,0 +1,27 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_LATEX_FILENAME:Latex Filename"
+
+_tex_build() {
+  log_detail "building $_LATEX_FILENAME"
+
+  local git_rev=$(git log -n 1 --pretty=format:%h -- $_LATEX_FILENAME)
+
+  local base_filename="${_LATEX_FILENAME%.*}"
+  local output_filename=$base_filename-$git_rev.pdf
+
+  [ -e $output_filename ] && [ -z $force ] && {
+    log_warn "$output_filename already exists @ $git_rev and -force is unset"
+    return
+  }
+
+  rm -f $base_filename*.pdf
+  texi2pdf -q $_LATEX_FILENAME -o $output_filename || exit_with_error "error generating PDF"
+}
+
+_tex_cleanup() {
+  rm -f *.aux *.log *.out
+}
+
+exit_defer _tex_cleanup
+_tex_build

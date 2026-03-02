@@ -1,0 +1,17 @@
+#!/bin/sh
+
+lib .
+
+_activity_init $_OPTN_ACTIVITY_NAME
+
+_activity_filename=$_activity_directory/$(_activity_decade_path)
+mkdir -p $(dirname $_activity_filename)
+
+_stdin_read_if "Please enter tags separated by PIPE '|' or hit ENTER for none:" _ACTIVITY_TAGS
+
+$EDITOR $_activity_filename
+
+git_commit_message="add"
+[ $_ACTIVITY_TAGS ] && git_commit_message="$git_commit_message - $_ACTIVITY_TAGS"
+
+_data_app_save "$git_commit_message" $_activity_filename

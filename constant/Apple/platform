@@ -1,0 +1,10 @@
+readonly _TAR_ARGS=" -f - "
+readonly _SUDO_CMD="sudo"
+
+readonly GNU_SED=/opt/homebrew/bin/gsed
+readonly GNU_GREP=/opt/homebrew/opt/grep/libexec/gnubin/grep
+
+readonly PLATFORM_SYSTEM_ID_PATH=/usr/local/etc/walterjwhite/system
+readonly IO_STAT_ARGS='-f %OLp'
+readonly LIBRARY_PATH=/usr/local/walterjwhite
+readonly BIN_PATH=/usr/local/bin

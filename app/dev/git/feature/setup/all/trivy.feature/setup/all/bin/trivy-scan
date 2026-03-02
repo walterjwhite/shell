@@ -1,0 +1,17 @@
+#!/bin/sh
+
+lib feature:.
+lib git/project.directory.sh
+
+_project_directory_get_project_directory
+_git_relative_path
+
+cd $git_project_path
+
+_trivy_scan repo repo .
+
+_trivy_scan license -q fs --scanners license .
+
+_trivy_scan vuln -q fs --scanners vuln .
+
+

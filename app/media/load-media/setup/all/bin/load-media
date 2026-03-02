@@ -1,0 +1,16 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_load_media_source_directory:Source Directory"
+
+lib .
+lib io/file.sh
+
+file_require "$_load_media_source_directory" "Source Directory"
+
+sudo_ensure_root "$@"
+
+_load_media_is_mounted || _load_media_mount
+
+_load_media_prepare_target
+_load_media_copy
+

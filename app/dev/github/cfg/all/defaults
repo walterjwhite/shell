@@ -1,0 +1,4 @@
+: ${conf_github_target_branch:=main}
+
+: ${conf_github_date_tag_format:="+%Y/%m/%d-%H.%M.%S"}
+: ${conf_github_review:=1}

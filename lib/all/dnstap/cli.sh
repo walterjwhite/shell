@@ -1,28 +1,28 @@
 #!/bin/sh
 
-for _ARG in $@; do
-	case $_ARG in
-	-f=*)
-		_DNSTAP_FILE="-r ${_ARG#*=}"
-		shift
-		;;
-	-a)
-		_DNSTAP_FILE="$(find $_DNSTAP_LOG_PATH -type f | sed -e \"s/^/-r /g\" | tr '\n' ' ')"
-		;;
-	-c=*)
-		_append "\$3==\"${_ARG#*=}\""
-		;;
-	-h=*)
-		_append "substr(\$1,1,2) == \"${_ARG#*=}\""
-		;;
-	-m=*)
-		_append "substr(\$1,4,2) == \"${_ARG#*=}\""
-		;;
-	-s)
-		_INCLUDE_SELF=1
-		;;
-	*)
-		echo "$_ARG was not understood"
-		;;
-	esac
+for arg in $@; do
+  case $arg in
+  -f=*)
+    dnstap_file="-r ${arg#*=}"
+    shift
+    ;;
+  -a)
+    dnstap_file="$(find $dnstap_log_path -type f | sed -e \"s/^/-r /g\" | tr '\n' ' ')"
+    ;;
+  -c=*)
+    _write_append "\$3==\"${arg#*=}\""
+    ;;
+  -h=*)
+    _write_append "substr(\$1,1,2) == \"${arg#*=}\""
+    ;;
+  -m=*)
+    _write_append "substr(\$1,4,2) == \"${arg#*=}\""
+    ;;
+  -s)
+    dnstap_include_self=1
+    ;;
+  *)
+    echo "$arg was not understood"
+    ;;
+  esac
 done

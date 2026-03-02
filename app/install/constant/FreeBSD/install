@@ -1,0 +1,13 @@
+
+readonly _FREEBSD_PKG_OPTIONS="-yq"
+
+readonly PLATFORM_PACKAGES="git gsed gnugrep gtar gawk shfmt shuf sudo"
+
+readonly NPM_PACKAGE="npm"
+readonly RUST_PACKAGE="rust"
+
+readonly _PYPI_DISABLED=1
+
+readonly PYPI_PACKAGE="python39 py39-pip"
+
+readonly GO_PACKAGE="go"

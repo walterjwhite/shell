@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./setup/console.sh
+
+cfg feature:.
+
+shell_type=zsh shell_cmd=$conf_console_zsh_cmd _console_conf_all

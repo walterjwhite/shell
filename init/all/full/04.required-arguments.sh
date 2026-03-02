@@ -1,33 +1,27 @@
-_ACTUAL_ARGUMENT_COUNT=$#
-_DISCOVERED_ARGUMENT_COUNT=$(printf '%s' "$_REQUIRED_ARGUMENTS" | sed -e 's/$/\n/' | tr '|' '\n' | wc -l | awk {'print$1'})
+readonly ACTUAL_ARGUMENT_COUNT=$#
+readonly DISCOVERED_ARGUMENT_COUNT=$(printf '%s' "$REQUIRED_ARGUMENTS" | sed -e 's/$/\n/' | tr '|' '\n' | wc -l | awk {'print$1'})
 
-_required_arguments_argument_log_level=_DEBUG
+[ $ACTUAL_ARGUMENT_COUNT -lt $DISCOVERED_ARGUMENT_COUNT ] && log_warn "expecting $DISCOVERED_ARGUMENT_COUNT, received $# arguments"
 
-[ $_ACTUAL_ARGUMENT_COUNT -lt $_DISCOVERED_ARGUMENT_COUNT ] && _required_arguments_argument_log_level=_WARN
+arg_index=1
+while [ $arg_index -le $DISCOVERED_ARGUMENT_COUNT ]; do
+  _argument_name=$(printf '%s' "$REQUIRED_ARGUMENTS" | tr '|' '\n' | sed -n ${arg_index}p | sed -e 's/:.*$//')
+  _argument_message=$(printf '%s' "$REQUIRED_ARGUMENTS" | tr '|' '\n' | sed -n ${arg_index}p | sed -e 's/^.*://')
 
-$_required_arguments_argument_log_level "Expecting $_DISCOVERED_ARGUMENT_COUNT, received $# arguments"
+  if [ -z "$1" ]; then
+    log_warn "$arg_index:$_argument_message was not provided"
+  else
+    log_debug "$arg_index:$_argument_name=$1"
+    eval "$_argument_name=\"$1\""
+    shift
+  fi
 
-_ARG_INDEX=1
-_ARGUMENT_LOG_LEVEL=_INFO
-while [ $_ARG_INDEX -le $_DISCOVERED_ARGUMENT_COUNT ]; do
-	_ARGUMENT_NAME=$(printf '%s' "$_REQUIRED_ARGUMENTS" | tr '|' '\n' | sed -n ${_ARG_INDEX}p | sed -e 's/:.*$//')
-	_ARGUMENT_MESSAGE=$(printf '%s' "$_REQUIRED_ARGUMENTS" | tr '|' '\n' | sed -n ${_ARG_INDEX}p | sed -e 's/^.*://')
-
-	if [ -z "$1" ]; then
-		$_required_arguments_argument_log_level "$_ARG_INDEX:$_ARGUMENT_MESSAGE was not provided"
-	else
-		$_required_arguments_argument_log_level "$_ARG_INDEX:$_ARGUMENT_NAME=$1"
-		export $_ARGUMENT_NAME="$1"
-		shift
-	fi
-
-	_ARG_INDEX=$(($_ARG_INDEX + 1))
+  arg_index=$(($arg_index + 1))
 done
 
-[ $_ACTUAL_ARGUMENT_COUNT -lt $_DISCOVERED_ARGUMENT_COUNT ] && _ERROR "Missing arguments"
-unset _ARG_INDEX _ARGUMENT_NAME _ARGUMENT_MESSAGE _required_arguments_argument_log_level
+[ $ACTUAL_ARGUMENT_COUNT -lt $DISCOVERED_ARGUMENT_COUNT ] && exit_with_error "missing arguments"
+unset arg_index _argument_name _argument_message
 
-_DISCOVERED_REQUIRED_ARGUMENTS="$_REQUIRED_ARGUMENTS"
-unset _REQUIRED_ARGUMENTS
+readonly DISCOVERED_REQUIRED_ARGUMENTS="$REQUIRED_ARGUMENTS"
 
-_DEBUG "REMAINING ARGS: $*"
+log_debug "remaining args: $*"

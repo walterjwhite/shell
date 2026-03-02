@@ -1,11 +1,11 @@
-: ${_CONF_LOG_BEEP_TIMEOUT:=5}
+: ${conf_log_beep_timeout:=5}
 
-: ${_CONF_LOG_BEEP_ERR:='-f 1000 -l 1000'}
-: ${_CONF_LOG_BEEP_ALRT:='-f 1000 -l 100 -n -f 1000 -l 100'}
-: ${_CONF_LOG_BEEP_SCS:='-f 1600 -l 100'}
-: ${_CONF_LOG_BEEP_WRN:='-f 1500 -l 100 -n -f 1000'}
-: ${_CONF_LOG_BEEP_INFO:=''}
-: ${_CONF_LOG_BEEP_DETAIL:=''}
-: ${_CONF_LOG_BEEP_DEBUG:=''}
-: ${_CONF_LOG_BEEP_STDIN:='-f 1000 -l 100 -n -f 1400'}
-: ${_CONF_LOG_SUDO_BEEP_TONE:='-f 1000 -l 100 -n -f 1400 -l 50 -n -f 1200'}
+: ${conf_log_beep_ERR:='-f 1000 -l 1000'}
+: ${conf_log_beep_ALRT:='-f 1000 -l 100 -n -f 1000 -l 100'}
+: ${conf_log_beep_SCS:='-f 1600 -l 100'}
+: ${conf_log_beep_WRN:='-f 1500 -l 100 -n -f 1000'}
+: ${conf_log_beep_info:=''}
+: ${conf_log_beep_detail:=''}
+: ${conf_log_beep_debug:=''}
+: ${conf_log_beep_STDIN:='-f 1000 -l 100 -n -f 1400'}
+: ${conf_log_sudo_beep_tone:='-f 1000 -l 100 -n -f 1400 -l 50 -n -f 1200'}

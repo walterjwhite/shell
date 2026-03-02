@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_MEDIA_DIRECTORY:Media Directory"
+
+for _MEDIA_SUB_DIRECTORY in $(find $_MEDIA_DIRECTORY -type d | sort -V); do
+  _MEDIA_COUNT=$(find $d -maxdepth 1 \( -name '*.jpg' -or -name '*.mp4' \) | wc -l)
+
+  [ $_MEDIA_COUNT -gt $conf_media_share_max_files_per_directory ] && {
+    log_warn "$_MEDIA_SUB_DIRECTORY - $_MEDIA_COUNT > $conf_media_share_max_files_per_directory"
+  }
+done

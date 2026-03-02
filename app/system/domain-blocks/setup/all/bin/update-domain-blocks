@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib ./blocks.sh
+lib parallel.sh
+
+cfg .
+
+sudo_ensure_root
+
+_parallel_parallel $APP_LIBRARY_PATH/bin $conf_domain_blocks_parallel_workers
+_domain_blocks_aggregate $conf_domain_blocks_blocklist

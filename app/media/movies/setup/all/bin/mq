@@ -1,0 +1,34 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_MOVIE_ID:Movie ID"
+
+lib .
+lib io/file.sh
+
+_is_already_queued() {
+  find queued -type f -exec $GNU_GREP -Pc "^${_MOVIE_ID}$" {} + 2 >/dev/null
+}
+
+_download_movie_trailers() {
+  _MOVIE_DATA_PATH=$(find . -type d -name "$_MOVIE_ID" -print -quit)
+  file_require "$_MOVIE_DATA_PATH" _MOVIE_DATA_PATH
+
+  while read _MOVIE_TRAILER_URL; do
+    _download_movie_trailer
+  done <$_MOVIE_DATA_PATH/trailers
+
+  local movie_queued_datestamp=queued/$(date +%Y/%m/%d/%H.%M.%S)
+  mkdir -p $(dirname $movie_queued_datestamp)
+  printf '%s\n' "$_MOVIE_ID" >$movie_queued_datestamp
+
+}
+
+_download_movie_trailer() {
+  vq -url="$_MOVIE_TRAILER_URL" || vq -force -url="$_MOVIE_TRAILER_URL"
+}
+
+_data_app_init
+
+_is_already_queued && exit_with_error "$_MOVIE_ID was already queued"
+
+_download_movie_trailers

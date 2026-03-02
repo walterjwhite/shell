@@ -1,0 +1,19 @@
+#!/bin/sh
+
+lib .
+lib io/file.sh
+
+cfg .
+
+if [ $# -gt 0 ]; then
+  weather_location=$1
+  shift
+else
+  weather_location=default
+fi
+
+_weather_is_expired && _weather_fetch
+
+file_require $weather_report_file
+
+cat $weather_report_file

@@ -1,3 +1,3 @@
 _io() {
-	_ERROR "Unsupported"
+  exit_with_error "unsupported"
 }

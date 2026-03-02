@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cfg install
+
+constant ./install
+
+_app_update_update_all() {
+  for _APP_NAME in "$@"; do
+    app-install $_APP_NAME || log_warn "$_APP_NAME - installation failed"
+  done
+}
+
+if [ $# -eq 0 ]; then
+  _app_update_update_all install $(find $LIBRARY_PATH -maxdepth 2 -type f -name .metadata ! -path '*/install/*' | sed -e 's/\/.metadata$//' -e 's/^.*\///' | sort -u)
+else
+  _app_update_update_all "$@"
+fi

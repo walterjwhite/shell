@@ -1,0 +1,74 @@
+#!/bin/sh
+
+lib ./bootstrap
+lib ./run.sh
+
+cfg .
+cfg git
+
+sudo_ensure_root "$@"
+
+log_info "installing $APP_PLATFORM_PLATFORM $(uname -r) [$APPLICATION_VERSION]"
+
+[ -n "$clean" ] && {
+  log_warn "cleaning up prior installation history"
+  rm -rf /tmp/.os
+
+  find $(dirname $log_logfile) -type f ! -name $(basename $log_logfile) -exec rm -rf {} +
+}
+
+_select_disk
+_validate_disk
+_setup_disks_efi
+
+_cleanup_prior_installation
+
+_bootstrap_validate
+_init_net
+
+_run_init
+_run_run _init_disk_layout
+_init_disk_encryption_get_device
+_run_run _init_disk_encryption
+_open_disk_encryption && exit_defer _close_encrypted_disks
+
+_run_run _init_disk_zfs
+_zpool_import && exit_defer _zpool_export
+_zfs_mount
+
+_bootstrap_mount_efi
+
+_setup_git
+_validate_conf
+
+_run_run _init_chroot
+_run_run _init_disk_backup
+
+_init_chroot_net
+_init_chroot_other
+
+_init_chroot_app_conf
+
+_init_chroot_ssh
+
+_run_run _prepare_chroot
+
+
+_run_run _write_system
+_run_run _bootstrap_write_fstab
+
+_bootstrap_mounts && exit_defer _cleanup_mounts
+_mount_sshfs_cache
+exit_defer _cleanup_processes
+
+_environment_export_matching_vars os_installer
+
+_os_installer_chroot=$conf_os_installer_mountpoint \
+  _os_installer_zfs_pool_name=$_os_installer_zfs_pool_name \
+  _logging_context=$_logging_context \
+  _add_log_context=chroot-$_os_installer_zfs_pool_name \
+  conf_log_console=$conf_log_console \
+  chroot $conf_os_installer_mountpoint $APP_LIBRARY_PATH/bin/chroot "$@" 2>&1 || exit_with_error "exit_with_error during chroot"
+
+_post_install
+_run_run _boot_loader

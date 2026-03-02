@@ -1,1 +1,1 @@
-: ${_CONF_CRON_PROVIDER:=DEFAULT}
+: ${conf_cron_provider:=default}

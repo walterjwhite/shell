@@ -1,0 +1,18 @@
+lib feature:.
+
+cfg .
+cfg context
+cfg feature:
+cfg logging
+cfg platform
+
+constant platform
+constant platform.resolved
+
+export HISTSIZE=$conf_console_zsh_session_history_size
+export SAVEHIST=$conf_console_zsh_disk_history_size
+
+
+autoload -U add-zsh-hook
+add-zsh-hook precmd _console_zsh_hook_after
+add-zsh-hook preexec _console_zsh_hook_before

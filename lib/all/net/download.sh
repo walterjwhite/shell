@@ -1,47 +1,50 @@
 
-_download() {
-	mkdir -p $_CONF_CACHE_PATH
+download_file=""
 
-	local _cached_filename
-	if [ $# -gt 1 ]; then
-		_cached_filename="$2"
-	else
-		_cached_filename=$(basename $1 | sed -e 's/?.*$//')
-	fi
+_download_fetch() {
+  mkdir -p $APP_PLATFORM_CACHE_PATH
 
-	_DOWNLOADED_FILE=$_CONF_CACHE_PATH/$_cached_filename
-	[ -z "$_NO_CACHE" ] && {
-		[ -e $_DOWNLOADED_FILE ] && {
-			_DETAIL "$1 already downloaded to: $_DOWNLOADED_FILE"
-			return
-		}
-	}
+  local _cached_filename
+  if [ $# -gt 1 ]; then
+    _cached_filename="$2"
+  else
+    _cached_filename=$(basename $1 | sed -e 's/?.*$//')
+  fi
 
-	if [ -z "$_DOWNLOAD_DISABLED" ]; then
-		_INFO "Downloading $1 -> $_DOWNLOADED_FILE"
-		curl $_CURL_OPTIONS -o $_DOWNLOADED_FILE -s -L "$1"
-	else
-		_continue_if "Please manually download: $1 and place it in $_DOWNLOADED_FILE" "Y/n"
-	fi
+  download_file=$APP_PLATFORM_CACHE_PATH/$_cached_filename
+  [ -z "$no_cache" ] && {
+    [ -e $download_file ] && {
+      log_detail "$1 already downloaded to: $download_file"
+      return
+    }
+  }
+
+  if [ -z "$download_disabled" ]; then
+    log_info "downloading $1 -> $download_file"
+    curl $curl_options -o $download_file -s -L "$1"
+  else
+    _stdin_continue_if "Please manually download: $1 and place it in $download_file" "Y/n"
+  fi
 }
 
 _download_install_file() {
-	_WARN_ON_ERROR=1 _require "$1" "1 (_download_install_file) target filename" || return 1
+  warn_on_error=1 validation_require "$1" "1 (_download_install_file) target filename" || return 1
 
-	[ -z $_INSTALL_FILE_CHMOD ] && _INSTALL_FILE_CHMOD=444
+  : ${_install_file_chmod:=444}
 
-	_INFO "Installing $_DOWNLOADED_FILE -> $1"
-	_sudo mkdir -p $(dirname $1)
-	_sudo cp $_DOWNLOADED_FILE $1
-	_sudo chmod $_INSTALL_FILE_CHMOD $1
+  log_info "installing $download_file -> $1"
+  mkdir -p $(dirname $1)
+  cp $download_file $1
+  chmod $_install_file_chmod $1
 
-	unset _DOWNLOADED_FILE _INSTALL_FILE_CHMOD
+  unset download_file
 
-	[ -e $1 ] || _WARN "failed to install file to: $1"
+  [ -e $1 ] || log_warn "failed to install file to: $1"
 }
 
-_verify() {
-	[ -z "$_HASH_ALGORITHM" ] && _HASH_ALGORITHM=512
+_download_verify() {
+  local _hash_algorithm
+  _hash_algorithm=512
 
-	shasum -a $_HASH_ALGORITHM -c $1 >/dev/null 2>&1
+  shasum -a $_hash_algorithm -c $1 >/dev/null 2>&1
 }

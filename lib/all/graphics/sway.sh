@@ -1,6 +1,6 @@
 _sway_init() {
-	export YDOTOOL_SOCKET=/tmp/.ydotool_socket
+  export YDOTOOL_SOCKET=/tmp/.ydotool_socket
 
-	SCREEN_WIDTH=$(swaymsg -t get_outputs | jq '.[0].current_mode.width')
-	SCREEN_HEIGHT=$(swaymsg -t get_outputs | jq '.[0].current_mode.height')
+  local sway_screen_width=$(swaymsg -t get_outputs | jq '.[0].current_mode.width')
+  local sway_screen_height=$(swaymsg -t get_outputs | jq '.[0].current_mode.height')
 }

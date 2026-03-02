@@ -1,0 +1,16 @@
+#!/bin/sh
+
+cfg feature:.
+
+VENV_PATH=$(dirname $conf_dev_azure_venv)
+
+sudo_run mkdir -p $VENV_PATH
+sudo_run chown -R $USER: $VENV_PATH
+
+python -m venv $conf_dev_azure_venv
+. $conf_dev_azure_venv/bin/activate
+pip install $conf_dev_azure_python_artifact
+
+deactivate
+
+sudo_run chown -R root: $conf_dev_azure_venv

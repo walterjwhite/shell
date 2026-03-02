@@ -1,2 +1,2 @@
-: ${_CONF_INSTALL_STAT_ARGUMENTS:='-c %a'}
-: ${_CONF_INSTALL_SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}
+readonly  conf_install_stat_arguments='-c %a'
+readonly conf_install_software_center_executable="C:/Windows/CCM/ClientUX/scclient.exe"

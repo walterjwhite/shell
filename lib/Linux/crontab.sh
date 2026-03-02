@@ -1,18 +1,18 @@
-_CRONTAB_DCRON_CLEAR() {
-	case $1 in
-	root)
-		_SUDO_USER=$1 _sudo crontab /etc/crontab
-		;;
-	*)
-		_SUDO_USER=$1 _sudo crontab -d
-		;;
-	esac
+crontab_dcron_clear() {
+  case $1 in
+  root)
+    sudo_user=$1 sudo_run crontab /etc/crontab
+    ;;
+  *)
+    sudo_user=$1 sudo_run crontab -d
+    ;;
+  esac
 }
 
-_CRONTAB_DCRON_GET() {
-	_SUDO_USER=$1 _sudo crontab -l | _SUDO_USER=$1 _sudo tee $2 >/dev/null 2>&1
+crontab_dcron_get() {
+  sudo_user=$1 sudo_run crontab -l | sudo_user=$1 sudo_run tee $2 >/dev/null 2>&1
 }
 
-_CRONTAB_DCRON_WRITE() {
-	_SUDO_USER=$1 _sudo crontab $2
+crontab_dcron_write() {
+  sudo_user=$1 sudo_run crontab $2
 }

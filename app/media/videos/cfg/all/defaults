@@ -1,0 +1,3 @@
+: ${conf_videos_audio_format:=aac}
+
+: ${conf_videos_youtube_download_cmd:=yt-dlp}

@@ -1,0 +1,2 @@
+_LPR=/usr/local/bin/lpr
+_CUPS_PATH=/usr/local/etc/cups

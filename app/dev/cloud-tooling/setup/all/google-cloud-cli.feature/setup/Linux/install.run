@@ -1,0 +1,33 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+_gcloud_link_cmd() {
+  ln -sf $google_cloud_cli_installation_path/bin/$1 $APP_PLATFORM_BIN_PATH/$1
+}
+
+_gcloud_link_cmds() {
+    local gcloud_cmd
+    for gcloud_cmd in b docker-credential-gcloud gsutil gcloud-crc32c gcloud; do
+        _gcloud_link_cmd $gcloud_cmd
+    done
+}
+
+_gcloud_install() {
+    _download_fetch https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-$APP_PLATFORM_ARCHITECTURE.tar.gz
+    clean=1 _extract_extract $download_file $google_cloud_cli_installation_path
+
+    mv $google_cloud_cli_installation_path/google-cloud-sdk/* \
+        $google_cloud_cli_installation_path/google-cloud-sdk/.install $google_cloud_cli_installation_path
+
+    _gcloud_link_cmds
+}
+
+google_cloud_cli_installation_path=/opt/google/cloud/cli
+
+if [ ! -e $APP_PLATFORM_BIN_PATH/gcloud ]; then
+    _gcloud_install
+else
+    log_warn 'gcloud cli appears to already be installed'
+fi

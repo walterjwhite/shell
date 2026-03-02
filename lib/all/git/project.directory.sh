@@ -1,15 +1,14 @@
 lib git/include.sh
-lib io/path.sh
 
-_get_project_directory() {
-	_PROJECT_PATH=$(git rev-parse --show-toplevel 2>/dev/null)
-	local status=$?
-	if [ $status -gt 0 ]; then
-		unset _PROJECT_PATH
-		return $status
-	fi
+_project_directory_get_project_directory() {
+  git_project_path=$(git rev-parse --show-toplevel 2>/dev/null)
+  local _status=$?
+  if [ $_status -gt 0 ]; then
+    unset git_project_path
+    return $_status
+  fi
 
-	_PROJECT=$(basename $_PROJECT_PATH)
+  git_project_name=$(basename $git_project_path)
 
-	return 0
+  return 0
 }
