@@ -1,9 +1,0 @@
-#!/bin/sh
-
-lib net/download.sh
-cfg feature:.
-
-_INFO "Installing timo-a-lomboker Java JAR"
-_download https://github.com/timo-a/lomboker/releases/download/v0.0.0/$_CONF_DEV_JAVA_TIMO_A_LOMBOKER_JAR_NAME
-
-_download_install_file $_CONF_DEV_JAVA_TIMO_A_LOMBOKER_JAR

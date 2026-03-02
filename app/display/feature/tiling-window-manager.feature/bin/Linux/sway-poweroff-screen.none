@@ -1,4 +1,0 @@
-#!/bin/sh
-
-swaymsg "output * power off"
-/usr/bin/sway-lock-screen

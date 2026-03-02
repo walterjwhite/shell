@@ -1,4 +1,0 @@
-#!/bin/sh
-
-grep -l @Data $@ |
-	xargs -P $_CONF_DEV_FORMAT_PARALLEL -I _F $_CONF_APPLICATION_LIBRARY_PATH/action/format/java/bin/lombok/.lombok-data-do-not-use-getter _F

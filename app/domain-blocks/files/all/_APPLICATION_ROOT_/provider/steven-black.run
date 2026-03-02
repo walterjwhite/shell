@@ -1,8 +1,0 @@
-#!/bin/sh
-lib ./blocks.sh
-
-_domain_blocks_filter() {
-	cut -f2 -d ' '
-}
-
-_domain_blocks_install https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts

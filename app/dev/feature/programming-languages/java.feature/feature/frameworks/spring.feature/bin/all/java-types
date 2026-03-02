@@ -1,4 +1,0 @@
-#!/bin/sh
-
-: ${_DEV_TYPE:=enum}
-find . -type f -name '*.java' -exec $_CONF_GNU_GREP -Poh "[\s]+${_DEV_TYPE}[\s]+[\w]{3,}" {} + | awk {'print$2'} | sort -u

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-device-activity |
-	head -2

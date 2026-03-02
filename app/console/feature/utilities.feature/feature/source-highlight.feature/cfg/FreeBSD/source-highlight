@@ -1,1 +1,0 @@
-: ${_CONF_CONSOLE_SOURCE_HIGHTLIGHT:=/usr/local/bin/src-hilite-lesspipe.sh}

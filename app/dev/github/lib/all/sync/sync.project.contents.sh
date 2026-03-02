@@ -6,7 +6,7 @@ _github_sync() {
 
   setup_github_clone_project_name=$(basename $PWD)
 
- _git_remove_contents
+  _github_remove_contents
   _github_copy_source
 
  _git_remove_app_framework

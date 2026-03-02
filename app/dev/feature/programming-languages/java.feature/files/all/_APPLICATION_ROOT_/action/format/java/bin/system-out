@@ -1,6 +1,0 @@
-#!/bin/sh
-
-$_CONF_GNU_SED -i '/System.out.println/d' $@
-$_CONF_GNU_SED -i '/System.out.print/d' $@
-$_CONF_GNU_SED -i '/System.err.println/d' $@
-$_CONF_GNU_SED -i '/System.err.print/d' $@

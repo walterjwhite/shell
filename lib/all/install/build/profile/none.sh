@@ -1,3 +1,0 @@
-_INJECT_NONE() {
-	cp -p $1 $APP_BUILD_OUTPUT_FILE
-}

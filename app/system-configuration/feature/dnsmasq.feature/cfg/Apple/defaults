@@ -1,2 +1,0 @@
-: ${_SYSTEM_CONFIGURATION_DNSMASQ_CONF:=/usr/local/etc/dnsmasq.conf}
-: ${_SYSTEM_CONFIGURATION_DNSMASQ_TRUST_ANCHOR:=/usr/share/dnsmasq/trust-anchors.conf}

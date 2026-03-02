@@ -1,8 +1,0 @@
-#!/bin/sh
-
-export XDG_RUNTIME_DIR=/run/user/$UID
-mkdir -p $XDG_RUNTIME_DIR
-
-physlock -Lms
-dbus-run-session sway &
-

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-lib io/link.sh
-
-if [ -e /Applications/Conduktor.app/Contents/MacOS/Conduktor ]; then
-    _link /Applications/Conduktor.app/Contents/MacOS/Conduktor $_INSTALL_BIN_PATH/conduktor
-else
-    _WARN '/Applications/Conduktor.app/Contents/MacOS/Conduktor does not exist?'
-fi

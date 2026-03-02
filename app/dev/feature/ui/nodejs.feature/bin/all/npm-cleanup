@@ -1,7 +1,0 @@
-#!/bin/sh
-
-_WARN "Clearing out node_modules"
-find . -type d -iname 'node_modules' -exec rm -rf {} +
-
-_WARN "Removing package-lock.json"
-find . -type f -iname 'package-lock.json' -exec rm -f {} +

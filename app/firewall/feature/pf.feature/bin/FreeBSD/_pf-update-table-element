@@ -1,8 +1,0 @@
-#!/bin/sh
-
-_REQUIRED_ARGUMENTS="PF_TABLE_NAME:pf table name|PF_TABLE_ACTION:pf table action(add/del)"
-
-for _DEVICE in "$@"; do
-	_pfctl -t $PF_TABLE_NAME -T $PF_TABLE_ACTION $_DEVICE
-	_pfctl -k $_DEVICE
-done

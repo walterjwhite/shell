@@ -1,3 +1,0 @@
-#!/bin/sh
-
-java -jar ${_CONF_APPLICATION_LIBRARY_PATH}/sikulix-ide.jar

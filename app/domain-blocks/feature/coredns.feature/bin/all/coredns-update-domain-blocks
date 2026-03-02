@@ -1,5 +1,0 @@
-#!/bin/sh
-
-
-sed -e "s/^/0.0.0.0 /" $_CONF_DOMAIN_BLOCKS_AGGREGATE |
-	_sudo tee $_CONF_DOMAIN_BLOCKS_COREDNS_BLOCKS >/dev/null

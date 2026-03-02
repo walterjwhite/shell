@@ -1,3 +1,0 @@
-_dmesg() {
-	dmesg -Tc
-}

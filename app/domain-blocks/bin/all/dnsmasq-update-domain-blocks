@@ -1,6 +1,0 @@
-#!/bin/sh
-
-
-
-sed -e "s/^/address=\//" -e 's/#.*$//' -e 's/$/\//' $_CONF_DOMAIN_BLOCKS_AGGREGATE |
-	_sudo tee $_CONF_DOMAIN_BLOCKS_DNSMASQ_BLOCKS >/dev/null

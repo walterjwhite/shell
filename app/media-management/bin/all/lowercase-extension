@@ -1,8 +1,0 @@
-#!/bin/sh
-
-out=$(printf '%s' "$1" | sed -e 's/\.JPG$/\.jpg/' -e 's/\.CR2$/\.cr2/' -e 's/\.XCF$/\.xcf/')
-
-_INFO "$1 -> $out"
-
-mkdir -p $(dirname $out)
-mv "$1" "$out"

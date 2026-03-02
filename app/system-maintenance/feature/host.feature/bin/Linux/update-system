@@ -1,7 +1,0 @@
-#!/bin/sh
-
-lib alert.sh
-lib install/install
-lib system-alert.sh
-
-_PACKAGE_UPDATE

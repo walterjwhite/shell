@@ -1,6 +1,0 @@
-#!/bin/sh
-
-lib net/download.sh
-
-_download "https://raw.githubusercontent.com/Jehops/zap/refs/heads/master/zap"
-_INSTALL_FILE_CHMOD=755 _download_install_file /usr/local/bin/zap

@@ -1,5 +1,0 @@
-#!/bin/sh
-
-lib sudo.sh
-
-_sudo service minidlna onestop

@@ -1,2 +1,0 @@
-request: search 'git log'
-validator: check stdout and stderr

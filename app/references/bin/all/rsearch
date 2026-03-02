@@ -1,9 +1,0 @@
-#!/bin/sh
-
-lib git/data.app.sh
-
-cfg git
-
-_git_init
-
-search "$@"

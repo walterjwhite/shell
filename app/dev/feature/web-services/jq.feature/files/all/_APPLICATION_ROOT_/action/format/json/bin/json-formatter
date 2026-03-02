@@ -1,8 +1,0 @@
-#!/bin/sh
-
-_TEMP_FILE=$(_mktemp)
-
-cat $1 | jq -MS >$_TEMP_FILE
-mv $_TEMP_FILE $1
-
-unset _TEMP_FILE

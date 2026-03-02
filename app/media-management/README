@@ -1,2 +1,0 @@
-recursively find broken symlinks in the current working directory
-symlinks -r .

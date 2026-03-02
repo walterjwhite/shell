@@ -1,8 +1,0 @@
-#!/bin/sh
-
-lib ./bootstrap
-
-_select_disk
-_init_disk_encryption_get_device
-
-_cleanup_prior_installation

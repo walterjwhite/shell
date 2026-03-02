@@ -1,1 +1,0 @@
-: ${_CONF_DEV_VSCODE_IDE:=/Applications/Visual\ Studio\ Code.app/Contents/MacOS/Electron}

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-_REQUIRED_ARGUMENTS="EXECUTION_TIME:Time, Date/Time when cmd or file is executed|EXECUTION_CMD:CMD and any arguments to execute"
-
-lib ./delay.sh
-
-_time_delay
-
-$EXECUTION_CMD

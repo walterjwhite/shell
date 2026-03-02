@@ -1,3 +1,0 @@
-_post_install() {
-	:
-}

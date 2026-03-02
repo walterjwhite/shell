@@ -1,7 +1,0 @@
-#!/bin/sh
-
-lib lock.sh
-
-cfg feature:.
-
-_lock $_CONF_PF_LOCK_TIMEOUT $_CONF_PF_LOCK_FILE pfctl "$@"

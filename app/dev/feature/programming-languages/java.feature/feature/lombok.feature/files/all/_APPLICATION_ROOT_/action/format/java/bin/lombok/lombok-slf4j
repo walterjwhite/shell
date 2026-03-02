@@ -1,3 +1,0 @@
-#!/bin/sh
-
-grep -l 'LoggerFactory.getLogger' "$@" | xargs -P$_CONF_DEV_FORMAT_PARALLEL -I _F $_CONF_APPLICATION_LIBRARY_PATH/action/format/java/bin/lombok/.lombok-slf4j _F

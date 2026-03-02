@@ -1,7 +1,0 @@
-#!/bin/sh
-
-_REQUIRED_ARGUMENTS="APPLICATION_ID:Application ID"
-
-: ${APPLICATION_ICON:=mobileIcon.png}
-
-fyne package -os android -appID $APPLICATION_ID -icon $APPLICATION_ICON

@@ -1,9 +1,0 @@
-_PLATFORM="Apple"
-
-_TAR_ARGS=" -f - "
-_SUDO_CMD="sudo"
-
-_ARCHITECTURE=$(uname -m)
-
-: ${_CONF_GNU_SED:=/opt/homebrew/bin/gsed}
-: ${_CONF_GNU_GREP:=/opt/homebrew/opt/grep/libexec/gnubin/grep}

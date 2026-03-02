@@ -1,7 +1,0 @@
-#!/bin/sh
-
-lib io/file.sh
-
-_require_file "$_CONF_FIREWALL_TABLES_PATH"
-
-find $_CONF_FIREWALL_TABLES_PATH -type f ! -name '*.data' | xargs -P$_CONF_FIREWALL_PARALLEL_WORKERS -I _RULE firewall-update-table _RULE

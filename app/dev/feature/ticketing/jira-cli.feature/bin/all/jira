@@ -1,7 +1,0 @@
-#!/bin/sh
-
-_REQUIRED_ARGUMENTS="_JIRA_ACTION:Jira Action"
-
-lib feature/ticketing/jira-cli.feature/.
-
-jira_${_JIRA_ACTION} "$@"

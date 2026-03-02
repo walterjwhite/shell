@@ -1,8 +1,0 @@
-#!/bin/sh
-
-lib ./videos.sh
-
-cfg git
-
-_git_init
-search $@

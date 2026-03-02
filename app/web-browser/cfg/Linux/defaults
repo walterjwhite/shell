@@ -1,1 +1,0 @@
-: ${_CONF_WEB_BROWSER_CHROMIUM_CMD:=chromium}

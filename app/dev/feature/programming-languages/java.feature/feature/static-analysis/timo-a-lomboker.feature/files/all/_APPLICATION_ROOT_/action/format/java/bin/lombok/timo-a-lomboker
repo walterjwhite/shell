@@ -1,5 +1,0 @@
-#!/bin/sh
-
-
-printf '%s\n' "$@" |
-	xargs -P$_CONF_DEV_FORMAT_PARALLEL $_CONF_APPLICATION_LIBRARY_PATH/action/format/java/bin/lombok/.timo-a-lomboker

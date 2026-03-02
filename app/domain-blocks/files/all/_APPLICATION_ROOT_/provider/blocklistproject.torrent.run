@@ -1,4 +1,0 @@
-#!/bin/sh
-lib ./blocks.sh
-
-_domain_blocks_install https://blocklistproject.github.io/Lists/alt-version/torrent-nl.txt

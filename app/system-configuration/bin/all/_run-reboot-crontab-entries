@@ -1,9 +1,0 @@
-#!/bin/sh
-
-oIFS="$IFS"
-IFS=$'\n'
-for CRONTAB_LINE in $(crontab -l | grep '^@reboot' | sed -e 's/^@reboot //'); do
-	sh -c $CRONTAB_LINE
-done
-
-IFS=$oIFS

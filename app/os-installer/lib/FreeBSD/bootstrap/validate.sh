@@ -1,3 +1,0 @@
-_validate_conf() {
-	:
-}

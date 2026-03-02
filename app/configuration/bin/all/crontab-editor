@@ -1,9 +1,0 @@
-#!/bin/sh
-
-lib io/file.sh
-
-_require "$CRONTAB" CRONTAB
-_require_file "$CRONTAB" CRONTAB
-
-cp $CRONTAB $1
-

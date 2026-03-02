@@ -1,1 +1,0 @@
-_EXEC_CMD="$_CONF_GNU_SED -i /printStackTrace/d {} +"

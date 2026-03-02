@@ -1,6 +1,0 @@
-#!/bin/sh
-
-_REQUIRED_ARGUMENTS="_GIT_DATE:Date to use"
-
-
-git commit --amend --no-edit --date="$_GIT_DATE"

@@ -1,5 +1,0 @@
-#!/bin/sh
-
-lib ./setup/console.sh
-
-_SHELL=zsh _HOME=$HOME _USER=$USER _console_conf

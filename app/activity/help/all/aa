@@ -1,4 +1,0 @@
-record activity
-    Enter tags separated by '|'
-
-    Enter notes, end input with an empty line
