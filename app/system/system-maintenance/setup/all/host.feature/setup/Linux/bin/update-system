@@ -5,6 +5,10 @@ lib install
 lib io/write.sh
 lib system-alert.sh
 
-_PACKAGE_UPDATE
+package_update
 
 app-update
+
+root_zfs_volume=$(zfs get -H name / | awk {'print$1'} | cut -f1 -d/ | head -1)
+
+zap snap 30d ${root_zfs_volume}

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+cfg .
+
+
+sudo_ensure_not_root
+
+git rev-parse --git-dir >/dev/null 2>&1 || exit_with_error "not in a git repository"
+
+log_info "moving *.md files to doc.secret/"
+git ls-files '*.md' '*.txt' | while IFS= read -r md_file; do
+  [ ! -f "$md_file" ] && continue
+
+  case "$md_file" in
+  *.secret*)
+    log_debug "md file is already in a directory"
+    continue
+    ;;
+  esac
+
+  log_detail "moving: $md_file"
+  target_dir="$(dirname "$md_file")/doc.secret"
+  mkdir -p "$target_dir"
+  git mv "$md_file" "$target_dir"
+done
+
+log_info "removing binaries from git (excluding *.secret* and *.png)"
+git ls-files | while IFS= read -r file; do
+  [ ! -f "$file" ] && continue
+
+  [ ! -s "$file" ] && continue
+
+  case "$file" in
+  *.secret* | *.png | *.svg | *.ico)
+    log_debug "ignoring $file as it is either a secret or png"
+    continue
+    ;;
+  esac
+
+  if file --mime "$file" | grep -q 'charset=binary'; then
+    log_detail "removing binary: $file"
+    git rm -f "$file"
+  fi
+done
+
+log_info "git repository cleaned"
+gss

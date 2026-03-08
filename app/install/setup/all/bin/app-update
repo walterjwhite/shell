@@ -1,8 +1,8 @@
 #!/bin/sh
 
-cfg install
-
 constant ./install
+
+cfg install
 
 _app_update_update_all() {
   for _APP_NAME in "$@"; do

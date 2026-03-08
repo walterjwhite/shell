@@ -4,6 +4,8 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 : ${_SEARCH_CATEGORIES:="downloaded exit_with_error queued watched"}
 _data_app_init
 if [ -n "$_SEARCH_RELATIVE" ]; then

@@ -1,6 +1,0 @@
-#!/bin/sh
-
-for f in repository_owner repository gh_query pr_url gh_pr_options gitleaks_project_report_path gitleaks_new_report gitleaks_args glab_pipeline_stage woke_output_file sudo_required git_town_version git_is_runnable project_full_path git_url git_recursive located_message_arg message_text arg original_branch git_recursive; do
-    nf=$(printf '%s' $f | sed -e 's/^_//' | tr '[:upper:]' '[:lower:]')
-    sed -i "s/$f/$nf/" $(search -l $f)
-done

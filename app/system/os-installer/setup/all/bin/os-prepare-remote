@@ -10,10 +10,10 @@ sudo_ensure_root "$target_host" "$@"
 
 
 tar cp -C ~/ .config/walterjwhite .ssh \
-    $APP_PLATFORM_BIN_PATH/app-install |
-    ssh $target_host "tar xp"
+  $APP_PLATFORM_BIN_PATH/app-install |
+  ssh $target_host "tar xp"
 
-ssh $target_host 'mkdir -p /usr/local/etc/walterjwhite && printf "%s\n" > /usr/local/etc/walterjwhite/system' $conf_os_installer_system_name
+ssh $target_host 'mkdir -p $(dirname $PLATFORM_SYSTEM_ID_PATH) && printf "%s\n" > $PLATFORM_SYSTEM_ID_PATH' $conf_os_installer_system_name
 
 ssh $target_host "$HOME/$BIN_PATH/app-install install os-installer"
 

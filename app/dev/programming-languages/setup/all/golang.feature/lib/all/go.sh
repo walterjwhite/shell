@@ -9,12 +9,13 @@ go_mod_tidy() {
 }
 
 go_build_do() {
-  if [ $(grep "package main" *.go -n 2>/dev/null | wc -l) -gt 0 ]; then
-    log_warn 'building cmd'
-    _go_build_cmd
-  else
+  [ $(grep "package main" *.go -n 2>/dev/null | wc -l) -eq 0 ] && {
     _go_build_lib
-  fi
+    return
+  }
+
+  log_warn 'building cmd'
+  _go_build_cmd
 }
 
 _go_build_lib() {
@@ -22,10 +23,12 @@ _go_build_lib() {
 }
 
 _go_build_cmd() {
-  _go_walterjwhite_conf
+  _go_walterjwhite_conf $PWD
 
   local error_count=0
-  go install -a -race -ldflags "$go_build_options" || error_count=1
+  (
+    env CGO_ENABLED=1 go install -a -race -ldflags "$go_build_options"
+  ) || error_count=1
 
 
   unset _app_name_flag _app_version_flag _scm_id_flag _build_date_flag _go_version_flag _os_architecture_flag go_build_options

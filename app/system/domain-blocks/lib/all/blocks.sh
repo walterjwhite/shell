@@ -21,5 +21,5 @@ _domain_blocks_aggregate() {
 
   find $1 -type f ! -name '.aggregate' -exec cat {} \; 2>/dev/null |
     $GNU_GREP -Pv "^(#|$)" |
-    sort -u > $1/.aggregate
+    sort -u >$1/.aggregate
 }

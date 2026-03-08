@@ -13,5 +13,5 @@ _download_fetch https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.
 _extract_extract $download_file $_DBEAVER_CONTENTS
 exit_defer _cleanup_dbeaver
 
-$_SUDO_CMD mkdir -p $APP_LIBRARY_PATH/feature/$_FEATURE_NAME
-$_SUDO_CMD mv $_DBEAVER_CONTENTS/dbeaver/* $APP_LIBRARY_PATH/feature/$_FEATURE_NAME
+mkdir -p $APP_LIBRARY_PATH/feature/$_FEATURE_NAME
+mv $_DBEAVER_CONTENTS/dbeaver/* $APP_LIBRARY_PATH/feature/$_FEATURE_NAME

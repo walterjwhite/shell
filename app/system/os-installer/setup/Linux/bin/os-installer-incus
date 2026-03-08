@@ -3,6 +3,7 @@
 lib ./bootstrap/git.sh
 lib ./chroot/configure.sh
 lib ./chroot/incus-live.sh
+lib system.sh
 
 cfg .
 cfg git
@@ -10,7 +11,8 @@ cfg git
 
 grep -cqm1 container /proc/1/environ && exit_with_error 'detected container environment, will not provision a container within a container'
 
-conf_os_installer_system_name=$(head -1 /usr/local/etc/walterjwhite/system)
+system_get_id
+conf_os_installer_system_name=$system_id
 
 exec_wrap _setup_git
 exec_wrap _configure_configure

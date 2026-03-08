@@ -1,5 +1,5 @@
 _buildfile_duplicate_functions_find() {
-  local duplicated_functions=$($GNU_GREP -Po '[_a-zA-Z][_a-zA-Z0-9]*\(\)' $buildfile_output_package_file | $GNU_SED -e 's/()//' | uniq -d | sort -u)
+  local duplicated_functions=$($GNU_GREP -Po '^[_a-zA-Z][_a-zA-Z0-9]*\(\)[[:space:]]*\{' $buildfile_output_package_file | $GNU_SED -e 's/().*//' | uniq -d | sort -u)
   [ -z "$duplicated_functions" ] && return
 
   log_warn 'duplicated functions'

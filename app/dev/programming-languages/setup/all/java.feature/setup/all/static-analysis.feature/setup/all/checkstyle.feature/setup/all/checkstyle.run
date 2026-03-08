@@ -4,10 +4,10 @@ lib net/download.sh
 cfg feature:.
 
 _download_fetch https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${conf_dev_checkstyle_version}/checkstyle-${conf_dev_checkstyle_version}-all.jar
-_download_install_file ${APP_LIBRARY_PATH}/checkstyle/checkstyle.jar
+_download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar
 
 _download_fetch https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml
-_download_install_file ${APP_LIBRARY_PATH}/checkstyle/checks/google_checks.xml
+_download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checks/google_checks.xml
 
 _download_fetch https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/sun_checks.xml
-_download_install_file ${APP_LIBRARY_PATH}/checkstyle/checks/sun_checks.xml
+_download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checks/sun_checks.xml

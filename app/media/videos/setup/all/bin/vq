@@ -4,6 +4,8 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 _action=queue
 : ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
 _data_app_init

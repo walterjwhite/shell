@@ -8,11 +8,11 @@ lib ./install/settings.sh
 lib io/file.sh
 lib shell-script.sh
 
+constant ./build
+constant ./install
+
 cfg ./build
 cfg install
-
-constant ./install
-constant ./build
 
 
 processes_restrict_to_single_process

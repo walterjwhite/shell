@@ -3,6 +3,8 @@
 lib ./die.sh
 lib net/network.sh
 
+cfg .
+
 _network_check() {
   _online && exit_with_success "connected to Internet"
 

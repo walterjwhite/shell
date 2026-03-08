@@ -1,5 +1,5 @@
-lib provider.sh
 lib git/github.sh
+lib provider.sh
 
 readonly BROWSER_CMD=firefox
 

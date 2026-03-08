@@ -4,7 +4,7 @@ _public_ip_fetch() {
   local _host
   for _host in ifconfig.me ipinfo.io/ip icanhazip.com; do
     _public_ip_fetch_address $_host && {
-      log_info $public_ip_address
+      log_info "public IP: $public_ip_address"
       return
     }
   done

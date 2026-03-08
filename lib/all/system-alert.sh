@@ -1,5 +1,10 @@
-_system_alert_alert() {
-  [ -z "$system" ] && system=$(head -1 /usr/local/etc/walterjwhite/system)
+lib system.sh
+
+_system_alert() {
+  [ -z "$system" ] && {
+    system_get_id
+    system=$system_id
+  }
 
   local _message
   _message=$(printf '%s\n%s\n' "$2")

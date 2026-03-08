@@ -2,4 +2,4 @@
 
 lib io/link.sh
 
-_link /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code $BIN_PATH
+_link /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code $APP_PLATFORM_BIN_PATH

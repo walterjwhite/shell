@@ -4,6 +4,8 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 _data_app_init
 for video_file in $(find downloaded -type f); do
   _video_read_meta

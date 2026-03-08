@@ -18,4 +18,4 @@ log_add_context $agent_job_name
 _agent_git_init_workspace
 
 _worker_init_job
-_worker_run_agent
+_worker_run_job

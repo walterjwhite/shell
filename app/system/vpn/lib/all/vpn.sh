@@ -7,7 +7,13 @@ _vpn_client_ip() {
   _self_client_ip=$public_ip_address
   unset public_ip_address
 
-  validation_require "$_self_client_ip" SELF_CLIENT_IP
+  validation_require "$_self_client_ip" _self_client_ip
+}
+
+_vpn_server_ip() {
+  [ -n "$vpn_remote_server_ip" ] && {
+    export vpn_remote_server_ip=$vpn_remote_server_ip
+  }
 }
 
 _vpn_firewall_cleanup() {
@@ -15,16 +21,27 @@ _vpn_firewall_cleanup() {
   [ -n "$_WEB_BROWSER_PID" ] && kill -9 $_WEB_BROWSER_PID
 
   log_warn "cleaning up vpn"
-  publish-cmd -func _VPN_STOP
+  publish-cmd -func vpn_stop
 }
 
 _vpn_firewall_update() {
   log_warn "updating firewall to allow vpn client"
 
-  publish-cmd -func _VPN_START -args "$_self_client_ip"
+  publish-cmd -func vpn_start -args "$_self_client_ip"
 }
 
 _vpn_firewall_wait_conf() {
   log_info "waiting 5s for remote server to implement changes"
   sleep 5
+}
+
+_vpn_provider() {
+  case $vpn_provider in
+  wireguard) ;;
+  *)
+    exit_with_error "unsupported vpn_provider:$vpn_provider"
+    ;;
+  esac
+
+  $APP_LIBRARY_PATH/bin/${vpn_provider}-client "$@"
 }

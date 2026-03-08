@@ -30,7 +30,7 @@ case $APP_PLATFORM_SUB_PLATFORM in
 
     readonly PYPI_PACKAGE="python"
 
-    readonly GO_PACKAGE="go"
+    readonly GO_PACKAGE="go gcc"
     readonly EXPECT_PACKAGE="expect"
 
 

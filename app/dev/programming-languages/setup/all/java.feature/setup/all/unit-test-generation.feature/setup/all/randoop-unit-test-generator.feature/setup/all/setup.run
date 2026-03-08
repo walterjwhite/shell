@@ -10,10 +10,10 @@ _install_randoop() {
 
     randoop_contents=$(_mktemp_options=d _mktemp_mktemp)
     exit_defer _cleanup_randoop
-    _extract_extract $downloaded_file $randoop_contents
+    _extract_extract $download_file $randoop_contents
 
-    downloaded_file=$randoop_contents/randoop-${randoop_version}/randoop-all-${randoop_version}.jar
-    _download_install_file ${APP_LIBRARY_PATH}/randoop-all.jar
+    download_file=$randoop_contents/randoop-${randoop_version}/randoop-all-${randoop_version}.jar
+    _download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/randoop-all.jar
 }
 
 _cleanup_randoop() {
@@ -21,4 +21,3 @@ _cleanup_randoop() {
 }
 
 _install_randoop
-

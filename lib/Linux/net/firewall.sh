@@ -14,7 +14,7 @@ _firewall_update_table() {
 }
 
 _firewall_update_table_from_file() {
-  _io_has_contents $2 || {
+  _file_has_contents $2 || {
     log_warn "file is empty: $2"
     return
   }

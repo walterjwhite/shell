@@ -27,6 +27,7 @@ package_bootstrap_uninstall() {
 }
 
 package_update() {
+  log_detail 'updated packages via homebrew'
   brew update
   brew upgrade "$@"
 }

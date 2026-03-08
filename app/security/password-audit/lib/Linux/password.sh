@@ -26,8 +26,8 @@ _audit_password() {
   log_info "starting password crack (this may take a while)..."
   john "$unshadow_file"
 
-    exit_with_success "password cracked!"
-    john --show "$unshadow_file"
+  exit_with_success "password cracked!"
+  john --show "$unshadow_file"
 
   log_remove_context
 }

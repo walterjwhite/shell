@@ -1,4 +1,0 @@
-: ${conf_dev_java_formatter:=google}
-
-: ${suspend_jvm:=n}
-: ${debug_port:=5005}

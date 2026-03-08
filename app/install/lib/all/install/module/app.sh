@@ -17,3 +17,7 @@ app_uninstall_do() {
 app_is_installed() {
   [ -e $LIBRARY_PATH/$1/.metadata ]
 }
+
+app_is_latest() {
+  :
+}

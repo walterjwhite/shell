@@ -3,4 +3,4 @@
 : ${conf_dev_java_timo_a_lomboker_version:=0.0.0}
 
 : ${conf_dev_java_timo_a_lomboker_jar_NAME:=lomboker-$conf_dev_java_timo_a_lomboker_version.jar}
-: ${conf_dev_java_timo_a_lomboker_jar:=${APP_LIBRARY_PATH}/$conf_dev_java_timo_a_lomboker_jar_NAME}
+: ${conf_dev_java_timo_a_lomboker_jar:=__LIBRARY_PATH__/__APPLICATION_NAME__/tools/$conf_dev_java_timo_a_lomboker_jar_NAME}

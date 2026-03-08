@@ -7,7 +7,7 @@ package_pacman_uninstall_do() {
 }
 
 package_pacman_is_installed() {
-  _pacman_cmd -Q "$@" 
+  _pacman_cmd -Q "$@"
 }
 
 package_pacman_bootstrap() {
@@ -20,17 +20,17 @@ package_pacman_update() {
 
 _pacman_cmd() {
   [ "$APP_PLATFORM_ROOT" = "/" ] && {
-    pacman "$@"
+    pacman "$@" 2>&1 >/dev/null
     return
   }
 
   [ "$_container_type" = "incus" ] && {
     log_warn "detected incus container, using incus exec"
-    incus exec $_container_name -- pacman "$@"
+    incus exec $_container_name -- pacman "$@" 2>&1 >/dev/null
     return
   }
 
-  pacman --sysroot $APP_PLATFORM_ROOT "$@"
+  pacman --sysroot $APP_PLATFORM_ROOT "$@" 2>&1 >/dev/null
 }
 
 _pacman_setup_keys() {

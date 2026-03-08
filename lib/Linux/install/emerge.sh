@@ -54,7 +54,7 @@ package_emerge_bootstrap() {
   }
 
   _emerge_portage_setup_chroot_mounts_with_root
-  
+
   _emerge_portage_use_git
   _emerge_portage_mirrors
 

@@ -14,5 +14,9 @@ go_uninstall() {
 }
 
 go_is_installed() {
-  _setup_type_is_installed "$1"
+  _go_is_installed "$1"
+}
+
+go_is_latest() {
+  _go_get_latest_hash "$1"
 }

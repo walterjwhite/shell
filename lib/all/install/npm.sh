@@ -17,6 +17,11 @@ _npm_bootstrap_is_npm_available() {
 }
 
 _npm_install_do() {
+  _npm_is_installed $1 && {
+    log_detail "$1 is already installed"
+    return 0
+  }
+  
   npm install -s -g "$1"
 }
 

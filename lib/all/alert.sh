@@ -21,7 +21,7 @@ _alert_alert() {
     return 1
   fi
 
-  _mail "$_recipients" "$_subject" "$2"
+  _mail_send "$_recipients" "$_subject" "$2"
 }
 
 _alert_long_running_cmd() {

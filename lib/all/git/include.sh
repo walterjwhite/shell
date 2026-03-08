@@ -19,6 +19,6 @@ _git_relative_path() {
 }
 
 _git_relative_path_in_worktree() {
-  local worktree_path=$(git rev-parse --show-toplevel)
-  pwd | sed -e "s|^$worktree_path/||"
+  git_worktree_path=$(git rev-parse --show-toplevel)
+  git_relative_path_in_worktree=$(pwd | sed -e "s|^$git_worktree_path/||")
 }

@@ -1,4 +1,7 @@
 #!/bin/sh
+
 lib ./blocks.sh
+
 cfg .
+
 _domain_blocks_install https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt

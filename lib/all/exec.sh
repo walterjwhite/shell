@@ -22,7 +22,7 @@ exec_wrap() {
 
     while [ $_attempt -le $exec_attempts ]; do
       [ $_attempt -gt 1 ] && [ -n "$exec_delay" ] && sleep $exec_delay
-      
+
       warn_on_error=1 _exec_do_exec "$@" && return
 
       _attempt=$(($_attempt + 1))

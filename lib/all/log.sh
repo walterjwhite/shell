@@ -46,8 +46,13 @@ log_remove_context() {
 log_to_console() {
   [ -z "$conf_log_console" ] && return 0
 
-  local _color=$1 _message=$2
-  printf >&${conf_log_console} '\033[%s%s \033[0m\n' "$_color" "$_message"
+  local _color=$1 _event_date_time=$2 _message=$3
+
+  if [ "$conf_log_date_time_to_console" -eq 1 ]; then
+    printf >&${conf_log_console} '\033[%s%s - %s \033[0m\n' "$_color" "$_event_date_time" "$_message"
+  else
+    printf >&${conf_log_console} '\033[%s%s \033[0m\n' "$_color" "$_message"
+  fi
 }
 
 log_print_to_console() {
@@ -69,7 +74,7 @@ log_sanitize_input() {
 log_to_file() {
   [ -z "$log_logfile" ] && return 0
 
-  printf '%s %s %s\n' "$(date '+%Y/%m/%d %H:%M:%S')" "$1" "$2" >>$log_logfile
+  printf '%s %s %s\n' "$1" "$2" "$3" >>$log_logfile
 }
 
 log_open_logfile() {
@@ -149,7 +154,7 @@ log_redirect_output_with_indent() {
 
   mkfifo "$log_fifo" || {
     log_warn "error setting up fifo, falling back to std redirection"
-    
+
     unset log_fifo
 
     log_redirect_output
@@ -199,9 +204,11 @@ log_print_log() {
   log_handle_background_notification "$_level_str" "$_message"
   [ -n "$_tone" ] && _beep_beep "$_tone"
 
-  log_to_file "$_level_str" "$_message"
-  log_to_console "$_color" "$_message"
-  log_user_log "$_level_str" "$_message"
+  local log_event_date_time="$(date '+%Y/%m/%d %H:%M:%S')"
+
+  log_to_file "$_level_str" "$log_event_date_time" "$_message"
+  log_to_console "$_color" "$log_event_date_time" "$_message"
+  log_user_log "$_level_str" "$log_event_date_time" "$_message"
 
   [ -n "$log_syslog" ] && _syslog_syslog "$_message"
 

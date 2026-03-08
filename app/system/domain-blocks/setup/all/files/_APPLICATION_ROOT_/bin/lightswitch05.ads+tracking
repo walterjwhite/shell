@@ -1,8 +1,11 @@
 #!/bin/sh
+
 lib ./blocks.sh
+
 cfg .
+
 _domain_blocks_filter() {
-	cut -f2 -d ' '
+  cut -f2 -d ' '
 }
 
 _domain_blocks_install https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt

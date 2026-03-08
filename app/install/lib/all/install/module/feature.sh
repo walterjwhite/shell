@@ -17,3 +17,11 @@ _feature_apply() {
   _setup_main $_feature/setup
   _setup_main $_feature/post-setup
 }
+
+feature_is_installed() {
+  :
+}
+
+feature_is_latest() {
+  :
+}

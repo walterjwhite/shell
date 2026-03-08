@@ -5,7 +5,7 @@
     pkg audit -F -q
 
 2. if so, automatically create BE, ask user to reboot into new BE
-3. on bootup, apply patches
+3. on boot up, apply patches
 4. check for additional updates, repeat
 5. automatically prune old BE / patches and recycle #'s
 

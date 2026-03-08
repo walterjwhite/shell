@@ -99,6 +99,8 @@ _extension_find_default_files() {
   find . -type f -and -name "$_name_pattern" \
     ! -path '*/*.archived/*' \
     ! -path '*/*.secret/*' \
+    ! -path '*/*.unused/*' \
+    ! -path '*/*.deprecated/*' \
     ! -path '*/node_modules/*' \
     ! -path '*/target/*' \
     ! -path '*/.idea/*' \

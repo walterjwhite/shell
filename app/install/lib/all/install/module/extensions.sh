@@ -4,7 +4,7 @@ extensions_install() {
 }
 
 _install_extension_cmds() {
-  [ ! -e $1/bin ] && return 1
+  [ ! -e $1/bin ] && return
 
   log_detail "installing extension $1/bin"
   _install_files $1/bin $APP_PLATFORM_BIN_PATH
@@ -20,6 +20,8 @@ _install_extension_extensions() {
     log_detail "installing extension $1/type"
     _install_files $1/type $APP_PLATFORM_LIBRARY_PATH/install/extensions/type
   }
+
+  return 0
 }
 
 extensions_uninstall() {
@@ -27,4 +29,12 @@ extensions_uninstall() {
 
   rm -f $(cat $1)
   rm -f $1
+}
+
+extensions_is_installed() {
+  :
+}
+
+extensions_is_latest() {
+  :
 }

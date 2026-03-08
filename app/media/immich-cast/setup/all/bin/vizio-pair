@@ -1,0 +1,10 @@
+#!/bin/sh
+
+lib ./vizio
+
+cfg .
+
+vizio_device_id=vizio_sh_ctrl
+
+
+_vizio_do_pair

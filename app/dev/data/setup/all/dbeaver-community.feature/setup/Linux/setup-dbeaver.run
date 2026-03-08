@@ -15,7 +15,7 @@ _dbeaver_install() {
     clean=$dbeaver_install_path sudo_required=1 _extract_extract "$download_file" "$dbeaver_install_path"
 
     $_link $BIN_PATH/dbeaver $dbeaver_install_path/dbeaver
-    $_SUDO_CMD chmod +x $BIN_PATH/dbeaver
+    chmod +x $BIN_PATH/dbeaver
 }
 
 _dbeaver_platform_check() {

@@ -28,12 +28,12 @@ patch_incus() {
 _patch_incus_pre() {
   patch_incus_prepare_${distribution_function_name}
 
-  _incus_live_start
-
   grep -qm1 'root:1000000' /etc/subuid || {
     log_detail "configuring users and groups for incus"
     printf 'root:1000000:1000000000\n' | tee -a /etc/subuid /etc/subgid >/dev/null
   }
+
+  _incus_live_start
 }
 
 patch_incus_prepare_arch() {

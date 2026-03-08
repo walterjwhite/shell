@@ -5,6 +5,8 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 processes_restrict_to_single_process
 : ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
 

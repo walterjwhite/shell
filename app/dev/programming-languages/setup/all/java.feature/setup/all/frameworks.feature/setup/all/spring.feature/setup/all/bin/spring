@@ -7,7 +7,7 @@ if [ $# -gt 0 ]; then
 fi
 
 feature_name=SPRING
-java -cp $APP_LIBRARY_PATH/feature/$feature_name/spring-boot-cli.jar org.springframework.boot.loader.JarLauncher "$@" "$spring_cli_args" || exit_with_error "see above exit_with_error message"
+java -cp __LIBRARY_PATH__/__APPLICATION_NAME__/tools/feature/$feature_name/spring-boot-cli.jar org.springframework.boot.loader.JarLauncher "$@" "$spring_cli_args" || exit_with_error "see above exit_with_error message"
 
 git init
 git add .

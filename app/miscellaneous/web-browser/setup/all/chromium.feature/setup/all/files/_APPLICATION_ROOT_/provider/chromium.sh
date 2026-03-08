@@ -1,8 +1,8 @@
-lib provider.sh
 lib extract.sh
 lib feature:.
 lib git/github.sh
 lib net/download.sh
+lib provider.sh
 
 cfg feature:.
 

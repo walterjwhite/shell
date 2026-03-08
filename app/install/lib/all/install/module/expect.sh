@@ -12,3 +12,11 @@ _expect_bootstrap_is_expect_available() {
 expect_install() {
   $1 >/dev/null 2>&1
 }
+
+expect_is_installed() {
+  :
+}
+
+expect_is_latest() {
+  :
+}

@@ -1,6 +1,6 @@
 _prune_be_destroy() {
   log_warn "destroying BE $_be_name - created $_be_cr_dt ($_be_age_human)"
-  $_SUDO_CMD beadm destroy -F $_be_name 2>&1 | sed -e 's/^/  /'
+  beadm destroy -F $_be_name 2>&1 | sed -e 's/^/  /'
 }
 
 _prune_be_by_age() {

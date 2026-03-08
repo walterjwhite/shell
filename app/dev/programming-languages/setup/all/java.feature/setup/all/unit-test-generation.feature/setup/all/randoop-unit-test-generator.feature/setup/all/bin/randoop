@@ -22,12 +22,12 @@ gen)
   file_require $test_jar test_jar
 
   java $conf_dev_randoop_heap \
-    -classpath $test_jar:$lib_jars:${APP_LIBRARY_PATH}/randoop-all.jar \
+    -classpath $test_jar:$lib_jars:__LIBRARY_PATH__/__APPLICATION_NAME__/tools/randoop-all.jar \
     randoop.main.Main gentests --testclass $test_class_name $conf_dev_randoop_options $@
   ;;
 help)
   java $conf_dev_randoop_heap \
-    -classpath ${APP_LIBRARY_PATH}/randoop-all.jar \
+    -classpath __LIBRARY_PATH__/__APPLICATION_NAME__/tools/randoop-all.jar \
     randoop.main.Main $_RANDOOP_CMD
   ;;
 *)

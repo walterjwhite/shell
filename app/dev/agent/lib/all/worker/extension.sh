@@ -15,7 +15,7 @@ agent_run_job_validation_extension() {
     format && build
     ;;
   *)
-    exit_with_error "unknown extension type: $agent_extension_type"
+    log_warn "unknown extension type: $agent_extension_type"
     ;;
   esac
 }

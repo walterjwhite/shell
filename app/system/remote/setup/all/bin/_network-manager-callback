@@ -4,6 +4,8 @@ readonly REQUIRED_ARGUMENTS="_DEVICE:Device|_EVENT:Event"
 
 lib net/network.sh
 
+cfg .
+
 case "$_EVENT" in
 up | dhcp4-change)
   _online || {

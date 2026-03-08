@@ -8,7 +8,7 @@ _setup_main() {
 _setup_run_type() {
   setup_type_name=$(basename $1)
   log_add_context "$setup_type_name"
-  log_detail "processing"
+  log_debug "processing"
 
   _setup_type_platform_is_supported || {
     log_debug "ignoring $1, does not target this sub-platform"
@@ -32,6 +32,8 @@ _setup_run_type() {
   }
 
   _setup_run_do_bootstrap
+
+  log_detail processing
 
   ${setup_type_name}_install $1 || {
     local error=$?
@@ -97,12 +99,13 @@ _setup_type_is_disabled() {
 }
 
 _setup_run_do_bootstrap() {
-  _setup_type_bootstrapped || {
-    exec_call ${setup_type_name}_bootstrap
-    exec_call ${setup_type_name}_bootstrap_post
+  _setup_type_bootstrapped && return
 
-    printf '_bootstrap_%s=1\n' "$setup_type_name" | _metadata_install_append
-  }
+  log_detail "bootstrapping"
+  exec_call ${setup_type_name}_bootstrap
+  exec_call ${setup_type_name}_bootstrap_post
+
+  printf '_bootstrap_%s=1\n' "$setup_type_name" | _metadata_install_append
 }
 
 _setup_type_bootstrapped() {

@@ -92,7 +92,7 @@ _incus_live() {
     --env conf_os_installer_system_workspace=/os \
     --env conf_git_mirror=$conf_git_mirror \
     $LIBRARY_PATH/$APPLICATION_NAME/bin/chroot
-  
+
   exec_call _incus_instance_cleanup_running
 
   cp $_container_path/etc/systemd/resolved.conf.bak $_container_path/etc/systemd/resolved.conf

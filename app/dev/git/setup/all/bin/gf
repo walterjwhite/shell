@@ -2,6 +2,7 @@
 
 cfg .
 
+
 for arg in "$@"; do
   case "$arg" in
   -m=* | --message=*)

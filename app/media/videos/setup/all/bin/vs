@@ -4,5 +4,7 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 _data_app_init
 search $@

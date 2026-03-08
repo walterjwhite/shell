@@ -1,7 +1,10 @@
+lib system.sh
+
 _agent_git_init_workspace() {
   [ ! -e $agent_workspace ] && {
     log_detail 'initializing workspace'
-    git clone $conf_agent_git_repository_prefix/$(head -1 /usr/local/etc/walterjwhite/system)/$USER/agent-work.git $agent_workspace
+    system_get_id
+    git clone $conf_agent_git_repository_prefix/$system_id/$USER/agent-work.git $agent_workspace
   }
 
   log_detail 'updating workspace'
@@ -20,4 +23,9 @@ _agent_git_update_job() {
   gpush
 
   agent_job=$agent_new_job_path
+}
+
+_agent_get_job_name_key() {
+  agent_job_name_key="${agent_job_name#[0-9][0-9].}"
+  agent_job_name_key="${agent_job_name_key%.job}"
 }

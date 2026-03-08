@@ -3,7 +3,7 @@ lib jail.sh
 
 _prune_jail_snapshot_destroy() {
   log_warn "destroying Jail Snapshot $_JAIL_ZFS_SNAPSHOT - created $_ZFS_SNAPSHOT_CR_DT ($_ZFS_SNAPSHOT_AGE_HUMAN)"
-  $_SUDO_CMD zfs destroy $_JAIL_ZFS_SNAPSHOT
+  zfs destroy $_JAIL_ZFS_SNAPSHOT
 }
 
 _prune_jail_snapshot_by_age() {

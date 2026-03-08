@@ -5,14 +5,14 @@ readonly REQUIRED_ARGUMENTS="_FUNCTION_CALL:Function to call"
 lib .
 lib exec.sh
 
-cfg ./remote
+cfg .
 
 log_warn "setting path to: $conf_remote_callback_path"
 PATH=$conf_remote_callback_path
 
 log_info "$_FUNCTION_CALL $*"
 
-_call $_FUNCTION_CALL "$@" || {
+exec_call $_FUNCTION_CALL "$@" || {
   function_exit_status=$?
   [ $function_exit_status -eq 255 ] && exit_with_error "$_FUNCTION_CALL undefined: 255" 255
 

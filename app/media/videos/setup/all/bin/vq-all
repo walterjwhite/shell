@@ -7,8 +7,13 @@ lib ./videos.sh
 
 cfg git
 
+sudo_ensure_not_root
+
 file_require "$_QUEUE_FILE" _QUEUE_FILE
 
+[ -n "$force" ] && export force=$force
+
 for videos_url in $($GNU_GREP -Pvh '(^$|^#)' $_QUEUE_FILE); do
+  export videos_url="$videos_url"
   vq "$@"
 done

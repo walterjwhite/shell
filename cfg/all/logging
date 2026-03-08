@@ -23,6 +23,8 @@ CONF_LOG_HEADER="##################################################"
 : ${conf_log_long_running_cmd:=30}
 : ${conf_log_long_running_cmd_lines:=1000}
 
+: ${conf_log_date_time_to_console:=0}
+
 which mail > /dev/null 2>&1 || conf_log_mail_disabled=1
 
 [ -t 0 ] && interactive=1

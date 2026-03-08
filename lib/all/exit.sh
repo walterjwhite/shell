@@ -18,8 +18,8 @@ exit_with_error() {
   exit_message="$1 ($exit_status)"
   exit_beep="$conf_log_beep_err"
 
-  exit_defer _environment_dump
   exit_defer _exit_log_app_exit
+  exit_defer _environment_dump
 
   _exit_run_defers
 
@@ -86,7 +86,7 @@ _exit_print_line() {
 }
 
 exit_defer() {
-  log_debug "deferring: $1"
+  log_debug "deferring: $*"
   if [ $# -gt 1 ]; then
     local _defer_with_args
     _defer_with_args=$(printf '%s' "$*" | sed -e 's/ /:/' -e 's/ /,/g')
@@ -94,6 +94,30 @@ exit_defer() {
   else
     exit_defers="$1 $exit_defers"
   fi
+}
+
+exit_undefer() {
+  log_debug "undeferring: $*"
+
+  local _undefer_target
+  if [ $# -gt 1 ]; then
+    _undefer_target=$(printf '%s' "$*" | sed -e 's/ /:/' -e 's/ /,/g')
+  else
+    _undefer_target="$1"
+  fi
+
+  local _new_defers=""
+  local _defer
+  for _defer in $exit_defers; do
+    if [ "$_defer" != "$_undefer_target" ]; then
+      _new_defers="$_defer $_new_defers"
+    fi
+  done
+
+  exit_defers=""
+  for _defer in $_new_defers; do
+    exit_defers="$_defer $exit_defers"
+  done
 }
 
 _exit_run_defers() {
@@ -105,10 +129,10 @@ _exit_run_defers() {
       local _func_name=$(printf '%s' "$exit_defer" | cut -d':' -f1)
       local _args=$(printf '%s' "$exit_defer" | cut -d':' -f2 | tr ',' ' ')
 
-      exec_call $_func_name $_args 2>/dev/null
+      exec_call $_func_name $_args
       ;;
     *)
-      exec_call $exit_defer 2>/dev/null
+      exec_call $exit_defer
       ;;
     esac
   done
@@ -118,16 +142,7 @@ _exit_run_defers() {
 
 _exit_log_app_exit() {
   [ "$exit_message" ] && {
-    if [ -z "$APPLICATION_START_TIME" ]; then
-      unset exit_beep
-    else
-      local _current_time
-      local _timeout
-      _current_time=$(date +%s)
-
-      _timeout=$(($APPLICATION_START_TIME + $conf_log_beep_timeout))
-      [ $_current_time -le $_timeout ] && unset exit_beep
-    fi
+    _exit_disable_beep
 
     log_print_log $exit_log_level "$exit_status_code" "$exit_color_code" "$exit_beep" "$exit_message"
   }
@@ -137,5 +152,18 @@ _exit_log_app_exit() {
   [ -n "$log_logfile" ] && [ -n "$optn_log_exit_cmd" ] && {
     $optn_log_exit_cmd -file $log_logfile
   }
+}
+
+_exit_disable_beep() {
+  [ -z "$APPLICATION_START_TIME" ] && {
+    unset exit_beep
+    return
+  }
+
+  local _current_time=$(date +%s)
+  local _timeout=$(($APPLICATION_START_TIME + $conf_log_beep_timeout))
+  [ $_current_time -ge $_timeout ] && return
+
+  unset exit_beep
 }
 

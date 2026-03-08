@@ -7,9 +7,9 @@ lib ./install/git.sh
 lib io/file.sh
 lib ./publish
 
-cfg install
-
 constant ./install
+
+cfg install
 
 processes_restrict_to_single_process
 _is_registry_online || readonly INSTALL_REGISTRY_OFFLINE=1

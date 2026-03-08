@@ -1,7 +1,7 @@
 _be() {
   unset _system_configuration_file _patches _system_branch _system_hash _system_be _system_be_with_sequence _active_be _last_sequence_file _last_sequence
 
-  local _system_configuration_file=$_JAIL_PATH/usr/local/etc/walterjwhite/system
+  local _system_configuration_file=$_JAIL_PATH${APP_PLATFORM_ROOT}${PLATFORM_SYSTEM_ID_PATH}
   local _patches=$_JAIL_PATH/usr/local/etc/walterjwhite/patches
 
   local _system_branch=$(head -1 $_system_configuration_file | tr '/' '_')

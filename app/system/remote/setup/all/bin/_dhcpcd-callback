@@ -2,6 +2,8 @@
 
 lib net/network.sh
 
+cfg .
+
 log_info "_dhcpcd-callback: $interface | $reason | $ifcarrier | $ifup"
 
 _online && exit_with_success "connected to the Internet, no captive portal detected"

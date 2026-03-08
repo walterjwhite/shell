@@ -14,7 +14,7 @@ sudo_ensure_root "$@"
 log_info "configuring $APP_PLATFORM_PLATFORM $(uname -r) [$APPLICATION_VERSION]"
 
 log_detail "snapshotting root volume"
-zfs snapshot $(zfs list -o name,mountpoint | grep ' /$'  | awk {'print$1'})@$(date +%Y.%m.%d-%H.%M.%S)
+zfs snapshot $(zfs list -o name,mountpoint | grep ' /$' | awk {'print$1'})@$(date +%Y.%m.%d-%H.%M.%S)
 
 _remove_status
 _init_net

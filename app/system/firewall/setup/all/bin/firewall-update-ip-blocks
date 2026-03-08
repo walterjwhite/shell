@@ -6,7 +6,7 @@ lib net/firewall.sh
 sudo_ensure_root "$@"
 
 _firewall_update_ip_block_update_firewall() {
-  _has_contents $1 || {
+  _file_has_contents $1 || {
     log_warn "updating ${_IP_BLOCK_PROVIDER} IP blocks failed"
     rm -f $1
     continue

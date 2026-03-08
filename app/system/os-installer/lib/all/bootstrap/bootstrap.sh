@@ -1,6 +1,7 @@
 lib ./git.archive.sh
 lib net/network.sh
 lib ssh.sh
+lib system.sh
 
 _bootstrap_validate() {
   validation_require "$os_installer_disk_passphrase" os_installer_disk_passphrase
@@ -53,15 +54,7 @@ _init_chroot_ssh() {
 }
 
 _write_system() {
-  local system_id_file=$conf_os_installer_mountpoint/$conf_os_installer_system_identification
-  mkdir -p $(dirname $system_id_file)
-
-  printf '%s\n' $conf_os_installer_system_name >$system_id_file
-  printf '%s\n' $conf_os_installer_system_ref >>$system_id_file
-  printf '%s\n' $conf_os_installer_system_git >>$system_id_file
-  git ls-remote $conf_os_installer_system_git -b $conf_os_installer_system_name | awk {'print$1'} >>$system_id_file
-
-  printf 'Provision Date: %s\n' "$(date)" >>$system_id_file
+  APP_PLATFORM_ROOT=$conf_os_installer_mountpoint system_write_id $conf_os_installer_system_name $conf_os_installer_system_ref $conf_os_installer_system_git
 }
 
 _run_init() {

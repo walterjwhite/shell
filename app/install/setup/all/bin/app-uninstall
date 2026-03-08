@@ -6,9 +6,9 @@ lib ./install
 lib io/file.sh
 lib ./uninstall
 
-cfg install
-
 constant ./install
+
+cfg install
 
 _settings_init
 

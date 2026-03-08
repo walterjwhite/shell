@@ -11,7 +11,7 @@ _provider_run_wrapper() {
 
   application_name_prefix=$(printf '%s' $APPLICATION_NAME | tr '-' '_' | tr '.' '_')
   log_add_context $application_name_prefix
- 
+
   $callback_function "$@"
 
   log_remove_context

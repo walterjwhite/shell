@@ -3,5 +3,7 @@
 lib net/public-ip.sh
 lib system-alert.sh
 
-_public_ip
-_system_alert "Remote - public IP" "public IP: $_PUBLIC_IP"
+cfg .
+
+_public_ip_fetch
+_system_alert "remote - public IP" "public IP: $public_ip_address"

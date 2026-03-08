@@ -9,3 +9,11 @@ bin_uninstall() {
   rm -f $(cat $1)
   rm -f $1
 }
+
+bin_is_installed() {
+  :
+}
+
+bin_is_latest() {
+  :
+}

@@ -11,11 +11,11 @@ lib io/write.sh
 lib platform.sh
 lib ./uninstall
 
+constant ./install
+
 cfg install
 
 init platform.sh
-
-constant ./install
 
 sudo_ensure_root "$@"
 
@@ -41,5 +41,5 @@ for target_application_name in $target_application_names; do
 done
 
 if [ $conf_install_auto_update_packages -gt 0 ]; then
-  _PACKAGE_UPDATE
+  package_update
 fi

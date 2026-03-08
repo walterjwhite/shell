@@ -6,9 +6,9 @@ lib ./build-file
 lib io/file.sh
 lib shell-script.sh
 
-cfg ./install
-
 constant ./install
+
+cfg ./install
 
 file_require "$_RUN_FILE" _RUN_FILE
 log_info "running $_RUN_FILE"

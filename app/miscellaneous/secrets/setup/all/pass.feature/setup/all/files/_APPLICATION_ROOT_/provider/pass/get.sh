@@ -20,28 +20,27 @@ secrets_get_find() {
 
 secrets_get_stdout() {
   case $secret_key in
-    */otp)
-      log_detail "fetching OTP"
-      pass otp $secret_key
-      ;;
-    *)
-      pass show $secret_key
-      ;;
+  */otp)
+    log_detail "fetching OTP"
+    pass otp $secret_key
+    ;;
+  *)
+    pass show $secret_key
+    ;;
   esac
 }
 
 secrets_get_clipboard() {
   case $secret_key in
-    */otp)
-      log_detail "fetching OTP"
-      pass otp -c $secret_key
-      ;;
-    *)
-      pass show --clip $secret_key
-      ;;
+  */otp)
+    log_detail "fetching OTP"
+    pass otp -c $secret_key
+    ;;
+  *)
+    pass show --clip $secret_key
+    ;;
   esac
 
-  
 }
 
 secrets_get "$@"
