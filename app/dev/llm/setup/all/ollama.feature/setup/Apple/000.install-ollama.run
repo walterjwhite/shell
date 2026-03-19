@@ -9,10 +9,10 @@ which ollama > /dev/null 2>&1 || {
     ollama_contents=$(_mktemp_options=d _mktemp_mktemp)
     _extract_extract $download_file $ollama_contents
 
-    sudo_run mv $ollama_contents/Ollama.app /Applications
-    sudo_run chmod +x /Applications/Ollama.app/Contents/Resources/ollama
+    mv $ollama_contents/Ollama.app /Applications
+    chmod +x /Applications/Ollama.app/Contents/Resources/ollama
 
-    sudo_run ln -s /Applications/Ollama.app/Contents/Resources/ollama $BIN_PATH/ollama
+    ln -s /Applications/Ollama.app/Contents/Resources/ollama $APP_PLATFORM_BIN_PATH/ollama
 
     rm -rf $ollama_contents
 }

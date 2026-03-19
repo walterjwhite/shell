@@ -6,7 +6,7 @@ secrets_get_find() {
 
   [ -z "$matched" ] && exit_with_error "no secrets found matching: $*"
 
-  case $secrets_output_function in
+  case $conf_secrets_output_function in
   wifi)
     secret_key=$1
     ;;

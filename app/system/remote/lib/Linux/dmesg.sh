@@ -1,3 +1,3 @@
 dmesg_get() {
-  dmesg -Tc
+  sudo_run dmesg -Tc
 }

@@ -21,7 +21,7 @@ _npm_install_do() {
     log_detail "$1 is already installed"
     return 0
   }
-  
+
   npm install -s -g "$1"
 }
 

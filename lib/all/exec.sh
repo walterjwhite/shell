@@ -1,5 +1,6 @@
 exec_call() {
   local _function_name=$1
+  shift
 
   type $_function_name >/dev/null 2>&1 || {
     log_debug "${_function_name} does not exist"
@@ -7,13 +8,7 @@ exec_call() {
     return 255
   }
 
-  [ $# -gt 1 ] && {
-    shift
-    $_function_name "$@"
-    return $?
-  }
-
-  $_function_name
+  $_function_name "$@"
 }
 
 exec_wrap() {
@@ -45,8 +40,13 @@ _exec_do_exec() {
   log_info "$*"
   local _exit_status
   if [ -z "$dry_run" ]; then
-    "$@"
-    _exit_status=$?
+    if [ -z "$log_logfile" ]; then
+      "$@"
+      _exit_status=$?
+    else
+      "$@" 2>&1 | sed -u 's/^/    /' | tee -a "$log_logfile"
+      _exit_status=$?
+    fi
   else
     log_warn "using dry run status: $dry_run"
     _exit_status=$dry_run

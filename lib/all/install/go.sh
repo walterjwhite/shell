@@ -35,14 +35,13 @@ _go_walterjwhite_conf() {
   local _go_version=$(go version | awk {'print$3'})
   local _os_architecture=$(go version | awk {'print$4'})
 
-  local _app_name_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.ApplicationName=$_app_name"
-  local _app_version_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.ApplicationVersion=$_version"
-  local _scm_version_id_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.SCMId=$_scm_id"
-  local _build_date_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.BuildDate=$_build_date"
-  local _go_version_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.GoVersion=$_go_version"
-  local _os_architecture_flag="${WALTERJWHITE_GO_APPLICATION_PACKAGE_PREFIX}.OSArchitecture=$_os_architecture"
+  local _app_name_flag="github.com/walterjwhite/go-code/lib/application.ApplicationName=$_app_name"
+  local _app_version_flag="github.com/walterjwhite/go-code/lib/application.ApplicationVersion=$_version"
+  local _scm_version_id_flag="github.com/walterjwhite/go-code/lib/application.SCMId=$_scm_id"
+  local _build_date_flag="github.com/walterjwhite/go-code/lib/application.BuildDate=$_build_date"
+  local _go_version_flag="github.com/walterjwhite/go-code/lib/application.GoVersion=$_go_version"
+  local _os_architecture_flag="github.com/walterjwhite/go-code/lib/application.OSArchitecture=$_os_architecture"
 
-  go_options="-ldflags"
   go_build_options="-X $_app_name_flag -X $_app_version_flag -X $_scm_version_id_flag -X $_build_date_flag -X $_go_version_flag -X $_os_architecture_flag"
 
   log_debug "build flags:"
@@ -71,12 +70,12 @@ _go_install_do() {
 
   (
     if [ -n "$go_build_options" ]; then
-      env GOPATH="$conf_install_go_path" CGO_ENABLED=1 go install -a -race $go_options "$go_build_options" "$1"
+      env GOPATH="$conf_install_go_path" CGO_ENABLED=1 go install -a -race -ldflags "$go_build_options" "$1"
     else
-      env GOPATH="$conf_install_go_path" CGO_ENABLED=1 go install -a -race $go_options "$1"
+      env GOPATH="$conf_install_go_path" CGO_ENABLED=1 go install -a -race "$1"
     fi
   ) || {
-    log_warn "go install failed: env GOPATH='$conf_install_go_path' CGO_ENABLED=1 go install -a -race $go_options '$go_build_options' $1"
+    log_warn "go install failed: env GOPATH='$conf_install_go_path' CGO_ENABLED=1 go install -a -race '$go_build_options' $1"
     log_warn "http_proxy: $http_proxy"
     log_warn "git  proxy: $(git config --global http.proxy)"
   }
@@ -87,21 +86,21 @@ _go_uninstall_do() {
 }
 
 _go_is_installed() {
-  local cmd_name=$(basename $(printf '%s\n' "$1" | sed -e 's/@.*//'))
+  local cmd_name=$(basename $(printf '%s\n' "$1" | sed 's/@.*//; s/\/v[0-9]*$//'))
   [ -e "$conf_install_go_path/bin/$cmd_name" ]
 }
 
-  
 
-  
-  
-    
 
-  
-  
-    
 
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+

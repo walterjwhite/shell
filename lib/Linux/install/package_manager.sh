@@ -17,6 +17,6 @@ package_bootstrap() {
 }
 
 package_update() {
-  log_detail "updated packages via ${linux_package_manager}"
+  log_detail "updating packages via ${linux_package_manager}"
   package_${linux_package_manager}_update "$@"
 }

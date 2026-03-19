@@ -41,7 +41,6 @@ _configure_devices() {
   file_require "$conf_system_configuration_path/configuration"
 
   . $conf_system_configuration_path/configuration
-  routers="${_IP_PREFIX}.1"
   _ip=$_STARTING_IP
 
   for _client_device_file in $(find $conf_system_configuration_path/devices -type f ! -name '.*'); do
@@ -49,11 +48,11 @@ _configure_devices() {
 
     grep -cqm1 '^# STATIC_IP' $_client_device_file || {
       $GNU_SED -i '/_ip=/d' $_client_device_file
-      printf '_ip=%s.%s\n' "${_IP_PREFIX}" "${_ip}" >>$_client_device_file
 
-      [ -z "$_CLIENT_IP_START" ] && _CLIENT_IP_START=$_IP_PREFIX.$_ip
+      _client_ip=$_IP_PREFIX.$_ip
+      printf '_ip=%s\n' "$_client_ip" >>$_client_device_file
 
-      _client_ip_end=$_IP_PREFIX.$_ip
+      [ -z "$_CLIENT_IP_START" ] && _CLIENT_IP_START=$_client_ip
 
       _ip=$((_ip + 1))
     }

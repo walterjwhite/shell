@@ -13,6 +13,7 @@ _stdin_read_ifs() {
 }
 
 _stdin_continue_if() {
+  unset _proceed
   _stdin_read_if "$1" _proceed "$2"
   if [ -z "$_proceed" ]; then
     _default=$(printf '%s' $2 | awk -F'/' {'print$1'})

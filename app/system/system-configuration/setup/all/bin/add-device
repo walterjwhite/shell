@@ -1,0 +1,59 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="group_name:Group Name|device_name:Device Name|device_macs:Device MAC addresses"
+
+lib ./configuration.sh
+lib provider.sh
+lib system.sh
+
+cfg .
+
+_sys_conf_update_conf() {
+  system_id=$(_system_get_id)
+  system_git_url=$(_system_get_git_url)
+
+  system_workspace=$(_mktemp_options=d _mktemp_mktemp)
+  git clone "$system_git_url" -b $system_id $system_workspace
+
+  cd $system_workspace
+
+  cd $(find patches -type d -name devices | head -1)
+
+  rm -rf $group_name/$device_name
+  cp -R $conf_system_configuration_path/devices/$group_name/$device_name $group_name/$device_name
+
+  git add $group_name/$device_name
+  git commit $group_name/$device_name -m "sys-conf - add device - $device_name"
+  git push
+  cd /tmp
+
+  rm -rf $system_workspace
+}
+
+sudo_ensure_root "$@"
+
+printf '%s' $device_name | $GNU_GREP -Pcqm1 "[\w]+\.[\w]+\.[\w]+\.(desktop|laptop|tablet|phone|hardware)" || {
+  exit_with_error "device name must follow pattern: owner.manufacturer.device-name.(desktop|laptop|tablet|phone|hardware)"
+}
+
+file_require $conf_system_configuration_path/devices/$group_name "$group_name does not exist"
+mkdir -p $conf_system_configuration_path/devices/$group_name/$device_name
+
+log_info "adding device"
+
+for device_mac in $device_macs; do
+  case $device_mac in
+  w:*)
+    log_detail "detected wireless mac"
+    device_mac="${device_mac##*w:}"
+
+    printf 'psk=\n' >$conf_system_configuration_path/devices/$group_name/$device_name/$device_mac
+    ;;
+  *)
+    touch $conf_system_configuration_path/devices/$group_name/$device_name/$device_mac
+    ;;
+  esac
+done
+
+system-configuration
+_sys_conf_update_conf

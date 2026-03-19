@@ -7,7 +7,6 @@ lib ./run.sh
 cfg .
 cfg git
 
-log_warn "conf_console_log: $conf_log_console"
 _chroot_init
 _configure_configure
 

@@ -1,5 +1,5 @@
 _buildfile_inject_lite() {
-  $GNU_GREP -Pcq '^(init |readonly REQUIRED_ARGUMENTS=|readonly REQUIRED_APP_CONF=)' $1 && exit_with_error "files may not contain init or required_arguments"
+  $GNU_GREP -Pcq '^(init |readonly REQUIRED_ARGUMENTS=)' $1 && exit_with_error "files may not contain init or required_arguments"
 
   _buildfile_inject_header
 

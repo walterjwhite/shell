@@ -13,4 +13,4 @@ cd xk6-disruptor
 
 unset GOPATH
 xk6 build --output xk6-disruptor --with github.com/grafana/xk6-disruptor=. 2>/dev/null || exit_with_error "error building xk6-disruptor"
-sudo_run cp xk6-disruptor $BIN_PATH/k6
+sudo_run cp xk6-disruptor $APP_PLATFORM_BIN_PATH/k6

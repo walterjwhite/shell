@@ -1,7 +1,7 @@
 lib net/download.sh
 
 _github_latest_release() {
-  curl -sL https://api.github.com/repos/$1/$2/releases/latest | grep tag_name | awk {'print$2'} | tr -d '"' | tr -d ','
+  curl -sL https://api.github.com/repos/$1/$2/releases/latest | jq -r ".tag_name"
 }
 
 _github_fetch_latest_artifact() {

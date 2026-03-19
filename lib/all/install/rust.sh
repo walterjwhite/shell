@@ -14,7 +14,7 @@ _rust_install_do() {
     log_detail "$1 is already installed"
     return 0
   }
-  
+
   local _rust_root_dir=$(printf '%s' $APP_PLATFORM_BIN_PATH | sed -e 's/\/bin//')
   cargo install --root=$_rust_root_dir "$@"
 }

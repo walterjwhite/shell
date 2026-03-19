@@ -34,7 +34,7 @@ _jail_install_app() {
 
   _git_system_conf $os_installer_jail_name /$_os_installer_jail_zfs_mountpoint/$os_installer_jail_name
 
-  APP_PLATFORM_ROOT=/$_os_installer_jail_zfs_mountpoint/$os_installer_jail_name conf_log_console=$conf_log_console log_no_indent=1 app-install "$@"
+  APP_PLATFORM_ROOT=/$_os_installer_jail_zfs_mountpoint/$os_installer_jail_name log_no_indent=1 app-install "$@"
 }
 
 _update_jails_list() {

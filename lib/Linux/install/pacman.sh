@@ -1,13 +1,16 @@
 package_pacman_install_do() {
-  _pacman_cmd -Sqyu --noconfirm "$@"
+  flags="-Sqyu --noconfirm"
+  _pacman_cmd "$@"
 }
 
 package_pacman_uninstall_do() {
-  _pacman_cmd -Rq --noconfirm "$@"
+  flags="-Rq --noconfirm"
+  _pacman_cmd "$@"
 }
 
 package_pacman_is_installed() {
-  _pacman_cmd -Q "$@"
+  flags="-Q"
+  _pacman_cmd "$@"
 }
 
 package_pacman_bootstrap() {
@@ -15,22 +18,26 @@ package_pacman_bootstrap() {
 }
 
 package_pacman_update() {
-  _pacman_cmd -Syuq --noconfirm "$@"
+  flags="-Syuq --noconfirm"
+  _pacman_cmd "$@"
+  
+  aur_package_update
 }
 
 _pacman_cmd() {
+
   [ "$APP_PLATFORM_ROOT" = "/" ] && {
-    pacman "$@" 2>&1 >/dev/null
+    pacman $flags "$@" 2>&1 >/dev/null
     return
   }
 
   [ "$_container_type" = "incus" ] && {
     log_warn "detected incus container, using incus exec"
-    incus exec $_container_name -- pacman "$@" 2>&1 >/dev/null
+    incus exec $_container_name -- pacman $flags "$@" 2>&1 >/dev/null
     return
   }
 
-  pacman --sysroot $APP_PLATFORM_ROOT "$@" 2>&1 >/dev/null
+  pacman $flags --sysroot $APP_PLATFORM_ROOT "$@" 2>&1 >/dev/null
 }
 
 _pacman_setup_keys() {
@@ -44,13 +51,13 @@ _pacman_setup_keys() {
   pacman-key --populate archlinux cachyos
 }
 
-
-
-
-
-
-
-
 pacman_package_bootstrap_is_package_available() {
   return 0
 }
+
+
+
+
+
+
+

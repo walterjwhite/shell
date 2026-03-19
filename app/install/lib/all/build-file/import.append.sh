@@ -10,7 +10,7 @@ _buildfile_import_append_file() {
 
   if [ -e "${src}.test" ]; then
     if ! (. "${src}.test" "$buildfile_output_package_file"); then
-      log_debug "skipping $src (test failed)"
+      log_debug "skipping $src (test failed) | $buildfile_output_package_file"
       return 0
     fi
   fi

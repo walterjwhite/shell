@@ -1,0 +1,11 @@
+#!/bin/sh
+
+_claude_code_install() {
+    log_warn 'installing claude'
+    curl -fsSL https://claude.ai/install.sh | sh
+    cp -L ~/.local/bin/claude $INSTALL_BIN_PATH/
+
+    setup_type_name=bin _install_setup_type_add $INSTALL_BIN_PATH/claude
+}
+
+[ -e $INSTALL_BIN_PATH/claude ] || _claude_code_install

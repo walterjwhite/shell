@@ -4,10 +4,8 @@ lib .
 
 cfg .
 
-exit_defer _stop_casting "stopping slideshow..."
-
 if fetch_memories; then
   cast_slideshow
 else
-  exit_with_success "no memories to show, waiting..."
+  exit_with_success "no memories to show"
 fi

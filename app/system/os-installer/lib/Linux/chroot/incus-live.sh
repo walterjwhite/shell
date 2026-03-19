@@ -87,7 +87,6 @@ _incus_live() {
     --env conf_os_installer_system_name=$_container_name \
     --env logging_context=$logging_context \
     --env container=lxc $_container_name \
-    --env conf_log_console=$conf_log_console \
     --env add_log_context=incus-$_container_name \
     --env conf_os_installer_system_workspace=/os \
     --env conf_git_mirror=$conf_git_mirror \

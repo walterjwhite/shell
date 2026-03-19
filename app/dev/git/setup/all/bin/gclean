@@ -8,7 +8,7 @@ sudo_ensure_not_root
 git rev-parse --git-dir >/dev/null 2>&1 || exit_with_error "not in a git repository"
 
 log_info "moving *.md files to doc.secret/"
-git ls-files '*.md' '*.txt' | while IFS= read -r md_file; do
+git ls-files '*.md' '*.txt' '*.puml' '*/diagrams/*.svg' | while IFS= read -r md_file; do
   [ ! -f "$md_file" ] && continue
 
   case "$md_file" in

@@ -1,12 +1,12 @@
 : ${conf_log_beep_timeout:=5}
 
-: ${conf_log_beep_ERR:='L32c'}
-: ${conf_log_beep_ALRT:='L32f'}
+: ${conf_log_beep_err:='L32c'}
+: ${conf_log_beep_alrt:='L32f'}
 : ${conf_log_beep_SCS:='L32a'}
-: ${conf_log_beep_WRN:=''}
+: ${conf_log_beep_wrn:=''}
 : ${conf_log_beep_info:=''}
 : ${conf_log_beep_detail:=''}
 : ${conf_log_beep_debug:=''}
-: ${conf_log_beep_STDIN:='L32ab'}
+: ${conf_log_beep_stdin:='L32ab'}
 
 : ${conf_log_sudo_beep_tone:=L32aL8fL32c}

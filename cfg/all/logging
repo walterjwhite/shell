@@ -27,6 +27,4 @@ CONF_LOG_HEADER="##################################################"
 
 which mail > /dev/null 2>&1 || conf_log_mail_disabled=1
 
-[ -t 0 ] && interactive=1
-
-: ${conf_log_console:=2}
+[ -t 2 ] && [ -c /dev/tty ] && interactive=1

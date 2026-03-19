@@ -1,7 +1,3 @@
-_load_media_cleanup() {
-  umount $conf_load_media_mount_point
-}
-
 _load_media_mount() {
   mkdir -p $conf_load_media_mount_point
 
@@ -16,7 +12,7 @@ _load_media_mount() {
 
   [ $? -eq 0 ] || exit_with_error 'exit_with_error mounting media'
 
-  exit_defer _load_media_cleanup
+  exit_defer umount $conf_load_media_mount_point
 
   find "$conf_load_media_mount_point" -maxdepth 1 -mindepth 1 -print -quit >/dev/null 2>&1 || exit_with_error "error checking phone contents"
 }

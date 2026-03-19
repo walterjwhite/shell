@@ -1,5 +1,5 @@
 _vizio_do_pair() {
-  log_detail "pairing request to $chromecast_device:$vizio_port ..."
+  log_detail "pairing request to $conf_immich_cast_chromecast_device:$vizio_port ..."
 
   _vizio_api PUT /pairing/cancel \
     "{\"DEVICE_ID\": \"${vizio_device_id}\"}"

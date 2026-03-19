@@ -1,13 +1,13 @@
 #!/bin/sh
 
-readonly REQUIRED_ARGUMENTS="_load_media_source_directory:Source Directory"
+readonly REQUIRED_ARGUMENTS="media_dir:Media Source Directory"
 
 lib .
 lib io/file.sh
 
-file_require "$_load_media_source_directory" "Source Directory"
+file_require "$media_dir" "Media Source Directory"
 
-sudo_ensure_root "$@"
+sudo_ensure_root "$media_dir" "$@"
 
 _load_media_is_mounted || _load_media_mount
 

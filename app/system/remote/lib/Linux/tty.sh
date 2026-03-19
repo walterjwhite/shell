@@ -1,13 +1,13 @@
 tty_disable() {
-  $GNU_SED -i 's/^c/#c/' /etc/inittab
+  sudo_run $GNU_SED -i 's/^c/#c/' /etc/inittab
   _reload_init
 }
 
 tty_enable() {
-  $GNU_SED -i 's/^#c/c/' /etc/inittab
+  sudo_run $GNU_SED -i 's/^#c/c/' /etc/inittab
   _reload_init
 }
 
 _reload_init() {
-  kill -hup 1
+  sudo_run kill -hup 1
 }

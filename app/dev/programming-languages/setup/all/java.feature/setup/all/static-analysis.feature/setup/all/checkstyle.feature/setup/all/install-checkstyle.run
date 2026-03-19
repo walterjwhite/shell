@@ -1,0 +1,75 @@
+#!/bin/sh
+
+lib git/github.sh
+lib net/download.sh
+cfg feature:.
+
+_get_installed_checkstyle_version() {
+    if [ -e __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar ]; then
+        java -jar __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar -V 2>/dev/null | head -1 | cut -d' ' -f3
+    fi
+}
+
+_get_latest_checkstyle_version() {
+    _github_latest_release checkstyle checkstyle | sed -e 's/checkstyle-//'
+}
+
+_get_xml_checksum() {
+    local xml_url="$1"
+    local xml_file="$2"
+    
+    local remote_checksum=$(curl -sL "$xml_url" | sha256sum | cut -d' ' -f1)
+    
+    local local_checksum=""
+    if [ -f "$xml_file" ]; then
+        local_checksum=$(sha256sum "$xml_file" | cut -d' ' -f1)
+    fi
+    
+    printf '%s|%s' "$remote_checksum" "$local_checksum"
+}
+
+_is_xml_up_to_date() {
+    local xml_url="$1"
+    local xml_file="$2"
+    
+    local checksums=$(_get_xml_checksum "$xml_url" "$xml_file")
+    local remote_checksum=$(printf '%s' "$checksums" | cut -d'|' -f1)
+    local local_checksum=$(printf '%s' "$checksums" | cut -d'|' -f2)
+    
+    [ -n "$local_checksum" ] && [ "$remote_checksum" = "$local_checksum" ]
+}
+
+_is_latest_checkstyle_installed() {
+  latest_checkstyle_version=$(_get_latest_checkstyle_version)
+  installed_checkstyle_version=$(_get_installed_checkstyle_version)
+  [ "$latest_checkstyle_version" = "$installed_checkstyle_version" ]
+}
+
+_install_xml_file() {
+  local xml_name="$1"
+  
+  local xml_url="https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/$xml_name"
+  local xml_file="__LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checks/$xml_name"
+  
+  if ! _is_xml_up_to_date "$xml_url" "$xml_file"; then
+    log_detail "updating $xml_name"
+    no_cache=1 _download_fetch "$xml_url"
+    _download_install_file "$xml_file"
+  else
+    log_detail "$xml_name is up to date"
+  fi
+}
+
+_install_checkstyle() {
+  _download_fetch "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${latest_checkstyle_version}/checkstyle-${latest_checkstyle_version}-all.jar"
+
+  _download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar
+}
+
+_get_latest_checkstyle_version
+if ! _is_latest_checkstyle_installed; then
+    _install_checkstyle
+fi
+
+_install_xml_file "google_checks.xml"
+_install_xml_file "sun_checks.xml"

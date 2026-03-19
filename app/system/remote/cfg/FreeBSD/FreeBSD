@@ -1,3 +1,5 @@
+: ${log_logfile:=/var/log/walterjwhite/remote}
+
 : ${conf_remote_service_start_cmd:="service wireguard start"}
 : ${conf_remote_service_stop_cmd:="service wireguard stop"}
 

@@ -1,8 +1,8 @@
 lib qr.sh
 
 secrets_get() {
-  _secrets_get_key "$@"
   [ -n "$out" ] && conf_secrets_output_function=$out
+  _secrets_get_key "$@"
 
   case $conf_secrets_output_function in
   wifi)

@@ -24,7 +24,7 @@ _data_app_init() {
   [ -n "$1" ] && _project_identifier=$1
 
   git_project_path=$DATA_PATH/$_project_identifier
-  system_get_id
+  system_id=$(_system_get_id)
 
   if [ -n "$system_id" ]; then
     git_project=data/$system_id/$USER/$_project_identifier
@@ -43,4 +43,5 @@ _data_app_init() {
   fi
 
   cd $git_project_path
+  git pull
 }

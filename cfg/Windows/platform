@@ -1,10 +1,10 @@
-: ${conf_log_beep_ERR:='500,400'}
-: ${conf_log_beep_ALRT:='600,200'}
+: ${conf_log_beep_err:='500,400'}
+: ${conf_log_beep_alrt:='600,200'}
 : ${conf_log_beep_SCS:='700,100'}
-: ${conf_log_beep_WRN:=''}
+: ${conf_log_beep_wrn:=''}
 : ${conf_log_beep_info:=''}
 : ${conf_log_beep_detail:=''}
 : ${conf_log_beep_debug:=''}
-: ${conf_log_beep_STDIN:='700,200'}
+: ${conf_log_beep_stdin:='700,200'}
 
 readonly PLATFORM_SYSTEM_ID_PATH=$HOME/.local/walterjwhite/system

@@ -14,8 +14,6 @@ _buildfile_inject_full() {
   unset buildfile_included_cfg
 
 
-  printf 'readonly REQUIRED_APP_CONF=""\n' >>$buildfile_output_package_file
-
   : ${init_imports:="$BUILDFILE_FULL_INIT"}
   buildfile_optional=1 _buildfile_imports init $1 "$init_imports"
 
@@ -23,7 +21,7 @@ _buildfile_inject_full() {
 
   _buildfile_format_shell_scripts
 
-  $GNU_GREP -Pvh '^(#|var |lib |cfg |constant |init |readonly REQUIRED_ARGUMENTS=|readonly REQUIRED_APP_CONF=)' $1 >>$buildfile_output_package_file
+  $GNU_GREP -Pvh '^(#|var |lib |cfg |constant |init |readonly REQUIRED_ARGUMENTS=)' $1 >>$buildfile_output_package_file
 
   [ -n "$post_build_function" ] && $post_build_function
 

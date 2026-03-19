@@ -3,7 +3,7 @@ _vizio_api() {
   local vizio_request_path="$2"
   local vizio_request_body="$3"
 
-  local vizio_url="https://${chromecast_device}:${vizio_port}${vizio_request_path}"
+  local vizio_url="https://${conf_immich_cast_chromecast_device}:${vizio_port}${vizio_request_path}"
 
   if [ -n "$vizio_request_body" ]; then
     curl -ksS \

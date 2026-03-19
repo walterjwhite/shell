@@ -10,3 +10,10 @@ _iostat_io() {
 _iostat_ctime() {
   stat -s "$1" | tr ' ' '\n' | grep st_ctime | sed -e 's/.*=//'
 }
+
+_iostat_ctime_many() {
+  for file in "$@"; do
+    stat -s "$file" | tr ' ' '\n' | grep st_ctime | sed -e 's/.*=//' | tr -d '\n'
+    printf ' %s\n' "$file"
+  done
+}

@@ -9,6 +9,6 @@ package_update
 
 app-update
 
-root_zfs_volume=$(zfs get -H name / | awk {'print$1'} | cut -f1 -d/ | head -1)
+root_zfs_volume=$(zfs get -H name / | awk {'print$1'})
 
 zap snap 30d ${root_zfs_volume}

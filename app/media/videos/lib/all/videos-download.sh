@@ -36,7 +36,7 @@ _video_download() {
     return
   fi
 
-  _video_downloadexit_with_success
+  _video_download_success
   _video_download_convert
 }
 
@@ -55,7 +55,7 @@ _videos_download_setup_proxy() {
 }
 
 _video_download_error() {
-  _video_download_git exit_with_error "download error"
+  _video_download_git error "download error"
   exit_with_error "error downloading video - $video_key" $_status
 }
 
@@ -63,13 +63,13 @@ _video_download_extract_audio() {
   _video_download_git extracted "download / extract"
 }
 
-_video_downloadexit_with_success() {
+_video_download_success() {
   _video_download_git downloaded "download"
   log_info "successfully downloaded $videos_url - $video_title @ $video_duration"
 }
 
 _video_download_git() {
-  local _video_target=$1/$(_target)
+  local _video_target=$1/$(_videos_date)
   mkdir -p $(dirname $_video_target)
 
   git mv $video_file $_video_target || {
@@ -81,21 +81,19 @@ _video_download_git() {
 }
 
 _video_download_convert() {
-  if [ -z "$video_profiles" ]; then
-    return 1
-  fi
+  [ -z "$video_profiles" ] && return 1
 
   video_media_file=$(find $conf_videos_download_path -type f ! -name '.part' -name "*$video_key*")
   validation_require "$video_media_file" video_media_file
 
-  for _VIDEO_PROFILE in $video_profiles; do
-    log_info "converting video with $_VIDEO_PROFILE"
+  for video_profile in $video_profiles; do
+    log_info "converting video with $video_profile"
 
-    local video_profile_name=$(printf $_VIDEO_PROFILE | tr '[:lower:]' '[:upper:]')
+    local video_profile_name=$(printf $video_profile | tr '[:lower:]' '[:upper:]')
 
     local profile_video_format=$(set | grep "^conf_videos_profile_${video_profile_name}_VIDEO_FORMAT=.*" | sed -e 's/^.*\=//')
     local profile_options=$(set | grep "^conf_videos_profile_${video_profile_name}_options=.*" | sed -e 's/^.*\=//')
 
-    ffmpeg -i "$video_media_file" $profile_options ${video_media_file}-$_VIDEO_PROFILE.$profile_video_format
+    ffmpeg -i "$video_media_file" $profile_options ${video_media_file}-$video_profile.$profile_video_format
   done
 }

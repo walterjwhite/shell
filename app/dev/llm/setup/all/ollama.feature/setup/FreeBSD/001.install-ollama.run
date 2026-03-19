@@ -23,9 +23,9 @@ _ollama_install_from_source() {
 
     rm -f /tmp/ollama-build.log
 
-    cp ollama $BIN_PATH/ollama
-    chmod +x $BIN_PATH/ollama
-    printf '%s\n' "$BIN_PATH/ollama" >> $_INSTALLED_FILES
+    cp ollama $APP_PLATFORM_BIN_PATH/ollama
+    chmod +x $APP_PLATFORM_BIN_PATH/ollama
+    printf '%s\n' "$APP_PLATFORM_BIN_PATH/ollama" >> $_INSTALLED_FILES
 
     cd ..
     rm -rf ollama

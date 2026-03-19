@@ -19,7 +19,7 @@ _setup_run_type() {
   _setup_get_type_name
 
   _setup_type_is_supported || {
-    log_warn "unknown type"
+    log_warn "unknown type: $setup_type_name"
     log_remove_context
     return
   }

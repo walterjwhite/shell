@@ -13,7 +13,6 @@ configuration_restore() {
   }
 
   provider_parent_dir=$(dirname "$provider_path")
-  provider_filename=$(basename "$provider_path")
 
   mkdir -p $provider_parent_dir
   provider_path="$provider_parent_dir"

@@ -1,0 +1,4 @@
+: ${conf_dev_detect_secrets_venv:=__LIBRARY_PATH__/__APPLICATION_NAME__/python/env/detect_secrets}
+: ${conf_dev_detect_secrets_python_artifact=detect-secrets}
+
+: ${conf_dev_detect_secrets_exclude_files:="--exclude-files '.*\.secret/.*' --exclude-files '.*.archived.*' --exclude-files '.*\.secrets$'"}

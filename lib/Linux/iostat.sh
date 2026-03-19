@@ -14,3 +14,7 @@ _iostat_io() {
 _iostat_ctime() {
   stat -c%W $1
 }
+
+_iostat_ctime_many() {
+  stat -c '%W %n'
+}

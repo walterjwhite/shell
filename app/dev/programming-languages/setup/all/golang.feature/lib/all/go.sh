@@ -14,7 +14,7 @@ go_build_do() {
     return
   }
 
-  log_warn 'building cmd'
+  log_detail 'building cmd'
   _go_build_cmd
 }
 

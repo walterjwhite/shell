@@ -25,7 +25,7 @@ usb_enable() {
 
 authorize_usb() {
   if [ -e $1 ]; then
-    printf '1\n' >$1
+    printf '1\n' | sudo_run tee $1 >/dev/null 2>&1
   else
     log_warn "$1 does not exist"
   fi
@@ -33,7 +33,7 @@ authorize_usb() {
 
 unauthorize_usb() {
   if [ -e $1 ]; then
-    printf '0\n' >$1 2>/dev/null
+    printf '0\n' | sudo_run tee $1 >/dev/null 2>&1
   else
     log_warn "$1 does not exist"
   fi
@@ -44,21 +44,21 @@ usb_authorization() {
 }
 
 usb_authorization_do() {
-  local _command=$1
+  local _function=$1
   shift
 
   local usb_hub
   set -f
   for usb_hub in $(find /sys/bus/usb/devices/ -maxdepth 1 -name 'usb*'); do
-    $_command $usb_hub/authorized_default
+    $_function $usb_hub/authorized_default
 
     for usb_product in $(find $usb_hub/ -mindepth 2 -name 'product' -type f $@ | sed -e 's/\/product//'); do
-      $_command $usb_product/authorized
+      $_function $usb_product/authorized
     done
   done
 
   set +f
-  unset _command usb_hub usb_product
+  unset _function usb_hub usb_product
 }
 
 usb_device_find_by_product() {

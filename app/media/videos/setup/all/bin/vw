@@ -1,5 +1,7 @@
 #!/bin/sh
 
+readonly REQUIRED_ARGUMENTS="video_id:ID of video (can be a substring)"
+
 lib io/path.sh
 lib ./videos.sh
 
@@ -12,11 +14,9 @@ _action=watch
 
 _watch() {
   video_key=$(basename $video_media_file | $GNU_GREP -Po "\-{0,1}[0-9A-Za-z_-]{10}[048AEIMQUYcgkosw]\." | tail -1 | sed -e "s/^\-//" -e "s/\.$//" -e "s/\-/\\\-/g")
-  video_file=$(grep $video_key downloaded -rl)
+  video_file=$(grep "$video_key" downloaded -rl | head -1)
 
-  if [ -z "$video_file" ]; then
-    exit_with_error "downloaded video not found for: $video_key" 2
-  fi
+  validation_require "$video_file" "video file not found for $video_key"
 
   _video_read_meta
   _video_meta
@@ -56,15 +56,24 @@ _move_watched_video() {
 
     git mv $video_file $video_watched_file
 
+    grep -lr "$video_key" downloaded | grep -cqm1 '.' && {
+      log_warn "other instances found, moving those to watched too"
+
+      watch_date=$(date +%Y/%m/%d)
+      git mv $(grep -lr "$video_key" downloaded) watched/$watch_date
+    }
+
     _videos_git $video_file $video_watched_file
   fi
+
+  unset _RETAIN
 }
 
 _watch_specified() {
   video_file=$1
 
   if [ ! -e $video_file ]; then
-    video_media_file=$(find $conf_videos_download_path -type f ! -name '.part' | grep $video_file)
+    video_media_file=$(find $conf_videos_download_path -type f ! -name '.part' | grep "$video_file")
   fi
 
   if [ -z "$video_media_file" ]; then
@@ -74,31 +83,11 @@ _watch_specified() {
   _watch
 }
 
-_watch_clipboard() {
-  _videos_clipboard_get
 
-  if [ -n "$videos_url" ]; then
-    video_key=$(printf '%s' $videos_url | sed -e "s/^.*\=//")
-    if [ -n "$video_key" ]; then
-      _clipboard_clear
 
-      _watch_specified $video_key
-      return $?
-    fi
-  fi
 
-  return 1
-}
 
-_watch_all() {
-  for video_media_file in $(find $conf_videos_download_path -type f ! -name '*.part'); do
-    _watch
-  done
-}
 
 _data_app_init
-if [ "$#" -eq "1" ]; then
-  _watch_specified $1
-else
-  _watch_clipboard || _watch_all
-fi
+
+_watch_specified $video_id

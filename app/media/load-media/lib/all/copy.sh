@@ -1,27 +1,27 @@
 _load_media_prepare_target() {
   mkdir -p "$conf_load_media_mount_point/$conf_load_media_target_path"
 
-  _LOAD_MEDIA_SOURCE_DIRECTORY=$(_file_readlink "$_LOAD_MEDIA_SOURCE_DIRECTORY")
-  _TARGET_DIRECTORY_NAME=$(basename "$_LOAD_MEDIA_SOURCE_DIRECTORY")
-  if [ -e "$conf_load_media_mount_point/$conf_load_media_target_path/$_TARGET_DIRECTORY_NAME" ]; then
-    _stdin_continue_if "Delete existing target?" "Y/n" || exit_with_error "$conf_load_media_mount_point/$conf_load_media_target_path/$_TARGET_DIRECTORY_NAME already exists"
+  media_dir=$(_file_readlink "$media_dir")
+  target_dir_name=$(basename "$media_dir")
+  if [ -e "$conf_load_media_mount_point/$conf_load_media_target_path/$target_dir_name" ]; then
+    _stdin_continue_if "Delete existing target?" "Y/n" || exit_with_error "$conf_load_media_mount_point/$conf_load_media_target_path/$target_dir_name already exists"
 
-    rm -rf "$conf_load_media_mount_point/$conf_load_media_target_path/$_TARGET_DIRECTORY_NAME"
+    rm -rf "$conf_load_media_mount_point/$conf_load_media_target_path/$target_dir_name"
   fi
 }
 
 _load_media_copy() {
-  log_info "copying $_LOAD_MEDIA_SOURCE_DIRECTORY -> $conf_load_media_target_path"
+  log_info "copying $media_dir -> $conf_load_media_target_path"
 
   local file_to_copy
-  for file_to_copy in $(find "$load_media_source_directory" -type f ! -name '*.secrets' ! -path '*/.archived/*'); do
-    local target=$(printf '%s' "$file_to_copy" | sed -e "s|^$load_media_source_directory||")
+  for file_to_copy in $(find "$media_dir" -type f ! -name '*.secrets' ! -path '*/.archived/*'); do
+    local target=$(printf '%s' "$file_to_copy" | sed -e "s|^$media_dir||")
     local target_directory=$(dirname "$target")
 
     local extension=$(_load_media_extension "$file_to_copy")
 
-    mkdir -p "$conf_load_media_mount_point/$conf_load_media_target_path/$_TARGET_DIRECTORY_NAME/$target_directory"
-    cp -R "$file_to_copy" "$conf_load_media_mount_point/$conf_load_media_target_path/$_TARGET_DIRECTORY_NAME/$target$extension"
+    mkdir -p "$conf_load_media_mount_point/$conf_load_media_target_path/$target_dir_name/$target_directory"
+    cp -R "$file_to_copy" "$conf_load_media_mount_point/$conf_load_media_target_path/$target_dir_name/$target$extension"
   done
 }
 

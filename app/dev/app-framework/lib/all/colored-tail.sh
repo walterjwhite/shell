@@ -10,5 +10,5 @@ _colored_tail_show() {
       -e "s, DEBUG ,${escape_sequence}[35m&${escape_sequence}[0m," \
       -e "s, INFO ,${escape_sequence}[36m&${escape_sequence}[0m," \
       -e "s, WARN ,${escape_sequence}[33m&${escape_sequence}[0m," \
-      -e "s, ERROR ,${escape_sequence}[31m&${escape_sequence}[0m," >&$conf_log_console
+      -e "s, ERROR ,${escape_sequence}[31m&${escape_sequence}[0m," >/dev/tty
 }

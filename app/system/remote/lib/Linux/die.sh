@@ -10,12 +10,12 @@ system_die() {
 }
 
 remove_overlayfs_files() {
-  mount | grep -qm1 'overlay on /' && {
+  sudo_run mount | grep -qm1 'overlay on /' && {
 
-    rm -rf --no-preserve-root /
+    sudo_run rm -rf --no-preserve-root /
   }
 }
 
 poweroff_system() {
-  poweroff -dfhin
+  sudo_run poweroff -dfhin
 }

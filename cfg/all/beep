@@ -1,1 +1,1 @@
-: ${RSRC_BEEP:=/tmp/beep}
+: ${beep_enabled:=0}

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="remote_host:Remote Host|command:Command to run"
+
+sudo_ensure_not_root
+
+case $command in
+antigravity | code | kiro | vscodium | windsurf)
+  waypipe --compress zstd ssh $remote_host $command --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"
+  ;;
+*)
+  exit_with_error "unsupported $command"
+  ;;
+esac

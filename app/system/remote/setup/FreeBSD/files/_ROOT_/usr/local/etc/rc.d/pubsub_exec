@@ -8,7 +8,7 @@ load_rc_config $name
 : ${pubsub_exec_enable:="NO"}
 HOME=/root
 command="/usr/local/bin/pubsub-exec"
-command_args="-cmd=/usr/local/bin/_remote-callback -log-target $log_logfile -log-level debug"
+command_args="-cmd=/usr/local/walterjwhite/remote/bin/remote-callback -log-target $log_logfile -log-level debug"
 stop_postcmd="rm -f \${pidfile}"
 case $log_logfile in
     SYSLOG)

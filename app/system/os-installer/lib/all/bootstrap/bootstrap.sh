@@ -54,7 +54,7 @@ _init_chroot_ssh() {
 }
 
 _write_system() {
-  APP_PLATFORM_ROOT=$conf_os_installer_mountpoint system_write_id $conf_os_installer_system_name $conf_os_installer_system_ref $conf_os_installer_system_git
+  APP_PLATFORM_ROOT=$conf_os_installer_mountpoint _system_write_id $conf_os_installer_system_name $conf_os_installer_system_ref $conf_os_installer_system_git
 }
 
 _run_init() {

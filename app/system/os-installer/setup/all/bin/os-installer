@@ -67,7 +67,6 @@ _os_installer_chroot=$conf_os_installer_mountpoint \
   _os_installer_zfs_pool_name=$_os_installer_zfs_pool_name \
   _logging_context=$_logging_context \
   _add_log_context=chroot-$_os_installer_zfs_pool_name \
-  conf_log_console=$conf_log_console \
   chroot $conf_os_installer_mountpoint $APP_LIBRARY_PATH/bin/chroot "$@" 2>&1 || exit_with_error "exit_with_error during chroot"
 
 _post_install

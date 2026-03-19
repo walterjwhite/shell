@@ -21,13 +21,14 @@ _vpn_firewall_cleanup() {
   [ -n "$_WEB_BROWSER_PID" ] && kill -9 $_WEB_BROWSER_PID
 
   log_warn "cleaning up vpn"
-  publish-cmd -func vpn_stop
+
+  publish-cmd vpn_stop
 }
 
 _vpn_firewall_update() {
   log_warn "updating firewall to allow vpn client"
 
-  publish-cmd -func vpn_start -args "$_self_client_ip"
+  publish-cmd vpn_start $_self_client_ip
 }
 
 _vpn_firewall_wait_conf() {

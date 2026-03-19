@@ -109,7 +109,7 @@ _dnsmasq_dhcp() {
 }
 
 _dnsmasq_set_dhcp_range() {
-  printf 'dhcp-range=%s,%s,%s\n' "$_CLIENT_IP_START" "$_client_ip_end" "$_OPTN_SYSTEM_CONFIGURATION_DNSMASQ_DHCP_LEASE_TIMEOUT" >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dhcp
+  printf 'dhcp-range=%s,%s,%s\n' "$_CLIENT_IP_START" "$_client_ip" "$_OPTN_SYSTEM_CONFIGURATION_DNSMASQ_DHCP_LEASE_TIMEOUT" >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dhcp
 }
 
 _dnsmasq_write_dhcp_option() {
@@ -131,6 +131,8 @@ _dnsmasq_dns() {
   printf 'bogus-priv\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
   printf 'expand-hosts\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
   printf 'no-resolv\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
+
+  printf 'filter-AAAA\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
 
   printf 'log-async\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
   printf 'log-queries\n' >>${_SYSTEM_CONFIGURATION_DNSMASQ_CONF}.dns
