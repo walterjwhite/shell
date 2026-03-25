@@ -48,7 +48,7 @@ crontab_default_write() {
   _crontab_default_header $1 $2
 
   sudo_user=$1 sudo_run crontab $2 || {
-    log_warn "exit_with_error writing crontab"
+    log_warn "error writing crontab"
     sudo_user=$1 sudo_run cat $2
   }
 }

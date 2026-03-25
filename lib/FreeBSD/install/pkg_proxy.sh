@@ -6,7 +6,7 @@ _pkg_enable_proxy() {
 
   pkg_proxy_enabled=1
   exit_defer _pkg_disable_proxy
-  log_warn "configuring pkg to use HTTP proxy: $http_proxy (via [install])"
+  log_warn "configuring pkg to use HTTP proxy: $http_proxy"
 
   local _updated_package_conf
   _updated_package_conf=$(_mktemp_mktemp)
@@ -23,6 +23,6 @@ _pkg_disable_proxy() {
   [ -z "$http_proxy" ] && return 1
 
   unset pkg_proxy_enabled
-  log_warn "disabling HTTP proxy: $http_proxy (via [freebsd-installer])"
+  log_warn "disabling HTTP proxy: $http_proxy"
   "$GNU_SED" -i "s/^pkg_env/#pkg_env/" "$root/usr/local/etc/pkg.conf"
 }

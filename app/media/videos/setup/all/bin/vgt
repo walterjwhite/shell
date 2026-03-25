@@ -1,0 +1,66 @@
+#!/bin/sh
+
+lib ./themoviedb.org
+
+constant .
+
+cfg .
+
+sudo_ensure_not_root
+processes_restrict_to_single_process
+
+_movie_trailer_genre_names() {
+  movie_genre_id_names=""
+  for movie_genre_id in $movie_genre_ids; do
+    pair=$(printf '%s\n' "$TMDB_GENRE_MAP" | tr ' ' '\n' | awk -F: -v k="$movie_genre_id" '$1==k{print $0; exit}')
+    if [ -n "$pair" ]; then
+      genre=${pair#*:}
+    else
+      log_warn "genre not found: $movie_genre_id"
+    fi
+
+    movie_genre_id_names="$movie_genre_id_names $genre"
+  done
+}
+
+_movie_trailer_process_movie_record() {
+  local oifs=$IFS
+  IFS=
+  read -r -d '' movie_id || true
+  read -r -d '' movie_title || true
+  read -r -d '' release_date || true
+  read -r -d '' movie_genre_ids || true
+  IFS=$oifs
+
+  log_add_context "fetch-trailer"
+  log_add_context "$movie_title"
+
+  movie_genre_ids=$(printf '%s' "$movie_genre_ids" | awk -F'[^0-9]+' '{
+  for(i=1;i<=NF;i++) if($i~/^[0-9]+$/) print $i
+  }')
+
+  _movie_trailer_genre_names
+  _tmdb_fetch_movie_trailers "$movie_id" | jq -r -j '.[0].key, "\u0000", .[0].name, "\u0000"' | _movie_trailer_process_movie_trailer_record
+
+  log_remove_context
+  log_remove_context
+}
+
+_movie_trailer_process_movie_trailer_record() {
+  local oifs=$IFS
+  IFS=
+  read -r -d '' trailer_key || true
+  read -r -d '' trailer_name || true
+  IFS=$oifs
+
+
+  movie_certification=$(_tmdb_get_movie_certification "$movie_id")
+  _download_trailer
+
+  unset movie_certification
+
+}
+
+_tmdb_fetch_movies | jq -c '.[]' | while IFS= read -r obj; do
+  printf '%s' "$obj" | jq -r -j '.id, "\u0000", .title, "\u0000", .release_date, "\u0000", .genre_ids, "\u0000"' | _movie_trailer_process_movie_record
+done

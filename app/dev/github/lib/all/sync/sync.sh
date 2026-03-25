@@ -7,6 +7,8 @@ _github_iterate() {
 
   _github_sync
 
+  scan
+
   exec_wrap git add .
 
   if [ $conf_github_review -eq 1 ]; then

@@ -1,0 +1,13 @@
+scan - Git Scanner
+
+USAGE:
+    scan
+
+DESCRIPTION:
+    Git repository scanner utility.
+
+CONFIGURATION:
+    Uses git configuration settings.
+
+EXAMPLES:
+    scan

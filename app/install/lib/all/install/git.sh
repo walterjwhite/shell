@@ -53,3 +53,18 @@ _git_app_dir_setup() {
 
   log_detail "$target_application_name exists @ $target_application_version"
 }
+
+_git_has_updates() {
+  local local_repository_version=$(_git_local_repository_version)
+  local remote_repository_version=$(_git_remote_repository_version)
+
+  [ "$local_repository_version" != "$remote_repository_version" ]
+}
+
+_git_local_repository_version() {
+  git --git-dir=$REGISTRY_PATH/.git rev-parse --short HEAD
+}
+
+_git_remote_repository_version() {
+  git ls-remote $conf_install_app_registry_git_url HEAD | cut -c1-9
+}

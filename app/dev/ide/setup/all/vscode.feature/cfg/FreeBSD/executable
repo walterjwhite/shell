@@ -1,3 +1,3 @@
-: ${conf_dev_vscode_ide:=/usr/local/bin/vscode}
+: ${conf_dev_vscode_ide:=/usr/local/bin/code}
 
-conf_dev_vscode_executable=vscode
+conf_dev_vscode_executable=code

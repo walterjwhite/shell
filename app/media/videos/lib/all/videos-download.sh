@@ -2,18 +2,18 @@ _video_download() {
   _video_read_meta
 
   _video_meta $video_file >/dev/null 2>&1
-  extract_audio=$(sed -n 2p $video_file)
-  video_profiles=$(sed -n 3p $video_file)
 
   is_playlist=$(printf '%s' "$videos_url" | grep -c list=)
 
   _options=""
   [ -z "$interactive" ] && _options="--no-color -q"
 
-  if [ -n "$extract_audio" ]; then
+  if [ -n "$extract_audio" ] && [ "$extract_audio" -eq 1 ]; then
     log_warn "configuring audio extraction"
     _options="$_options -x --recode-video $conf_videos_audio_format"
     _prefix=extracted
+  else
+    _options="$_options $conf_videos_youtube_video_download_options"
   fi
 
   if [ $is_playlist -eq 1 ]; then

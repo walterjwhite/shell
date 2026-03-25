@@ -4,26 +4,17 @@ lib net/download.sh
 lib git/github.sh
 cfg feature:.
 
-_get_installed_timo_a_lomboker_version() {
-  [ -e __LIBRARY_PATH__/__APPLICATION_NAME__/timo-a-lomboker.jar ] && java -jar __LIBRARY_PATH__/__APPLICATION_NAME__/timo-a-lomboker.jar version | cut -d' ' -f2
+get_installed_timo_a_lomboker_version() {
+  [ ! -e __LIBRARY_PATH__/__APPLICATION_NAME__/timo-a-lomboker.jar ] && return
+  
+  printf 'v'
+  java -jar __LIBRARY_PATH__/__APPLICATION_NAME__/timo-a-lomboker.jar version | cut -d' ' -f2
 }
 
-_get_latest_timo_a_lomboker_version() {
-  _latest_timo_a_lomboker_version=$(_github_latest_release timo-a lomboker | sed -e 's/^v//')
+install_timo_a_lomboker() {
+  _download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/timo-a-lomboker.jar
 }
 
-_is_latest_timo_a_lomboker_installed() {
-  local _installed_version=$(_get_installed_timo_a_lomboker_version)
-  [ "$_installed_version" = "$_latest_timo_a_lomboker_version" ]
-}
-
-_install_timo_a_lomboker() {
-  log_info "installing timo-a-lomboker Java JAR"
-  _download_fetch https://github.com/timo-a/lomboker/releases/download/v${_latest_timo_a_lomboker_version}/lomboker-${_latest_timo_a_lomboker_version}.jar
-  _download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/timo-a-lomboker.jar
-}
-
-_get_latest_timo_a_lomboker_version
-if ! _is_latest_timo_a_lomboker_installed; then
-  _install_timo_a_lomboker
-fi
+_github_install_latest timo-a-lomboker timo-a lomboker '.tag_name' \
+    ".assets[] | select(.name | test(\"lomboker-.*.jar\")) | .browser_download_url" \
+    timo-a-lomboker.jar

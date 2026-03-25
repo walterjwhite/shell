@@ -4,5 +4,21 @@ lib net/download.sh
 cfg feature:.
 
 
-_download_fetch https://repo1.maven.org/maven2/com/google/googlejavaformat/google-java-format/${conf_dev_google_java_format_version}/google-java-format-${conf_dev_google_java_format_version}-all-deps.jar
-_download_install_file $conf_dev_google_java_format_jar
+_google_java_format_latest_version() {
+    curl -fsS 'https://central.sonatype.com/api/internal/browse/component/versions?sortField=normalizedVersion&sortDirection=desc&page=0&size=1&filter=namespace%3Acom.google.googlejavaformat%2Cname%3Agoogle-java-format' |
+        jq -r '.components[0].version'
+}
+
+_google_java_format_installed_version() {
+    google-java-format -v 2>&1 | grep 'google-java-format: Version ' | sed -e 's/^.*Version //'
+}
+
+latest_google_java_format_version=$(_google_java_format_latest_version)
+installed_google_java_format_version=$(_google_java_format_installed_version)
+
+if [ -z "$installed_google_java_format_version" ] || [ "$installed_google_java_format_version" != "$latest_google_java_format_version" ]; then
+    log_detail "installing google java format: $latest_google_java_format_version"
+
+    _download_fetch https://repo1.maven.org/maven2/com/google/googlejavaformat/google-java-format/${latest_google_java_format_version}/google-java-format-${latest_google_java_format_version}-all-deps.jar
+    _download_install_file $conf_dev_google_java_format_jar
+fi

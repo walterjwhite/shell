@@ -16,7 +16,7 @@ _scan_delta() {
 }
 
 _scan_do() {
-  _trivy_scan repo .
+  _trivy_scan repo . -f json
 }
 
 _scan_run trivy-repo

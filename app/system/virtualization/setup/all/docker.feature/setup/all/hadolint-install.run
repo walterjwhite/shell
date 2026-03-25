@@ -1,6 +1,10 @@
-lib net/download.sh
+lib git/github.sh
 
-_HADOLINT_ARTIFACT=hadolint-$(uname | tr '[:upper:]' '[:lower:]')-$(uname -m)
+get_installed_hadolint_version() {
+    hadolint -v | sed -e 's/^Haskell Dockerfile Linter /v/'
+}
 
-_download_fetch https://github.com/hadolint/hadolint/releases/latest/download/$_HADOLINT_ARTIFACT
-_install_file_chmod=755 _download_install_file $APP_PLATFORM_BIN_PATH/hadolint
+hadolint_platform=$(printf '%s' $APP_PLATFORM_PLATFORM | tr '[:upper:]' '[:lower:]')
+_github_install_latest hadolint hadolint hadolint .name \
+    ".assets[] | select(.name | test(\"hadolint-$hadolint_platform-$APP_PLATFORM_ARCHITECTURE\")) | .browser_download_url" \
+    hadolint-$hadolint_platform-$APP_PLATFORM_ARCHITECTURE hadolint

@@ -15,7 +15,7 @@ _software_center_is_disabled() {
 _software_center_run() {
   _software_center_is_disabled && return
 
-  $conf_install_software_center_executable $1 $2
+  $SOFTWARE_CENTER_EXECUTABLE $1 $2
 
   local _install_status=$?
   [ "$_install_status" -gt 0 ] && log_warn "disabling software center installer: $_install_status"
@@ -26,7 +26,7 @@ _software_center_bootstrap() {
 }
 
 _software_center_is_installed() {
-  [ -e "$conf_install_software_center_executable" ] && return 0
+  [ -e "$SOFTWARE_CENTER_EXECUTABLE" ] && return 0
 
   return 1
 }

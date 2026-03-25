@@ -16,7 +16,7 @@ _scan_delta() {
 }
 
 _scan_do() {
-  _trivy_scan fs --scanners vuln .
+  _trivy_scan fs --scanners vuln . -f json
 }
 
 _scan_run trivy-vuln

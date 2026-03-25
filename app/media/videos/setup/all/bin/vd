@@ -3,6 +3,7 @@
 lib ./videos-download.sh
 lib ./videos.sh
 
+cfg .
 cfg git
 
 sudo_ensure_not_root

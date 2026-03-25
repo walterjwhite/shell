@@ -20,7 +20,7 @@ package_pacman_bootstrap() {
 package_pacman_update() {
   flags="-Syuq --noconfirm"
   _pacman_cmd "$@"
-  
+
   aur_package_update
 }
 

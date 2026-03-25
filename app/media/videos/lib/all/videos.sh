@@ -10,14 +10,16 @@ _videos_date() {
 _video_fetch_metadata() {
   log_info "fetching metadata for: $videos_url"
 
-  $conf_videos_youtube_download_cmd --print \
+  $conf_videos_youtube_download_cmd --replace-in-metadata "title" "\|" "-" \
+    --print \
     "%(original_url)s|%(upload_date>%Y/%m/%d)s|%(duration>%H:%M:%S)s|%(title)s|%(uploader_id)s|%(uploader)s" \
-    "$videos_url" | sed -e "s/$/|$_VIDEOSextract_audio|$video_profiles/" |
+    "$videos_url" | sed -e "s/$/|$videos_tags|$extract_audio|$video_profiles/" |
     while IFS= read -r video_metadata; do
       video_file=${_action}d/$(_videos_date)
       mkdir -p $(dirname $video_file)
 
       printf '%s\n' "$video_metadata" >$video_file
+
       _video_meta
 
       _videos_git $video_file
@@ -41,6 +43,10 @@ _video_meta() {
   video_title=$(printf '%s' $video_metadata | cut -f4 -d'|')
   video_uploader_id=$(printf '%s' $video_metadata | cut -f5 -d'|')
   video_uploader_name=$(printf '%s' $video_metadata | cut -f6 -d'|')
+
+  video_tags=$(printf '%s' $video_metadata | cut -f7 -d'|')
+  extract_audio=$(printf '%s' $video_metadata | cut -f8 -d'|')
+  video_profiles=$(printf '%s' $video_metadata | cut -f9 -d'|')
 
   log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
 }

@@ -1,0 +1,22 @@
+github-rename-default-branch - GitHub Default Branch Renamer
+
+USAGE:
+    github-rename-default-branch <from-branch> <to-branch>
+
+DESCRIPTION:
+    Rename default branch for all GitHub repositories. Clones each repo,
+    renames the branch, pushes changes, sets new default, and deletes old branch.
+
+ARGUMENTS:
+    from-branch
+        Current default branch name (e.g., master)
+
+    to-branch
+        New default branch name (e.g., main)
+
+NOTE:
+    Processes up to 1000 repositories. Requires GitHub authentication.
+
+EXAMPLES:
+    github-rename-default-branch master main
+    github-rename-default-branch master develop

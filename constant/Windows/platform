@@ -1,5 +1,15 @@
-readonly GNU_GREP=grep
-readonly GNU_SED=sed
+if command -v winget > /dev/null 2>&1; then
+  log_warn "found winget"
+  windows_package_manager=winget
+elif command -v choco > /dev/null 2>&1; then
+  log_warn "found chocolatey"
+  windows_package_manager=chocolatey
+elif command -v scoop > /dev/null 2>&1; then
+  log_warn "found scoop"
+  windows_package_manager=scoop
+else
+  exit_with_error "no package manager found"
+fi
 
-readonly LIBRARY_PATH=$HOME/lib
-readonly BIN_PATH=$HOME/bin
+: ${IO_STAT_ARGS:='-c %a'}
+: ${SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}

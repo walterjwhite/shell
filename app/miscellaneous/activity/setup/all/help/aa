@@ -1,4 +1,14 @@
-record activity
-    Enter tags separated by '|'
+aa - Activity Add
 
-    Enter notes, end input with an empty line
+USAGE:
+    aa
+
+DESCRIPTION:
+    Record a new activity entry. Prompts for tags and notes.
+
+INPUT:
+    - Tags separated by '|'
+    - Notes (end with empty line)
+
+EXAMPLES:
+    aa

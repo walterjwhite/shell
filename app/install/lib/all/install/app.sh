@@ -20,6 +20,8 @@ _app_setup_project() {
     ;;
   esac
 
+  _git_has_updates
+
   _is_latest $target_application_name && {
     [ -z "$force" ] && {
       log_warn "latest version of app is already installed: $target_application_name [$target_application_version]"

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+lib ./lightpanda.sh
+lib git/github.sh
+
+case $APP_PLATFORM_PLATFORM in
+  Apple)
+    lightpanda_platform=macos
+    ;;
+  FreeBSD)
+    lightpanda_platform=linux
+    ;;
+  *)
+    lightpanda_platform=$(printf '%s' $APP_PLATFORM_PLATFORM | tr '[:upper:]' '[:lower:]')
+    ;;
+esac
+
+_github_install_latest lightpanda lightpanda-io browser '' \
+    ".assets[] | select(.name | test(\"lightpanda-$APP_PLATFORM_ARCHITECTURE-$lightpanda_platform\")) | .browser_download_url" \
+    lightpanda-$lightpanda_platform-$APP_PLATFORM_ARCHITECTURE lightpanda

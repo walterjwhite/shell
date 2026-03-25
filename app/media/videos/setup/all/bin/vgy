@@ -1,0 +1,31 @@
+#!/bin/sh
+
+lib ./youtube.com
+
+constant .
+
+cfg .
+
+_youtube_fetch_channels() {
+  for youtube_channel_id in $conf_videos_youtube_channels; do
+    _youtube_fetch_channel | jq -c '.[]' | while read -r youtube_json_data; do
+      _youtube_filter || {
+        log_info "skipping"
+        _youtube_after_each
+        continue
+      }
+
+      _youtube_download
+      _youtube_after_each
+    done
+  done
+}
+
+_youtube_after_each() {
+  unset extract_audio video_profiles video_tags
+}
+
+_published_after=$(_compute_published_after) || exit_with_error "could not compute 'published after' date."
+log_info "fetching videos published after: ${_published_after}"
+
+_youtube_fetch_channels

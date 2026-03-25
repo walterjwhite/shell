@@ -19,7 +19,7 @@ _environment_load() {
   [ -z "$environment_file" ] && return 1
 
   [ ! -e "$environment_file" ] && {
-    log_warn "$environment_file does not exist!"
+    log_warn "$environment_file does not exist"
     return 2
   }
 

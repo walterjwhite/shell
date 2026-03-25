@@ -29,9 +29,13 @@ _github_remove_contents() {
 
 _github_copy_source() {
   log_detail "copying modified project contents"
-  [ -e $git_project_path/.app ] && cp -Rp $git_project_path/.app .
-  [ -e $git_project_path/.github ] && cp -Rp $git_project_path/.github .
-  [ -e $git_project_path/.gitignore ] && cp -Rp $git_project_path/.gitignore .
 
-  find $git_project_path -mindepth 1 -maxdepth 1 ! -name '.*' ! -name '*.secret*' ! -name github ! -name system-configuration -exec cp -Rp {} $setup_github_clone_project_path/ \;
+  cd $git_project_path
+  cp .app .github .gitignore $setup_github_clone_project_path >/dev/null 2>&1
+
+  git archive HEAD | tar xp -C $setup_github_clone_project_path
+
+  cd $setup_github_clone_project_path
+
+  find . -name '.*' -or -name '*.secret*' -or -name github -or -name system-configuration -exec rm -rf {} +
 }

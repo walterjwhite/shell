@@ -18,7 +18,7 @@ _scan_delta() {
 _scan_do() {
   for dockerfile in $(find . -path '*/.build/Dockerfile'); do
     dockerfile=$(realpath --relative-to=. "$dockerfile")
-    _trivy_scan conf "$dockerfile"
+    _trivy_scan conf -f json "$dockerfile"
   done
 }
 

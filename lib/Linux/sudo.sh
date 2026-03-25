@@ -13,7 +13,10 @@ sudo_run() {
   }
 
   $_SUDO_CMD $sudo_options "$@"
+  local sudo_return_status=$?
   unset sudo_options
+
+  return $sudo_return_status
 }
 
 sudo_is_validation_required() {

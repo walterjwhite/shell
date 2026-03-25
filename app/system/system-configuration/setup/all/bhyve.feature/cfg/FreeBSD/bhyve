@@ -1,1 +1,0 @@
-: ${conf_system_configuration_bhyve_required_packages:="vm-bhyve grub2-bhyve edk2-bhyve bhyve-firmware expect"}

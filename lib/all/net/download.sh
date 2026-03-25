@@ -1,6 +1,4 @@
 
-download_file=""
-
 _download_fetch() {
   mkdir -p $APP_PLATFORM_CACHE_PATH
 
@@ -29,6 +27,7 @@ _download_fetch() {
 
 _download_install_file() {
   warn_on_error=1 validation_require "$1" "1 (_download_install_file) target filename" || return 1
+  warn_on_error=1 validation_require "$download_file" "download_file" || return 1
 
   : ${_install_file_chmod:=444}
 

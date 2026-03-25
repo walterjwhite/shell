@@ -1,50 +1,11 @@
 #!/bin/sh
 
-lib net/download.sh
+lib git/github.sh
 
-_get_latest_git_bash_version() {
-  curl -s "https://api.github.com/repos/git-for-windows/git/releases/latest" |
-	  grep '"tag_name":' | cut -d'"' -f4 | sed 's/^v//' | cut -d'.' -f1-3
-}
-
-_get_installed_git_bash_version() {
+get_installed_git_for_windows_version() {
 	git --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
 }
 
-_is_git_bash_installed() {
-	command -v git >/dev/null 2>&1
-}
-
-_is_latest_version_of_git_bash() {
-	local installed_version=$(_get_installed_git_bash_version)
-	local latest_version=$(_get_latest_git_bash_version)
-	[ "$installed_version" = "$latest_version" ]
-}
-
-_install_git_bash() {
-	local version_to_install=$(_get_latest_git_bash_version)
-	[ -z "$version_to_install" ] && {
-		log_error "failed to determine latest git bash version"
-		return 1
-	}
-	
-	log_detail "installing git bash version: $version_to_install"
-	_download_fetch "https://github.com/git-for-windows/git/releases/download/v${version_to_install}.windows.1/Git-${version_to_install}-64-bit.exe"
-}
-
-if [ -n "$software_center" ]; then
-	log_warn "git bash *MUST* be installed through software center"
-else
-	log_detail "downloading and installing git bash"
-
-	if _is_git_bash_installed; then
-		if _is_latest_version_of_git_bash; then
-			log_detail "git bash is up-to-date"
-		else
-			log_detail "updating git bash"
-			_install_git_bash
-		fi
-	else
-		_install_git_bash
-	fi
-fi
+_github_install_latest git-bash git-for-windows git .tag_name \
+	'.assets[] | select(.name | test("Git-.*64-bit.exe")) | .browser_download_url' \
+	git-for-windows-amd64 git

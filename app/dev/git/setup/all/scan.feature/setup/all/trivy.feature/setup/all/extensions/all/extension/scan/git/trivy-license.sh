@@ -16,7 +16,7 @@ _scan_delta() {
 }
 
 _scan_do() {
-  _trivy_scan fs --scanners license .
+  _trivy_scan fs --scanners license . -f json
 }
 
 _scan_run trivy-license

@@ -2,23 +2,12 @@ lib git/github.sh
 lib net/download.sh
 lib extract.sh
 
-_get_installed_trivy_version() {
+get_installed_trivy_version() {
+  printf 'v'
   trivy --version | grep -oP 'Version: \K[0-9]+\.[0-9]+\.[0-9]+'
 }
 
-_get_latest_trivy_version() {
-  _latest_trivy_version=$(_github_latest_release aquasecurity trivy | sed -e 's/^v//')
-}
-
-_is_latest_trivy_installed() {
-  _get_latest_trivy_version
-  installed_trivy_version=$(_get_installed_trivy_version)
-  [ "$_latest_trivy_version" = "$installed_trivy_version" ]
-}
-
-_install_trivy() {
-  _download_fetch https://github.com/aquasecurity/trivy/releases/download/v$_latest_trivy_version/trivy_${_latest_trivy_version}_FreeBSD-64bit.tar.gz
-
+install_trivy() {
   mkdir /tmp/trivy
   _extract_extract $download_file /tmp/trivy
   mv /tmp/trivy/trivy $APP_PLATFORM_BIN_PATH
@@ -26,7 +15,6 @@ _install_trivy() {
   rm -rf /tmp/trivy
 }
 
-_get_latest_trivy_version
-if ! _is_latest_trivy_installed; then
-    _install_trivy
-fi
+_github_install_latest trivy aquasecurity trivy '.tag_name' \
+    ".assets[] | select(.name | test(\"trivy_.*.FreeBSD-64bit.tar.gz\")) | .browser_download_url" \
+    trivy-FreeBSD-64bit.tar.gz

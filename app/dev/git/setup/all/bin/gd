@@ -13,9 +13,11 @@ fi
 
 [ $# -eq 0 ] && _git-is-clean && exit_with_error "no changes"
 
+validation_require "$EDITOR" "EDITOR is not set"
+
 git rev-parse --quiet --verify HEAD >/dev/null || {
   find . -type f ! -path '*/.git/*' -exec $EDITOR {} \;
-  return
+  exit
 }
 
 git diff HEAD --unified -w "$@"

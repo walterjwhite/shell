@@ -130,7 +130,7 @@ _extension_run() {
     }
 
     log_add_context $extension_sub_feature_name
-    log_detail $extension_sub_feature_name
+    log_detail "$extension_sub_feature_name"
 
     cd $extension_opwd
 

@@ -1,0 +1,3 @@
+: ${conf_dev_windsurf_ide:=/Applications/Winsurf.app/Contents/MacOS/Electron}
+
+conf_dev_windsurf_executable=windsurf

@@ -1,0 +1,15 @@
+github-push - GitHub Repository Push
+
+USAGE:
+    github-push
+
+DESCRIPTION:
+    Push all GitHub repositories using iteration logic from the
+    iterate library and push functionality.
+
+CONFIGURATION:
+    -conf-github-git-projects-path PATH
+        Path containing git projects to push
+
+EXAMPLES:
+    github-push

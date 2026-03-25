@@ -1,0 +1,21 @@
+github-fixup - GitHub Fixup Commits
+
+USAGE:
+    github-fixup
+
+DESCRIPTION:
+    Create fixup commits across all GitHub repositories and force push
+    changes using iteration logic.
+
+CONFIGURATION:
+    -conf-github-commits NUM
+        Number of commits to fixup
+
+    -conf-github-commit-message MESSAGE
+        Commit message for fixup
+
+    -conf-github-git-projects-path PATH
+        Path containing git projects
+
+EXAMPLES:
+    github-fixup

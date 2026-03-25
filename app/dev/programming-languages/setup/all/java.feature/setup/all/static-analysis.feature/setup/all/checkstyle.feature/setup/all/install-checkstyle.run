@@ -4,14 +4,11 @@ lib git/github.sh
 lib net/download.sh
 cfg feature:.
 
-_get_installed_checkstyle_version() {
-    if [ -e __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar ]; then
-        java -jar __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar -V 2>/dev/null | head -1 | cut -d' ' -f3
-    fi
-}
+get_installed_checkstyle_version() {
+  [ ! -e __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar ] && return
 
-_get_latest_checkstyle_version() {
-    _github_latest_release checkstyle checkstyle | sed -e 's/checkstyle-//'
+  printf 'checkstyle-'
+  java -jar __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar -V 2>/dev/null | head -1 | cut -d' ' -f3
 }
 
 _get_xml_checksum() {
@@ -60,16 +57,13 @@ _install_xml_file() {
   fi
 }
 
-_install_checkstyle() {
-  _download_fetch "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${latest_checkstyle_version}/checkstyle-${latest_checkstyle_version}-all.jar"
-
+install_checkstyle() {
   _download_install_file __LIBRARY_PATH__/__APPLICATION_NAME__/tools/checkstyle/checkstyle.jar
 }
 
-_get_latest_checkstyle_version
-if ! _is_latest_checkstyle_installed; then
-    _install_checkstyle
-fi
+_github_install_latest checkstyle checkstyle checkstyle '.tag_name' \
+    ".assets[] | select(.name | test(\"checkstyle-.*-all.jar\")) | .browser_download_url" \
+    checkstyle-all.jar
 
 _install_xml_file "google_checks.xml"
 _install_xml_file "sun_checks.xml"
