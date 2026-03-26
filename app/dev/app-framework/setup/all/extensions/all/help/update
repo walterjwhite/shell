@@ -1,0 +1,10 @@
+update - Application Updater
+
+USAGE:
+    update
+
+DESCRIPTION:
+    Update application dependencies and configuration.
+
+EXAMPLES:
+    update

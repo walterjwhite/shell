@@ -21,7 +21,7 @@ sudo_ensure_root "$@"
 
 platform_is_supported
 
-[ -z "$app_install_dependency" ] && processes_restrict_to_single_process
+[ -z "$APP_INSTALL_DEPENDENCY" ] && processes_restrict_to_single_process
 
 _settings_init
 _bootstrap_install

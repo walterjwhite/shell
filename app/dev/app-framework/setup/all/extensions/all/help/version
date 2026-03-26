@@ -1,0 +1,10 @@
+version - Application Version
+
+USAGE:
+    version
+
+DESCRIPTION:
+    Display application version information.
+
+EXAMPLES:
+    version
