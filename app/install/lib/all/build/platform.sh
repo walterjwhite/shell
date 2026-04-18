@@ -1,4 +1,6 @@
 _app_build_determine_build_platforms() {
+  [ -n "$build_platforms" ] && return
+
   if [ -z "$build_all_platforms" ]; then
     build_platforms=$platforms
     return

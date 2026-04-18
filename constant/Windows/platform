@@ -1,15 +1,6 @@
-if command -v winget > /dev/null 2>&1; then
-  log_warn "found winget"
-  windows_package_manager=winget
-elif command -v choco > /dev/null 2>&1; then
-  log_warn "found chocolatey"
-  windows_package_manager=chocolatey
-elif command -v scoop > /dev/null 2>&1; then
-  log_warn "found scoop"
-  windows_package_manager=scoop
-else
-  exit_with_error "no package manager found"
-fi
+command -v winget > /dev/null 2>&1 && readonly WINGET=1
+command -v choco > /dev/null 2>&1 && readonly CHOCOLATEY=1
+command -v scoop > /dev/null 2>&1 && readonly SCOOP=1
 
 : ${IO_STAT_ARGS:='-c %a'}
 : ${SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}

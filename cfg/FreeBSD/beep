@@ -2,7 +2,7 @@
 
 : ${conf_log_beep_err:='L32c'}
 : ${conf_log_beep_alrt:='L32f'}
-: ${conf_log_beep_SCS:='L32a'}
+: ${conf_log_beep_scs:='L32a'}
 : ${conf_log_beep_wrn:=''}
 : ${conf_log_beep_info:=''}
 : ${conf_log_beep_detail:=''}

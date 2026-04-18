@@ -2,6 +2,13 @@ lib clipboard.sh
 lib git/data.app.sh
 
 cfg git
+cfg git
+
+_videos_previously_downloaded() {
+  [ -n "$force" ] && return 1
+
+  grep "$videos_url" queued downloaded watched -rqm1 2>/dev/null
+}
 
 _videos_date() {
   date +%Y/%m/%d/%H.%M.%S
@@ -37,6 +44,7 @@ _video_meta() {
   videos_url=$(printf '%s' $video_metadata | cut -f1 -d'|')
 
   video_key=$(printf '%s' $videos_url | sed -e "s/^.*\=//")
+  [ -z "$video_key" ] && video_key=$(printf '%s' $videos_url | sed 's/\.[^.]\{2,4\}$//')
 
   video_date=$(printf '%s' $video_metadata | cut -f2 -d'|')
   video_duration=$(printf '%s' $video_metadata | cut -f3 -d'|')

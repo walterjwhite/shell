@@ -27,6 +27,8 @@ _update_artifacts() {
     rm -rf $target_application_name/$app_platform
     mkdir -p $target_application_name/$app_platform
 
+    unset files
+
     local files
     [ -e $ARTIFACTS_PATH/$target_application_name/$app_platform/cfg ] && files="cfg"
     [ -e $ARTIFACTS_PATH/$target_application_name/$app_platform/setup ] && files="$files setup"

@@ -1,16 +1,27 @@
 #!/bin/sh
 
+lib ./videos.sh
 lib ./youtube.com
 
 constant .
 
 cfg .
+cfg git
+
+: ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
+_data_app_init
 
 _youtube_fetch_channels() {
   for youtube_channel_id in $conf_videos_youtube_channels; do
     _youtube_fetch_channel | jq -c '.[]' | while read -r youtube_json_data; do
       _youtube_filter || {
         log_info "skipping"
+        _youtube_after_each
+        continue
+      }
+
+      _videos_previously_downloaded && {
+        log_info "$videos_url was previously downloaded, skipping"
         _youtube_after_each
         continue
       }

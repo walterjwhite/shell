@@ -2,7 +2,7 @@
 
 : ${conf_log_beep_err:=''}
 : ${conf_log_beep_alrt:=''}
-: ${conf_log_beep_SCS:=''}
+: ${conf_log_beep_scs:=''}
 : ${conf_log_beep_wrn:=''}
 : ${conf_log_beep_info:=''}
 : ${conf_log_beep_detail:=''}

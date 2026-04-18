@@ -1,16 +1,19 @@
 package_pacman_install_do() {
-  flags="-Sqyu --noconfirm"
+  pacman_flags="-Sqyu --noconfirm --noprogressbar"
   _pacman_cmd "$@"
+  unset pacman_flags
 }
 
 package_pacman_uninstall_do() {
-  flags="-Rq --noconfirm"
+  pacman_flags="-Rq --noconfirm --noprogressbar"
   _pacman_cmd "$@"
+  unset pacman_flags
 }
 
 package_pacman_is_installed() {
-  flags="-Q"
+  pacman_flags="-Q"
   _pacman_cmd "$@"
+  unset pacman_flags
 }
 
 package_pacman_bootstrap() {
@@ -18,8 +21,9 @@ package_pacman_bootstrap() {
 }
 
 package_pacman_update() {
-  flags="-Syuq --noconfirm"
+  pacman_flags="-Syuq --noconfirm --noprogressbar"
   _pacman_cmd "$@"
+  unset pacman_flags
 
   aur_package_update
 }
@@ -27,17 +31,17 @@ package_pacman_update() {
 _pacman_cmd() {
 
   [ "$APP_PLATFORM_ROOT" = "/" ] && {
-    pacman $flags "$@" 2>&1 >/dev/null
+    pacman $pacman_flags "$@"
     return
   }
 
   [ "$_container_type" = "incus" ] && {
     log_warn "detected incus container, using incus exec"
-    incus exec $_container_name -- pacman $flags "$@" 2>&1 >/dev/null
+    incus exec $_container_name -- pacman $pacman_flags "$@"
     return
   }
 
-  pacman $flags --sysroot $APP_PLATFORM_ROOT "$@" 2>&1 >/dev/null
+  pacman $pacman_flags --sysroot $APP_PLATFORM_ROOT "$@"
 }
 
 _pacman_setup_keys() {

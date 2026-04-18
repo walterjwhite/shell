@@ -1,6 +1,20 @@
 _push_changes() {
-  git add $target_application_name
-  git commit $target_application_name -m "$APP_PLATFORM_PLATFORM:$target_application_name@$target_application_version"
+
+  local app_platform
+  for app_platform in $(ls $target_application_name); do
+    find $target_application_name/$app_platform -type f -print -quit | grep -cqm1 '.' || {
+      log_warn "no files exist for $app_platform"
+      continue
+    }
+
+    [ -n "$(git status --porcelain "$target_application_name/$app_platform")" ] || {
+      log_detail "no changes for $app_platform"
+      continue
+    }
+
+    git add $target_application_name/$app_platform
+    git commit $target_application_name/$app_platform -m "$app_platform:$target_application_name@$target_application_version"
+  done
 
   [ $INSTALL_REGISTRY_OFFLINE ] && {
     log_warn "registry is offline, skipping push changes"

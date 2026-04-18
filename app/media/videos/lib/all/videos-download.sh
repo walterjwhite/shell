@@ -10,17 +10,16 @@ _video_download() {
 
   if [ -n "$extract_audio" ] && [ "$extract_audio" -eq 1 ]; then
     log_warn "configuring audio extraction"
-    _options="$_options -x --recode-video $conf_videos_audio_format"
-    _prefix=extracted
+    _options="$_options $conf_videos_youtube_audio_download_options"
   else
     _options="$_options $conf_videos_youtube_video_download_options"
   fi
 
   if [ $is_playlist -eq 1 ]; then
     log_warn "is playlist"
-    _options="$_options --restrict-filenames -o $conf_videos_download_path/$_prefix/%(playlist)s/%(playlist_index)s-%(title)s-$video_key.%(ext)s"
+    _options="$_options --restrict-filenames -o $conf_videos_download_path/downloaded/%(playlist)s/%(playlist_index)s-%(title)s-$video_key.%(ext)s"
   else
-    _options="$_options --restrict-filenames -o $conf_videos_download_path/$_prefix/%(title)s-$video_key.%(ext)s"
+    _options="$_options --restrict-filenames -o $conf_videos_download_path/downloaded/%(title)s-$video_key.%(ext)s"
   fi
 
   _videos_download_setup_proxy
@@ -60,7 +59,7 @@ _video_download_error() {
 }
 
 _video_download_extract_audio() {
-  _video_download_git extracted "download / extract"
+  _video_download_git downloaded "download / extract audio"
 }
 
 _video_download_success() {

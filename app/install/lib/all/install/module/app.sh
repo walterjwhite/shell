@@ -3,7 +3,10 @@ app_install() {
 }
 
 _app_install_do() {
-  [ -z "$APP_INSTALL_DEPENDENCY" ] && readonly APP_INSTALL_DEPENDENCY=1
+  [ -z "$APP_INSTALL_DEPENDENCY" ] && {
+    readonly APP_INSTALL_DEPENDENCY=1
+    export APP_INSTALL_DEPENDENCY
+  }
 
   app-install $1
 }

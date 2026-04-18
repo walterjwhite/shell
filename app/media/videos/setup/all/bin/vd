@@ -12,7 +12,6 @@ processes_restrict_to_single_process
 : ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
 
 _action=download
-_prefix=downloaded
 
 videos_downloaded=0
 _data_app_init

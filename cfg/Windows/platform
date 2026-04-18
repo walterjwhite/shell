@@ -1,6 +1,6 @@
 : ${conf_log_beep_err:='500,400'}
 : ${conf_log_beep_alrt:='600,200'}
-: ${conf_log_beep_SCS:='700,100'}
+: ${conf_log_beep_scs:='700,100'}
 : ${conf_log_beep_wrn:=''}
 : ${conf_log_beep_info:=''}
 : ${conf_log_beep_detail:=''}

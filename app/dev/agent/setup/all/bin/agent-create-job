@@ -1,0 +1,20 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="agent_job:Agent Job|agent_job_file:Agent Job File|agent_prompt_file:Agent Prompt File"
+
+lib ./git.sh
+lib ./remote.sh
+lib ./worker
+
+cfg .
+
+sudo_ensure_not_root
+
+_agent_git_init_workspace
+mkdir -p $agent_job
+mv $agent_job_file $agent_job/job
+mv $agent_prompt_file $agent_job/prompt.md
+
+git add $agent_job
+git commit $agent_job -m "create - $agent_job"
+git push

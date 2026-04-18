@@ -1,6 +1,0 @@
-#!/bin/sh
-
-for _CONSOLE in $(find __LIBRARY_PATH__/__APPLICATION_NAME__/shell -mindepth 1 -maxdepth 1 -type d | sort -u); do
-  log_detail "configuring micro as the EDITOR: $_CONSOLE"
-  printf 'export EDITOR="micro"\n' > $_CONSOLE/micro-text-editor
-done

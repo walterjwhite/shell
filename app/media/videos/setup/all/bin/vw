@@ -14,6 +14,8 @@ _action=watch
 
 _watch() {
   video_key=$(basename $video_media_file | $GNU_GREP -Po "\-{0,1}[0-9A-Za-z_-]{10}[048AEIMQUYcgkosw]\." | tail -1 | sed -e "s/^\-//" -e "s/\.$//" -e "s/\-/\\\-/g")
+  [ -z "$video_key" ] && video_key=$(basename $video_media_file | sed 's/\.[^.]\{2,4\}$//')
+
   video_file=$(grep "$video_key" downloaded -rl | head -1)
 
   validation_require "$video_file" "video file not found for $video_key"
