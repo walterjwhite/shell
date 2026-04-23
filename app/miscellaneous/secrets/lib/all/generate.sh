@@ -10,6 +10,10 @@ secrets_generate() {
     shuf -i 100000-999999 -n 1
     return
     ;;
+  username)
+    log_info "generating 8-character username"
+    conf_secrets_password_length=8
+    ;;
   wifi-ssid)
     log_info "generating wifi ssid"
     conf_secrets_generate_symbols=0

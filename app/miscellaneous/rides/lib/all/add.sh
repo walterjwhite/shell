@@ -1,7 +1,7 @@
 _add_exists() {
   [ ! -e $_file ] && return
 
-  $GNU_GREP -Pcqm1 "^$_date|$_index|$_bike" $_file &&
+  $GNU_GREP -cqm1 "^$_date|$_index|$_bike" $_file &&
     exit_with_error "entry already exists, please double-check: $_date|$_index|$_bike - $_file"
 }
 

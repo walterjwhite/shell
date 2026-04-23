@@ -1,5 +1,0 @@
-#!/bin/sh
-
-find /media/output -type l -path '*/bad/*' -exec exiftool -rating=1 {} +
-find /media/output -type l -path '*/good/*' -exec exiftool -rating=3 {} +
-find /media/output -type l -path '*/selected/*' -exec exiftool -rating=4 {} +

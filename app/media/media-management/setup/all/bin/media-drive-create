@@ -1,26 +1,21 @@
 #!/bin/sh
 
-readonly REQUIRED_ARGUMENTS="_MEDIA_DRIVE:Media Drive|_MEDIA_VOLUME_NAME:Media Volume Name|_MEDIA_SOURCE_HOST:Media Source Host|_MEDIA_LUKS_PASSPHRASE:Media LUKS Passphrase"
+readonly REQUIRED_ARGUMENTS="media_drive:Media Drive|media_volume_name:Media Volume Name|media_device_name:Media Device Name|media_passphrase:Media Passphrase|media_source_host:Media Source Host"
 
-_media_drive_create_zfs_snapshot_send() {
-  zfs send -v $(zfs list -t snapshot | grep $1@ | tail -1 | awk {'print$1'}) | ssh $_MEDIA_SOURCE_HOST zfs receive $_MEDIA_VOLUME_NAME
-}
+lib ./encryption.sh
+lib ./partition.sh
+lib ./zfs.sh
 
-sgdisk -Z $_MEDIA_DRIVE
+sudo_ensure_not_root
 
-sgdisk -g $_MEDIA_DRIVE
+_media_git_init
 
-sgdisk -n 1:0:0 -t 1:8300 $_MEDIA_DRIVE
+_media_partition_drive
+_media_encrypt_drive
 
-sgdisk -b /tmp/disk.sgdisk $_MEDIA_DRIVE
-cp /tmp/disk.sgdisk /home/w/projects/git/systems/$_MEDIA_VOLUME_NAME
+_media_git_sync
 
-cryptsetup luksHeaderBackup $_GENTOO_DISK_DEVICE_LUKS --header-backup-file=$_GENTOO_DISK_ID/luks
+zpool attach $media_volume_name $media_device_name
 
-printf '%s\n' "$_MEDIA_LUKS_PASSPHRASE" | cryptsetup luksFormat --batch-mode -c aes-xts-plain -s 512 --hash sha512 $_MEDIA_DRIVE{1}
-printf '%s\n' "$_MEDIA_LUKS_PASSPHRASE" | cryptsetup luksOpen sha512 /dev/sdb1 media
-zpool create -f -o ashift=12 -o autotrim=on -O acltype=posixacl -O xattr=sa -O relatime=on -O compression=zstd -m none $_MEDIA_VOLUME_NAME /dev/mapper/media
-
-_media_drive_create_zfs_snapshot_send media
-_media_drive_create_zfs_snapshot_send media/audio
-_media_drive_create_zfs_snapshot_send media/raw
+_media_wait_until_resilvered
+_media_offline_drive

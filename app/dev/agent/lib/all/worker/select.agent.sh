@@ -4,6 +4,11 @@ _worker_select_random_available_agent() {
   _selected_agent=$(find "$_agent_provider_dir" -type f | while read agent_file; do
     _agent_name=$(basename "$agent_file" .sh)
 
+    set | grep -cqm1 "^agent_${_agent_name}_disabled=" && {
+      log_warn "$_agent_name is disabled"
+      continue
+    }
+
 
     [ -e $APP_DATA_PATH/$_agent_name ] && {
       local agent_wait_until=$(head -1 $APP_DATA_PATH/$_agent_name)

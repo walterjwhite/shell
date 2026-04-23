@@ -1,5 +1,6 @@
 #!/bin/sh
 
+lib ./add.sh
 lib git/data.app.sh
 
 cfg git
@@ -23,15 +24,15 @@ group_print="print $_aggregation\" \"units"
 
 [ "$bike" ] && _append 3 "==\"$bike\""
 [ "$start" ] && {
-  _start_date=${start#*=}
-  validate_date_format "$_start_date"
-  _start_filter=$(printf '%s' "$_start_date" | sed -e "s/\///g")
+  _date=${start#*=}
+  _add_validate_date
+  _start_filter=$(printf '%s' "$_date" | sed -e "s/\///g")
   _append 1 ">=$_start_filter"
 }
 [ "$end" ] && {
-  _end_date=${end#*=}
-  validate_date_format "$_end_date"
-  _end_filter=$(printf '%s' "$_end_date" | sed -e "s/\///g")
+  _date=${end#*=}
+  _add_validate_date
+  _end_filter=$(printf '%s' "$_date" | sed -e "s/\///g")
   _append 1 "<=$_end_filter"
 }
 [ "$group" ] && {

@@ -11,4 +11,5 @@ app-update
 
 root_zfs_volume=$(zfs get -H name / | awk {'print$1'})
 
-zap snap 30d ${root_zfs_volume}
+zap snap $conf_system_maintenance_zap_retention_period ${root_zfs_volume}
+zap destroy -v

@@ -19,3 +19,5 @@
 : ${_SYSTEM_MAINTENANCE_NOOP_RUNTIME:=15}
 
 : ${log_logfile:=/var/log/walterjwhite/$APPLICATION_NAME/$APPLICATION_CMD.log}
+
+: ${conf_system_maintenance_zap_retention_period:=30d}

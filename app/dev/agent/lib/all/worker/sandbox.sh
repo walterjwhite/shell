@@ -22,8 +22,8 @@ _worker_sandbox_init() {
 
 _worker_sandbox_run() {
   _agent_cmd
-  _worker_job_logfile=$(_mktemp_mktemp)
-  exit_defer rm -f $_worker_job_logfile
+  
+  log_info "running $_AGENT_CMD"
 
   cp $worker_agent_prompt $agent_job_work_path/PROMPT.md
 
@@ -32,12 +32,11 @@ _worker_sandbox_run() {
 
   exit_defer _worker_cleanup_sandbox
 
-  INPUT_DIR=$agent_job_work_path podman-compose -f __LIBRARY_PATH__/__APPLICATION_NAME__/container/dev/docker-compose.yml run --rm sandbox bash -c "$_AGENT_CMD < /input/PROMPT.md" 2>&1 | tee $_worker_job_logfile &
-  local sandbox_pid=$!
+  printf '### sandbox logs\n' >>$log_logfile
 
-  printf '%s' "$sandbox_pid" >>"$sandbox_marker"
-
-  wait $sandbox_pid
+  export INPUT_DIR=$agent_job_work_path
+  podman-compose -f __LIBRARY_PATH__/__APPLICATION_NAME__/container/dev/docker-compose.yml run --rm sandbox bash -c "$_AGENT_CMD < /input/PROMPT.md" 2>&1 | log_sanitize_input >>$log_logfile
+  printf '### sandbox logs - END\n' >>$log_logfile
 }
 
 _worker_sandbox_patch() {
@@ -46,7 +45,7 @@ _worker_sandbox_patch() {
 
   rm -f PROMPT.md
 
-  find . -type f -iname '*.md' -print -quit | grep -cqm1 '.' && {
+  find . -maxdepth 1 -mindepth 1 -type f -name '*.md' -print -quit | grep -cqm1 '.' && {
     log_detail "organizing docs"
 
     mkdir -p doc.secret
@@ -55,9 +54,7 @@ _worker_sandbox_patch() {
     git add doc.secret
   }
 
-  find . ! -path '*/.git/*' -type f
-
-  git add $(find . -type f ! -path '*/*.git/*' -name '*.md')
+  [ $conf_log_level -eq 0 ] && find . ! -path '*/.git/*' -type f
 
   if [ -n "$file_extension_filter" ]; then
     git add $(find . -type f ! -path '*/*.git/*' -name "$file_extension_filter")
@@ -99,16 +96,4 @@ _worker_apply_patch() {
 
   cd ..
   rm -rf $agent_job_git_path
-}
-
-_worker_cleanup_sandbox() {
-  log_detail "cleaning up sandbox processes..."
-
-  pkill -P $$ podman-compose 2>/dev/null || true
-
-  podman-compose -f __LIBRARY_PATH__/__APPLICATION_NAME__/container/dev/docker-compose.yml down 2>/dev/null || true
-
-  podman ps -a --filter "label=com.docker.compose.project=dev" --format "{{.ID}}" | xargs -r podman rm -f 2>/dev/null || true
-
-  rm -f "$sandbox_marker"
 }

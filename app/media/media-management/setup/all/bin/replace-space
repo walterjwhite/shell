@@ -1,8 +1,0 @@
-#!/bin/sh
-
-out=$(printf '%s' "$1" | sed -e 's/ /-/g' -e 's/:/./g')
-
-log_info "$1 -> $out"
-
-mkdir -p $(dirname $out)
-mv "$1" "$out"
