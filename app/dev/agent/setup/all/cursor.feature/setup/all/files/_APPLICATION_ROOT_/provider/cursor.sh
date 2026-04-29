@@ -7,7 +7,7 @@ _agent_add_path() {
 }
 
 _agent_is_rate_limit_error() {
-  tail -100 $log_logfile | grep -cqm1 'hit a rate limit that restricts the number of Copilot model requests you can make within a specific time period.'
+  tail -100 $log_logfile | grep -cqm1 "You've hit your usage limit Get Cursor Pro for more Agent usage, unlimited Tab, and more."
 }
 
 _agent_cmd() {

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="project_relative_path:Project path relative to $GIT_PROJECT_BASE_PATH|build_type:Build type (debug or release)|artifact_path:Artifact path"
+
+cfg .
+cfg git
+
+cd $GIT_PROJECT_BASE_PATH/git/$project_relative_path || exit_with_error "failed to change directory to $GIT_PROJECT_BASE_PATH/git/$project_relative_path"
+
+export gradle_build_type=$build_type
+
+build
+
+cp app/build/outputs/apk/$build_type/app-$build_type.apk $artifact_path || {
+  exit_with_error "failed to copy app/build/outputs/apk/$build_type/app-$build_type.apk -> $artifact_path"
+}

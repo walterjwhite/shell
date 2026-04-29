@@ -22,7 +22,7 @@ _worker_sandbox_init() {
 
 _worker_sandbox_run() {
   _agent_cmd
-  
+
   log_info "running $_AGENT_CMD"
 
   cp $worker_agent_prompt $agent_job_work_path/PROMPT.md

@@ -19,7 +19,7 @@ _media_wait_until_resilvered() {
       sleep $conf_media_management_zfs_pool_status_interval
     }
 
-    log_warn "ZFS pool $media_volume_name resilvered"
+    log_warn "resilvered $media_volume_name"
     break
   done
 }

@@ -12,8 +12,8 @@ _github_latest_release() {
 _github_fetch() {
   local download_url=$(curl -s https://api.github.com/repos/$1/$2/releases/latest | jq -r "$3")
   [ -z "$download_url" ] && {
-      log_warn "no matching artifact found"
-      return 1
+    log_warn "no matching artifact found"
+    return 1
   }
 
   _download_fetch "$download_url" $4-$5

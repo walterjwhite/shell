@@ -4,3 +4,12 @@ command -v scoop > /dev/null 2>&1 && readonly SCOOP=1
 
 : ${IO_STAT_ARGS:='-c %a'}
 : ${SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}
+
+readonly GNU_GREP=grep
+readonly GNU_SED=sed
+
+readonly APP_PLATFORM_SUB_PLATFORM=$(cmd //c systeminfo | grep -i "OS" | sed -e 's/^OS Name://g' -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*$//g')
+readonly LIBRARY_PATH=$HOME/.local/walterjwhite
+readonly BIN_PATH=$HOME/.local/bin
+readonly PLATFORM_SYSTEM_ID_PATH=$HOME/.local/etc/walterjwhite/system
+

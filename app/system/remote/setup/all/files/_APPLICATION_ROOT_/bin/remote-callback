@@ -12,7 +12,7 @@ _remote_exec() {
   exec_call $_FUNCTION_CALL "$@"
 }
 
-log_warn "setting path to: $conf_remote_callback_path"
+log_debug "setting path to: $conf_remote_callback_path"
 PATH=$conf_remote_callback_path
 
 log_info "$_FUNCTION_CALL $*"
