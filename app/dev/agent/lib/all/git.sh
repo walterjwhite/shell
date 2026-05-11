@@ -29,3 +29,8 @@ _agent_get_job_name_key() {
   agent_job_name_key="${agent_job_name#[0-9][0-9].}"
   agent_job_name_key="${agent_job_name_key%.job}"
 }
+
+_agent_commit_work_log() {
+  git add $1
+  git commit -m "work log: $1"
+}

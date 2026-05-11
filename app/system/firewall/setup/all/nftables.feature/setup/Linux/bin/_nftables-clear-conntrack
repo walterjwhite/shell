@@ -1,0 +1,7 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="set_name:set name"
+
+for ip in $(nft list set ip global $set_name | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}'); do
+  conntrack -D -s "$ip"
+done

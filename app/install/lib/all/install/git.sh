@@ -45,7 +45,13 @@ _git_app_dir_setup() {
       log_warn "app name: $target_application_name"
       pwd
       git log -1 | cat -
-      exit_with_error "error parsing version from git log"
+
+      log_warn "error parsing version from git log"
+
+      [ ! -e .app ] && exit_with_error "unable to determine application version for $target_application_name, .app not found"
+      
+      target_application_version=$(grep _APPLICATION_VERSION= .app 2>/dev/null | cut -f2 -d= | tr -d '"')
+      target_application_build_date=$(grep _APPLICATION_BUILD_DATE= .app 2>/dev/null | cut -f2 -d= | tr -d '"')
     }
   else
     log_warn "installed from zip, needs implemented"

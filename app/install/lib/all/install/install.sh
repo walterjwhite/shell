@@ -27,7 +27,7 @@ _install_uninstall_filter_file_callback() {
     return
   fi
 
-  [ -n "$_INSTALL" ] && {
+  [ -n "$_APP_INSTALLATION" ] && {
     local packages_to_install=$(_install_exclude_contents_from_file)
 
     uninstall_packages=$(printf '%s' "$uninstall_packages" | $GNU_GREP -Pv "($packages_to_install)")

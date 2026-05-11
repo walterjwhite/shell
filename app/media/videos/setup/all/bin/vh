@@ -19,10 +19,12 @@ if [ -n "$search_date" ]; then
   for _CATEGORY in $_CATEGORIES; do
     for video_file in $(find $_CATEGORY/$search_date -type f 2>/dev/null); do
       _video_meta
+      log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
     done
   done
 else
   for video_file in $(find $_CATEGORIES -type f 2>/dev/null | sort -n); do
     _video_meta
+    log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
   done
 fi

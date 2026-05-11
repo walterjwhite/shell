@@ -1,4 +1,9 @@
 package_chocolatey_bootstrap() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
   command -v choco >/dev/null 2>&1 && return 0
 
   log_info "installing chocolatey"
@@ -18,6 +23,11 @@ package_chocolatey_bootstrap() {
 }
 
 package_chocolatey_bootstrap_uninstall() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
   log_info "uninstalling chocolatey"
   if command -v choco >/dev/null 2>&1; then
     log_warn "chocolatey must be manually uninstalled"
@@ -28,6 +38,11 @@ package_chocolatey_bootstrap_uninstall() {
 }
 
 package_chocolatey_install() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
   package_chocolatey_bootstrap
 
   log_info "installing package: $*"
@@ -35,16 +50,30 @@ package_chocolatey_install() {
 }
 
 package_chocolatey_uninstall() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+  
   log_info "uninstalling package: $*"
   choco uninstall -y "$@"
 }
 
 package_chocolatey_update() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+  
   log_info "updating chocolatey and packages"
   choco upgrade all -y
 }
 
 package_chocolatey_is_installed() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
   local package_name=$1
   [ -z "$package_name" ] && return 1
 

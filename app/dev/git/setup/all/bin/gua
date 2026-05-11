@@ -1,0 +1,71 @@
+#!/bin/sh
+
+_git_in_working_directory() {
+  git status >/dev/null 2>&1
+}
+
+: ${branch:=$(git rev-parse --abbrev-ref HEAD)}
+
+: ${sort_column:="1"}
+: ${sort_order:="ascending"}
+
+_git_in_working_directory || exit_with_error "not in git tree"
+
+git rev-parse --verify "$branch" >/dev/null 2>&1 || exit_with_error "branch '$branch' does not exist"
+
+log_info "analyzing user activity for branch: $branch"
+
+git log --pretty=format:"%an|%ae|%ad" --date=iso "$branch" |
+  awk -F'|' '
+{
+  name = $1
+  email = $2
+  date = $3
+  
+  if (!(name in earliest) || date < earliest[name]) {
+    earliest[name] = date
+  }
+  if (!(name in latest) || date > latest[name]) {
+    latest[name] = date
+  }
+  
+  emails[name] = email
+}
+END {
+  for (name in earliest) {
+    printf "%s|%s|%s|%s\n", name, emails[name], earliest[name], latest[name]
+  }
+}' |
+  {
+    case "$sort_order" in
+    ascending)
+      sort_flags=""
+      ;;
+    descending)
+      sort_flags="-r"
+      ;;
+    esac
+
+    case "$sort_column" in
+    1) # name
+      sort -t'|' -k1,1 $sort_flags
+      ;;
+    2) # email
+      sort -t'|' -k2,2 $sort_flags
+      ;;
+    3) # earliest
+      sort -t'|' -k3,3 $sort_flags
+      ;;
+    4) # latest
+      sort -t'|' -k4,4 $sort_flags
+      ;;
+    esac
+  } |
+  awk -F'|' '
+BEGIN {
+  printf "%-30s %-50s %-30s %-30s\n", "Name", "Email", "Earliest Activity", "Latest Activity"
+  printf "%-30s %-50s %-30s %-30s\n", "----", "-----", "----------------", "---------------"
+}
+{
+  printf "%-30s %-50s %-30s %-30s\n", $1, $2, $3, $4
+}'

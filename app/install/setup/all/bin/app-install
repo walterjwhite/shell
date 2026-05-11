@@ -21,6 +21,8 @@ sudo_ensure_root "$@"
 
 platform_is_supported
 
+_APP_INSTALLATION=1
+
 [ -z "$APP_INSTALL_DEPENDENCY" ] && processes_restrict_to_single_process
 
 _settings_init

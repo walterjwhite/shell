@@ -4,15 +4,14 @@ lib ./videos-podcast.sh
 
 _video_download() {
   _video_read_meta
-
-  _video_meta $video_file >/dev/null 2>&1
+  _video_meta
 
   is_playlist=$(printf '%s' "$videos_url" | grep -c list=)
 
   _options=""
   [ -z "$interactive" ] && _options="--no-color -q"
 
-  if [ -n "$extract_audio" ] && [ "$extract_audio" -eq 1 ]; then
+  if [ -n "$extract_audio" ]; then
     log_warn "configuring audio extraction"
     _options="$_options $conf_videos_youtube_audio_download_options"
   else
@@ -22,6 +21,10 @@ _video_download() {
   if [ $is_playlist -eq 1 ]; then
     log_warn "is playlist"
     _options="$_options --restrict-filenames -o $conf_videos_download_path/downloaded/%(playlist)s/%(playlist_index)s-%(title)s-$video_key.%(ext)s"
+  elif [ -n "$podcast_channel_title" ]; then
+    local sanitized_channel=$(printf '%s' "$podcast_channel_title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+    local sanitized_title=$(printf '%s' "$podcast_title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+    _options="$_options --restrict-filenames -o $conf_videos_download_path/downloaded/${sanitized_channel}-${sanitized_title}-$video_key.%(ext)s"
   else
     _options="$_options --restrict-filenames -o $conf_videos_download_path/downloaded/%(title)s-$video_key.%(ext)s"
   fi

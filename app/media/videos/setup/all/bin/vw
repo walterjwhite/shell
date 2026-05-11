@@ -22,6 +22,7 @@ _watch() {
 
   _video_read_meta
   _video_meta
+  log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
 
   _play
   _comments

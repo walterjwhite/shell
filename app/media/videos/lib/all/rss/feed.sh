@@ -1,10 +1,23 @@
 _fetch_rss_feeds() {
-  for rss_feed_url in $conf_videos_podcast_feeds; do
-    local feed_context=$(printf '%s' "$rss_feed_url" | sed 's|.*://||')
-    log_add_context "$feed_context"
-    _fetch_rss_feed
-    _filter_rss_feed
-    log_remove_context
+  local current_feed=""
+
+  printf '%s\n' "$conf_videos_podcast_feeds" | while IFS= read -r line; do
+    current_feed="$current_feed $(printf '%s' "$line" | sed 's/ *\\$//')"
+
+    if ! printf '%s' "$line" | grep -q '\\$'; then
+      current_feed=$(printf '%s' "$current_feed" | sed 's/^ *//;s/ *$//') # trim whitespace
+
+      podcast_channel_title=$(printf '%s' "$current_feed" | cut -d'|' -f1)
+      rss_feed_url=$(printf '%s' "$current_feed" | cut -d'|' -f2)
+
+      local feed_context=$(printf '%s' "$rss_feed_url" | sed 's|.*://||')
+      log_add_context "$feed_context"
+      _fetch_rss_feed
+      _filter_rss_feed
+      log_remove_context
+
+      current_feed="" # reset for next feed
+    fi
   done
 }
 _fetch_rss_feed() {
@@ -20,8 +33,6 @@ _filter_rss_feed() {
   log_info "filtering rss feed"
 
   extract_audio=1
-
-  podcast_channel_title=$(xmlstarlet sel -t -v '//channel/title' "$feed_xml")
 
   unset podcast_url podcast_title podcast_guid podcast_publish_date podcast_duration
 

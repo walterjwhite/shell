@@ -20,7 +20,7 @@ _worker_fix_error() {
     tail -${agent_validation_error_context_lines} $_worker_job_logfile >>$worker_agent_prompt
     worker_agent_prompt=$(_file_readlink $worker_agent_prompt)
 
-    _worker_commit_work_log $worker_agent_job_work_path "fix error"
+    _agent_commit_work_log $worker_agent_job_work_path "fix error"
 
     _worker_sandbox_run
   done

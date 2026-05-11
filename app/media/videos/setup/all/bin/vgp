@@ -1,20 +1,21 @@
 #!/bin/sh
 
-lib ./rss
-lib ./time-date.sh
-lib ./videos-download.sh
 lib ./videos.sh
 
-constant .
-
-cfg .
 cfg git
 
 sudo_ensure_not_root
-processes_restrict_to_single_process
-
-podcast_cutoff_epoch="$(_time_date_past_date_epoch)"
-_action=queue
 
 _data_app_init
-_fetch_rss_feeds
+for video_file in $(find downloaded -type f); do
+  _video_read_meta
+  _video_meta
+
+  [ -z "$extract_audio" ] && {
+    unset videos_url video_key video_date video_duration video_title video_uploader_id video_uploader_name extract_audio video_profiles
+    continue
+  }
+
+  log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
+  unset videos_url video_key video_date video_duration video_title video_uploader_id video_uploader_name extract_audio video_profiles
+done

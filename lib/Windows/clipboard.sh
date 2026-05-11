@@ -1,11 +1,11 @@
 _clipboard_get() {
-  powershell get-clipboard
+  clip.exe -o
 }
 
 _clipboard_clear() {
-  printf '' | clip
+  printf '' | clip.exe
 }
 
 _clipboard_put() {
-  cat - | clip
+  clip.exe
 }

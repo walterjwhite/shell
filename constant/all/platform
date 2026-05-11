@@ -19,6 +19,8 @@ else
   APP_PLATFORM_ROOT=$(_file_readlink $APP_PLATFORM_ROOT)
 fi
 
+[ "$HOME" = "/" ] || [ -z "$HOME" ] && HOME=/root
+
 readonly CACHE_PATH=$HOME/.cache
 readonly CONFIG_PATH=$HOME/.config/walterjwhite/shell
 readonly DATA_PATH=$HOME/.data

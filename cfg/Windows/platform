@@ -7,4 +7,6 @@
 : ${conf_log_beep_debug:=''}
 : ${conf_log_beep_stdin:='700,200'}
 
-readonly PLATFORM_SYSTEM_ID_PATH=$HOME/.local/walterjwhite/system
+chocolatey_disabled=1
+scoop_disabled=1
+winget_disabled=1

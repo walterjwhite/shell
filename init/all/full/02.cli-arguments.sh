@@ -26,11 +26,14 @@ for _ARG in "$@"; do
     }
 
     _configuration_name=$(printf '%s' $_configuration_name | tr '-' '_' | tr '[:upper:]' '[:lower:]')
-    if [ $(printf '%s' "$_ARG" | grep -c '=') -eq 0 ]; then
-      _configuration_value=1
-    else
+    case "$_ARG" in
+    *-*)
       _configuration_value=${_ARG#*=}
-    fi
+      ;;
+    *)
+      _configuration_value=1
+      ;;
+    esac
 
     eval "${_configuration_name}=\"$_configuration_value\""
     unset _configuration_name _configuration_value

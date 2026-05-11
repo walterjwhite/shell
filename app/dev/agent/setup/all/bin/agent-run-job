@@ -9,8 +9,6 @@ lib ./worker
 
 cfg .
 
-pwd
-find . -type f -exec ls -alh {} +
 
 file_require prompt.md
 file_require job

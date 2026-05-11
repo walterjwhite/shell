@@ -1,7 +1,7 @@
 
 readonly _FREEBSD_PKG_OPTIONS="-yq"
 
-readonly PLATFORM_PACKAGES="git sed grep gawk shfmt Sudo"
+readonly PLATFORM_PACKAGES="git sed grep gawk shfmt sudo"
 
 readonly NPM_PACKAGE="nodejs"
 readonly RUST_PACKAGE="rust"

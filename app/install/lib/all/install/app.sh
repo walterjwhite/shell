@@ -37,7 +37,7 @@ _app_setup_project() {
   _settings_application_defaults $APP_PLATFORM_PLATFORM
 
 
-  [ $_OPTN_INSTALL_BYPASS_UNINSTALL ] || _INSTALL=1 uninstall_app
+  [ $_OPTN_INSTALL_BYPASS_UNINSTALL ] || uninstall_app
   _install_prepare_target
 
   _metadata_write_app

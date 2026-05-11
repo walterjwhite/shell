@@ -43,8 +43,18 @@ _video_read_meta() {
 _video_meta() {
   videos_url=$(printf '%s' $video_metadata | cut -f1 -d'|')
 
-  video_key=$(printf '%s' $videos_url | sed -e "s/^.*\=//")
-  [ -z "$video_key" ] && video_key=$(printf '%s' $videos_url | sed 's/\.[^.]\{2,4\}$//')
+  case $video_key in
+  *awsEpisodeId=*)
+    video_key=$(printf '%s' $video_key | grep -Po 'awEpisodeId=[A-Za-z0-9\-]+' | cut -f2 -d=)
+    ;;
+  *)
+    video_key=$(printf '%s' $videos_url | sed -e "s/^.*\=//")
+    ;;
+  esac
+
+  [ -z "$video_key" ] && {
+    video_key=$(printf '%s' $videos_url | sed 's/\.[^.]\{2,4\}$//')
+  }
 
   video_date=$(printf '%s' $video_metadata | cut -f2 -d'|')
   video_duration=$(printf '%s' $video_metadata | cut -f3 -d'|')
@@ -56,7 +66,9 @@ _video_meta() {
   extract_audio=$(printf '%s' $video_metadata | cut -f8 -d'|')
   video_profiles=$(printf '%s' $video_metadata | cut -f9 -d'|')
 
-  log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
+  video_is_protected=$(printf '%s' $video_metadata | cut -f10 -d'|')
+
+  video_last_position=$(printf '%s' $video_metadata | cut -f11 -d'|')
 }
 
 _videos_git() {

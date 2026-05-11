@@ -5,7 +5,7 @@ _conf_mongodb_compass_get_directory() {
     if [ -z "$provider_path" ]; then
       provider_path=$(find "$1" -maxdepth 1 -type d -name '*compass*' 2>/dev/null | head -1)
     fi
-    
+
     if [ -z "$provider_path" ]; then
       unset provider_path
       return
@@ -44,7 +44,7 @@ _configuration_mongodb_compass_backup_post() {
   find "$APP_DATA_PATH/$provider_name" -type f -name "*.log" -delete 2>/dev/null || true
   find "$APP_DATA_PATH/$provider_name" -type f -name "*.tmp" -delete 2>/dev/null || true
   find "$APP_DATA_PATH/$provider_name" -type f -name "session*" -delete 2>/dev/null || true
-  
+
   find "$APP_DATA_PATH/$provider_name" -type d -name "Cache" -exec rm -rf {} + 2>/dev/null || true
   find "$APP_DATA_PATH/$provider_name" -type d -name "CachedData" -exec rm -rf {} + 2>/dev/null || true
 }
