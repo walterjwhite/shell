@@ -1,0 +1,130 @@
+#!/bin/sh
+
+lib extract.sh
+lib net/download.sh
+
+KASM_WORKSPACES_INSTALL_PATH=/opt/kasm/workspaces
+
+_kasm_get_latest_version() {
+  log_info "determining latest Kasm Workspaces version"
+
+  LATEST_KASM_VERSION=$(curl -s https://kasm.com/downloads |
+    grep -i 'kasm' |
+    grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' |
+    sort -V |
+    tail -1)
+
+  validation_require "$LATEST_KASM_VERSION" "failed to detect latest Kasm Workspaces version"
+  log_info "detected latest version: $LATEST_KASM_VERSION"
+}
+
+_kasm_patch_installer() {
+  log_info "patching Kasm installer to use Podman and systemd"
+
+  cp kasm_release/install.sh kasm_release/install_dependencies.sh kasm_release/install.sh kasm_release/install_dependencies.sh.backup
+
+  sed -i '1a set -x' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  sed -i 's/sudo docker/sudo podman/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/docker exec/podman exec/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/docker pull/podman pull/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/ docker-compose / podman-compose /g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/^docker-compose /podman-compose /g' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  sed -i 's/docker load /podman load /g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/docker info /podman info /g' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  sed -i 's/sudo service docker restart/sudo systemctl restart podman/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+  sed -i 's/restart_docker/restart_podman/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  sed -i 's/docker /podman /g' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  cat >>kasm_release/install.sh kasm_release/install_dependencies.sh <<'EOF'
+
+function restart_podman() {
+    if [ "${START_SERVICES}" == "true" ]; then
+        echo "Restarting podman engine"
+        sudo systemctl restart podman
+    else
+        echo "Skipping podman engine restart"
+    fi
+}
+
+function install_podman_logging_plugin() {
+    if [ ! -z "$logging_plugin_image" ]; then
+        echo "Installing podman logging plugin: ${logging_plugin_image}"
+        output=$(sudo podman plugin install --alias "${logging_plugin_alias}:${logging_plugin_tag}" "$logging_plugin_image:${logging_plugin_tag}" --grant-all-permissions)
+        sudo podman plugin enable "$logging_plugin_alias" &> /dev/null || true
+    fi
+}
+
+function setup_podman_systemd() {
+    if command -v systemctl >/dev/null 2>&1; then
+        echo "Setting up Podman systemd integration"
+        
+        sudo systemctl enable --now podman.socket
+        sudo systemctl enable --now podman.service
+        
+        cd ${KASM_INSTALL_BASE}/docker/
+        if command -v podman-compose &> /dev/null; then
+            podman-compose --in-pod generate-kube -o kasm-pod.yaml
+            if command -v podman-kube-play &> /dev/null; then
+                sudo podman-kube-play kasm-pod.yaml --systemd
+            fi
+        fi
+    fi
+}
+EOF
+
+  sed -i 's/docker-compose up -d/podman-compose up -d/g' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  sed -i '/start_services/i setup_podman_systemd' kasm_release/install.sh kasm_release/install_dependencies.sh
+
+  log_info "kasm installer patched successfully"
+  cp kasm_release/install.sh kasm_release/install_dependencies.sh /tmp
+}
+
+_kasm_install() {
+  log_info "installing Kasm Workspaces version: $LATEST_KASM_VERSION"
+  rm -rf $KASM_WORKSPACES_INSTALL_PATH
+
+  _download_fetch "https://kasm-static-content.s3.amazonaws.com/kasm_release_${LATEST_KASM_VERSION}.tar.gz" || {
+    log_warn "unable to download Kasm Workspaces release"
+    return 1
+  }
+
+  TEMP_DIR=$(_mktemp_options=d _mktemp_mktemp -d)
+  exit_defer rm -rf $TEMP_DIR
+
+  _extract_extract "$download_file" "$TEMP_DIR"
+
+  cd "$TEMP_DIR"
+
+  _kasm_patch_installer
+
+  log_info "running patched Kasm Workspaces installer"
+  sh kasm_release/install.sh kasm_release/install_dependencies.sh --accept-eula --role all || {
+    log_warn "failed to run Kasm Workspaces installer"
+    return 2
+  }
+
+
+  log_info "kasm Workspaces installation completed"
+}
+
+_kasm_get_installed_version() {
+  if [ -f "$KASM_WORKSPACES_INSTALL_PATH/version.txt" ]; then
+    INSTALLED_KASM_VERSION=$(cat "$KASM_WORKSPACES_INSTALL_PATH/version.txt")
+    log_info "detected installed version: $INSTALLED_KASM_VERSION"
+  else
+    log_info "no installed version found"
+  fi
+}
+
+cd /tmp
+
+_kasm_get_latest_version
+if [ "$INSTALLED_KASM_VERSION" != "$LATEST_KASM_VERSION" ]; then
+  log_info "installing Kasm Workspaces with Podman and systemd"
+  _kasm_install
+fi

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="agent_job:Agent Job"
+
+lib ./git.sh
+lib io/file.sh
+lib ./remote.sh
+lib ./worker
+
+cfg .
+
+pwd
+find . -type f -exec ls -alh {} +
+
+file_require prompt.md
+file_require job
+
+log_info "prompt.md and job both exist, using absolute path"
+
+agent-create-job $agent_job $(readlink -f job) $(readlink -f prompt.md)
+agent-worker $agent_job

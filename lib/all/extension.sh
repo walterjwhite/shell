@@ -80,7 +80,7 @@ _extension_is_runnable_default() {
 }
 
 _extension_find_default() {
-  local _name_pattern=$(set | $GNU_GREP -P "^${extension_run_type}_name_pattern=" | sed -e "s/^${extension_run_type}_name_pattern=//")
+  local _name_pattern=$(set | $GNU_GREP -P "^${extension_run_type}_name_pattern=" | sed -e "s/^${extension_run_type}_name_pattern=//" -e "s/^'//" -e "s/'$//")
   [ -z "$_name_pattern" ] && {
     case $extension_run_type in
     [a-z][a-z] | [a-z][a-z][a-z] | [a-z][a-z][a-z][a-z])

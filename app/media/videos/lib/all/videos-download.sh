@@ -1,3 +1,7 @@
+#!/bin/sh
+
+lib ./videos-podcast.sh
+
 _video_download() {
   _video_read_meta
 

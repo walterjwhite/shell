@@ -1,37 +1,43 @@
-_scoop_install() {
-  _scoop_get_buckets "$@" | _scoop_add_buckets
+package_scoop_bootstrap() {
+  command -v scoop >/dev/null 2>&1 && return 0
+
+  log_info "installing scoop"
+  curl -L https://get.scoop.sh | sh
+
+  [ -f "$HOME/scoop/shims/scoop" ] && export PATH="$HOME/scoop/shims:$PATH"
+}
+
+package_scoop_bootstrap_uninstall() {
+  log_info "uninstalling scoop"
+  if command -v scoop >/dev/null 2>&1; then
+    scoop uninstall scoop
+    return
+  fi
+
+  log_warn "scoop is not installed"
+}
+
+package_scoop_install() {
+  package_scoop_bootstrap
+
+  log_info "installing package: $*"
   scoop install "$@"
 }
 
-_scoop_update() {
-  scoop update "$@"
+package_scoop_uninstall() {
+  log_info "uninstalling package: $*"
+  scoop uninstall "$@"
 }
 
-_scoop_bootstrap() {
-  exit_with_error "scoop bootstrap is not yet implemented"
+package_scoop_update() {
+  log_info "updating scoop and packages"
+  scoop update
+  scoop update *
 }
 
-_scoop_is_installed() {
-  which scoop >/dev/null 2>&1
-}
+package_scoop_is_installed() {
+  local package_name=$1
+  [ -z "$package_name" ] && return 1
 
-_scoop_add_buckets() {
-  local scoop_bucket
-  for scoop_bucket in $@; do
-    _scoop_add_bucket $scoop_bucket
-  done
-}
-
-_scoop_add_bucket() {
-  scoop bucket list | $GNU_GREP -Pcqm1 "^${1}$" && {
-    log_detail "$1 bucket already exists"
-    return
-  }
-
-  log_warn "adding $1 bucket"
-  scoop bucket add "$1"
-}
-
-_scoop_get_buckets() {
-  printf '%s' "$*" | tr ' ' '\n' | cut -f1 -d/ | sort -u
+  scoop list | grep -q "^$package_name$" 2>/dev/null
 }

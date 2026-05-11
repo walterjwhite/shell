@@ -42,7 +42,7 @@ _git_remove_patterns() {
   pattern_matcher_exclude_pattern_file=$APP_DATA_PATH/.exclude
   touch $pattern_matcher_exclude_pattern_file
 
-  pattern_matcher_pattern_file=${_APP_CONFIG_PATH}.patterns
+  pattern_matcher_pattern_file=${APP_CONFIG_PATH}.patterns
   if [ ! -e $pattern_matcher_pattern_file ]; then
     log_warn "unable to check contents"
     return

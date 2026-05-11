@@ -15,3 +15,4 @@ vpn_stop() {
 vpn_already_running() {
   sudo_run ip link show $conf_remote_interface_name >/dev/null 2>&1
 }
+

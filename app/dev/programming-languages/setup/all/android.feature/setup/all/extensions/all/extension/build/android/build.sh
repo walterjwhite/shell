@@ -1,26 +1,15 @@
+cfg feature:.
+
 _android_run_build() {
   gradle wrapper --gradle-version \
     $(grep distributionUrl gradle/wrapper/gradle-wrapper.properties | sed -n 's/.*gradle-\([0-9.]*\)-bin.zip/\1/p')
 
-  case $gradle_build_type in
-  debug)
-    gradle_build_arg=Debug
-    ;;
-  release)
-    gradle_build_arg=Release
-    ;;
-  *)
-    exit_with_error "invalid build type: $gradle_build_type"
-    ;;
-  esac
-
-  ./gradlew clean assemble$gradle_build_arg
+  ./gradlew clean assemble${conf_programming_languages_android_build_target}
 }
 
-_android_is_android_project() {
-  [ ! -e build.gradle ] && [ ! -e build.gradle.kts ] && return 1
+android_build_artifacts() {
 
-  grep -cqm1 "com.android.application\|com.android.library" build.gradle build.gradle.kts 2>/dev/null
+  find . -name "*.apk" -type f
 }
 
 _android_is_android_project && {

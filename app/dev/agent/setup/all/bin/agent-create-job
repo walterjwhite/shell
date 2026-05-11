@@ -10,7 +10,6 @@ lib ./worker
 cfg .
 
 sudo_ensure_not_root
-
 _agent_git_init_workspace
 
 case $agent_job in

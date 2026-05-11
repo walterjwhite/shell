@@ -4,6 +4,8 @@ _worker_run_job_joblet() {
   _worker_run_job_validation
 
   _worker_sandbox_patch && _worker_apply_patch
+
+  _worker_publish_artifacts
 }
 
 _worker_fix_error() {
@@ -27,6 +29,15 @@ _worker_fix_error() {
 }
 
 _worker_run_job_validation() {
+  [ -n "$agent_job_is_coding_task" ] && {
+    log_info "running format"
+    format >>$_worker_job_logfile 2>&1 || _worker_fix_error
+
+    log_info "running build"
+    build >>$_worker_job_logfile 2>&1 || _worker_fix_error
+
+  }
+
   type _agent_job_validation >/dev/null 2>&1 && {
     log_info "running _agent_job_validation"
 
@@ -35,5 +46,5 @@ _worker_run_job_validation() {
   }
 
   log_info 'running job validation'
-  agent_run_job_validation_extension
+  _agent_validate_documentation
 }
