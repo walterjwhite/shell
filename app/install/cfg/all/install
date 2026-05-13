@@ -20,8 +20,6 @@
 
 : ${conf_install_remove_unused_functions:=1}
 
-: ${platforms:=$APP_PLATFORM_PLATFORM}
-
 
 which shfmt > /dev/null 2>&1 || _optn_install_disable_shfmt=1
 

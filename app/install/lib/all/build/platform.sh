@@ -1,19 +1,23 @@
 _app_build_determine_build_platforms() {
-  [ -n "$build_platforms" ] && return
-
-  if [ -z "$build_all_platforms" ]; then
-    build_platforms=$platforms
-    return
-  fi
-
+  supported_build_platforms=$APP_PLATFORM_SUPPORTED_PLATFORMS
   [ -e supported-platforms ] && {
-    build_platforms=$(cat supported-platforms)
+    supported_build_platforms=$(cat supported-platforms)
+  }
+
+  [ -n "$build_platforms" ] && {
+    local supported_build_platforms_grep=$(printf '%s\n' "$supported_build_platforms" | tr '\n' '|' | sed -e 's/|$//')
+    build_platforms=$(printf '%s\n' $build_platforms | $GNU_GREP -Po "($supported_build_platforms_grep)")
     return
   }
 
-  build_platforms=$APP_PLATFORM_SUPPORTED_PLATFORMS
+  if [ -z "$build_all_platforms" ]; then
+    build_platforms=$APP_PLATFORM_PLATFORM
+    return
+  fi
 
-  [ -z "$build_platforms" ] && build_platforms=$platforms
+  build_platforms="$supported_build_platforms"
+
+
 }
 
 _app_build_platforms() {
