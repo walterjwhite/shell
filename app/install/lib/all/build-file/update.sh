@@ -15,17 +15,17 @@ _buildfile_update_constants() {
     ;;
   esac
 
-  $GNU_SED -i "s|__LIBRARY_APPLICATION_PATH__|$LIBRARY_PATH/$target_application_name|g" $buildfile_output_package_file
-  $GNU_SED -i "s|__LIBRARY_PATH__|$LIBRARY_PATH|g" $buildfile_output_package_file
-  $GNU_SED -i "s/__APPLICATION_NAME__/$target_application_name/g" $buildfile_output_package_file
-  $GNU_SED -i "s/__APPLICATION_VERSION__/$target_application_version/g" $buildfile_output_package_file
-  $GNU_SED -i "s/__PLATFORM__/$APP_PLATFORM_PLATFORM/g" $buildfile_output_package_file
+  $GNU_SED -i 's|__APP_LIBRARY_PATH__|$APP_LIBRARY_PATH|g' $buildfile_output_package_file
+  $GNU_SED -i 's|__LIBRARY_PATH__|$LIBRARY_PATH|g' $buildfile_output_package_file
+  $GNU_SED -i 's|__APPLICATION_NAME__|$APPLICATION_NAME|g' $buildfile_output_package_file
+  $GNU_SED -i 's|__APPLICATION_VERSION__|$APPLICATION_VERSION|g' $buildfile_output_package_file
+  $GNU_SED -i 's|__APP_PLATFORM_PLATFORM__|$APP_PLATFORM_PLATFORM|g' $buildfile_output_package_file
 }
 
 _buildfile_replace_constants() {
-  sed -e "s|__LIBRARY_APPLICATION_PATH__|$LIBRARY_PATH/$target_application_name|g" \
+  sed -e "s|__APP_LIBRARY_PATH__|$APP_LIBRARY_PATH|g" \
     -e "s|__LIBRARY_PATH__|$LIBRARY_PATH|g" \
-    -e "s/__APPLICATION_NAME__/$target_application_name/g" \
-    -e "s/__APPLICATION_VERSION__/$target_application_version/g" \
-    -e "s/__PLATFORM__/$APP_PLATFORM_PLATFORM/g"
+    -e "s/__APPLICATION_NAME__/$APPLICATION_NAME/g" \
+    -e "s/__APPLICATION_VERSION__/$APPLICATION_VERSION/g" \
+    -e "s/__APP_PLATFORM_PLATFORM__/$APP_PLATFORM_PLATFORM/g"
 }

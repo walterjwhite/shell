@@ -54,7 +54,7 @@ package_chocolatey_uninstall() {
     log_warn "chocolatey is disabled"
     return 1
   }
-  
+
   log_info "uninstalling package: $*"
   choco uninstall -y "$@"
 }
@@ -64,7 +64,7 @@ package_chocolatey_update() {
     log_warn "chocolatey is disabled"
     return 1
   }
-  
+
   log_info "updating chocolatey and packages"
   choco upgrade all -y
 }

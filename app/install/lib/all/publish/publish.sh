@@ -20,11 +20,5 @@ _app_publish_instance() {
 
   _prepare_registry
   _update_artifacts
-
-  if [ -n "$(git status --porcelain $target_application_name)" ]; then
-    log_info "publishing changes"
-    _push_changes
-  else
-    log_warn "no changes detected"
-  fi
+  _push_changes
 }

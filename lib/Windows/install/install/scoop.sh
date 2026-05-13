@@ -32,7 +32,7 @@ package_scoop_install() {
     log_warn "scoop is disabled"
     return 1
   }
-  
+
   package_scoop_bootstrap
 
   log_info "installing package: $*"
@@ -44,7 +44,7 @@ package_scoop_uninstall() {
     log_warn "scoop is disabled"
     return 1
   }
-  
+
   log_info "uninstalling package: $*"
   scoop uninstall "$@"
 }
@@ -54,7 +54,7 @@ package_scoop_update() {
     log_warn "scoop is disabled"
     return 1
   }
-  
+
   log_info "updating scoop and packages"
   scoop update
   scoop update *
@@ -65,7 +65,7 @@ package_scoop_is_installed() {
     log_warn "scoop is disabled"
     return 1
   }
-  
+
   local package_name=$1
   [ -z "$package_name" ] && return 1
 

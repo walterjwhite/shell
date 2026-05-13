@@ -3,7 +3,7 @@ package_winget_bootstrap() {
     log_warn "winget is disabled"
     return 1
   }
-  
+
   command -v winget >/dev/null 2>&1 && return 0
 
   log_info "checking winget availability"
@@ -26,7 +26,7 @@ package_winget_install() {
     log_warn "winget is disabled"
     return 1
   }
-  
+
   package_winget_bootstrap
 
   log_info "installing package: $*"
@@ -38,7 +38,7 @@ package_winget_uninstall() {
     log_warn "winget is disabled"
     return 1
   }
-  
+
   log_info "uninstalling package: $*"
   winget uninstall "$@"
 }
@@ -48,7 +48,7 @@ package_winget_update() {
     log_warn "winget is disabled"
     return 1
   }
-  
+
   log_info "updating winget and packages"
   winget upgrade --all --accept-package-agreements --accept-source-agreements
 }
@@ -58,7 +58,7 @@ package_winget_is_installed() {
     log_warn "winget is disabled"
     return 1
   }
-  
+
   local package_name=$1
   [ -z "$package_name" ] && return 1
 

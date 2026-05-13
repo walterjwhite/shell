@@ -12,8 +12,14 @@ _push_changes() {
       continue
     }
 
+    log_info "publishing changes for $target_application_name/$app_platform"
+
+    local app_version_tuple="$app_platform:$target_application_name@$target_application_version"
+    printf '%s\n' "$target_application_version" >$target_application_name/$app_platform/.app
+    printf '%s\n' "$(date)" >>$target_application_name/$app_platform/.app
+
     git add $target_application_name/$app_platform
-    git commit $target_application_name/$app_platform -m "$app_platform:$target_application_name@$target_application_version"
+    git commit $target_application_name/$app_platform -m "$app_version_tuple"
   done
 
   [ $INSTALL_REGISTRY_OFFLINE ] && {

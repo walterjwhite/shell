@@ -1,7 +1,7 @@
 . __LIBRARY_PATH__/__APPLICATION_NAME__/provider/$conf_secrets_provider/init.sh
 
 secrets_get_stdout() {
-  openssl enc -d -aes-256-cbc -salt -pbkdf2 -in $secret_key.enc -out /dev/stdout -kfile $conf_secrets_openssl_key
+  openssl enc -d -aes-256-cbc -salt -pbkdf2 -in $secret_key.enc -out - -kfile $conf_secrets_openssl_key
 }
 
 secrets_get_find() {
