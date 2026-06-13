@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./find-public-functions.sh
+
+[ "$#" -eq 0 ] && set -- "."
+
+_find_public_functions "$@"

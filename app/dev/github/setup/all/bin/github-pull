@@ -1,0 +1,32 @@
+#!/bin/sh
+
+lib io/file.sh
+
+cfg .
+
+file_require .git 'Expecting to be in project directory, .git does not exist'
+
+github_project_name=$(basename $PWD)
+if [ -e .github-project-name ]; then
+  github_project_name=$(head -1 .github-project-name)
+fi
+
+log_info "pulling $github_project_name"
+
+_github_pull_cleanup() {
+  if [ -z "$github_project_path" ]; then
+    return 1
+  fi
+
+  rm -rf $github_project_path
+}
+
+github_project_path=$(_mktemp_options=d _mktemp_mktemp)
+exit_defer _github_pull_cleanup
+
+github_username=$(secrets -out=stdout get $conf_github_username_key 2>/dev/null)
+github_project=ssh://git@github.com:/$github_username/$github_project_name
+
+exec_wrap git clone $github_project $github_project_path
+$conf_github_diff_cmd $github_project_path .
+

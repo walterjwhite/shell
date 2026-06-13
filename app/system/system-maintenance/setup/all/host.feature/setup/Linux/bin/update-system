@@ -1,0 +1,19 @@
+#!/bin/sh
+
+lib alert.sh
+lib install
+lib io/write.sh
+lib system-alert.sh
+
+package_update
+
+_requires_reboot && {
+  _system_alert "update-system" "reboot required"
+}
+
+app-update
+
+root_zfs_volume=$(zfs get -H name / | awk {'print$1'})
+
+zap snap $conf_system_maintenance_zap_retention_period ${root_zfs_volume}
+zap destroy -v

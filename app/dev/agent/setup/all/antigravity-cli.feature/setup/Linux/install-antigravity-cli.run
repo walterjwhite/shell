@@ -1,0 +1,81 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+readonly ANTIGRAVITY_BASE_URL="https://antigravity-cli-auto-updater-974169037036.us-central1.run.app"
+
+
+_get_latest_antigravity_version_info() {
+    antigravity_platform=$(printf '%s' $APP_PLATFORM_PLATFORM | tr '[[:upper:]]' '[[:lower:]]')
+    case $antigravity_platform in
+        apple)
+            antigravity_platform=darwin
+            ;;
+        linux)
+            ;;
+        *)
+            log_warn "unsupported platform: $antigravity_platform"
+            return 1
+            ;;
+    esac
+
+    case $APP_PLATFORM_ARCHITECTURE in
+        x86_64 | amd64)
+            antigravity_architecture=amd64
+            ;;
+        arm64 | aarch64)
+            antigravity_architecture="arm64"
+            ;;
+        *)
+            log_warn "unsupported architecture: $APP_PLATFORM_ARCHITECTURE"
+            return 2
+            ;;
+    esac
+
+    _get_antigravity_manifest
+
+    latest_antigravity_version=$(jq -r .version "$antigravity_manifest")
+    latest_antigravity_url=$(jq -r .url "$antigravity_manifest")
+    latest_antigravity_checksum=$(jq -r .sha512 "$antigravity_manifest")
+}
+
+_get_antigravity_manifest() {
+    local antigravity_manifest_url="$ANTIGRAVITY_BASE_URL/manifests/${antigravity_platform}_${antigravity_architecture}.json"
+    no_cache=1 _download_fetch "$antigravity_manifest_url" antigravity-${antigravity_platform}_${antigravity_architecture}.json
+    antigravity_manifest=$download_file
+}
+
+_get_installed_antigravity_version() {
+    if [ -e $APP_PLATFORM_BIN_PATH/antigravity-cli ]; then
+        $APP_PLATFORM_BIN_PATH/antigravity-cli --version | cut -d' ' -f2
+    fi
+}
+
+_antigravity_install() {
+    versioned_filename="antigravitycli-$latest_antigravity_version-$APP_PLATFORM_ARCHITECTURE-$(basename $latest_antigravity_url)"
+    _download_fetch $latest_antigravity_url "$versioned_filename"
+
+
+
+    cd /tmp
+    versioned_extract_dir="/tmp/antigravitycli-$latest_antigravity_version"
+    mkdir -p "$versioned_extract_dir"
+
+    _extract_extract $download_file "$versioned_extract_dir"
+    exit_defer rm -rf "$versioned_extract_dir"
+
+    mv "$versioned_extract_dir/antigravity" $APP_PLATFORM_BIN_PATH/antigravity-cli
+}
+
+_antigravity_is_latest_version() {
+    local installed_antigravity_version=$(_get_installed_antigravity_version)
+    [ "$installed_antigravity_version" = "$latest_antigravity_version" ]
+}
+
+_get_latest_antigravity_version_info
+if ! _antigravity_is_latest_version; then
+  _antigravity_install
+else
+  log_detail "latest version of antigravity is already installed: $latest_antigravity_version"
+fi

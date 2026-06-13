@@ -1,0 +1,47 @@
+name: Build (Gentoo Linux)
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'debug'
+        required: true
+        default: false
+        type: boolean
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  conf_log_level: ${{ inputs.debug == true && '0' || '2' }}
+
+jobs:
+
+  build-gentoo:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'walterjwhite' }}
+    container:
+      image: gentoo/stage3:amd64-systemd-mergedusr
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: sync portage and test installing apps
+        run: |
+          emerge-webrsync
+          emerge --oneshot --quiet net-misc/curl
+
+          curl -sSL \
+            https://raw.githubusercontent.com/walterjwhite/app-registry/refs/heads/main/install/Linux/setup/bin/app-install \
+            -o /tmp/app-install
+          chmod +x /tmp/app-install
+          mv /tmp/app-install /usr/local/bin
+
+          conf_log_level=${{ env.conf_log_level }} /usr/local/bin/app-install install
+
+          for app in $(find app -type d -maxdepth 2 ! -name install | sort -uV); do
+            app_name=$(basename $app)
+
+            echo "installing $app"
+            conf_log_level=${{ env.conf_log_level }} /usr/local/bin/app-install $app_name || {
+              printf 'failed to install %s\n' "$app_name"
+            }
+          done

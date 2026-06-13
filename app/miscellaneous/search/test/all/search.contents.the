@@ -1,0 +1,10 @@
+[ $(search the | wc -l) -gt 10 ] && log_info "success - search the"
+[ $(search the | $GNU_GREP -Pc ':[\d]+:') -gt 10 ] && log_info "success - search the"
+
+[ $(search -changes 'the' | grep commit | wc -l) -gt 1 ] && log_info "success - search changes for the"
+
+[ $(search then | wc -l) -gt 0 ] && log_info "success - search the"
+
+[ $(search -filenames '*README*' | wc -l) -eq 1 ] && log_info "success - search filenames for README"
+
+[ $(search -h | wc -l) -gt 30 ] && log_info "success - search help"

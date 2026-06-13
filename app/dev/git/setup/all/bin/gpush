@@ -1,0 +1,25 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+
+if [ -z "$git_recursive" ]; then
+  _git_in_working_directory || {
+    export git_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir gpush "$@" \;
+
+    exit
+  }
+fi
+
+_git_relative_path
+log_info "$git_project_relative_path"
+
+if [ $# -eq 0 ]; then
+  git push || {
+    git pull || {
+      git merge --no-edit && git push
+    }
+  }
+else
+  git push "$@"
+fi

@@ -1,0 +1,15 @@
+: ${conf_log_beep_timeout:=5}
+
+: ${conf_log_beep_err:=''}
+: ${conf_log_beep_alrt:=''}
+: ${conf_log_beep_scs:=''}
+: ${conf_log_beep_wrn:=''}
+: ${conf_log_beep_info:=''}
+: ${conf_log_beep_detail:=''}
+: ${conf_log_beep_debug:=''}
+: ${conf_log_beep_stdin:=''}
+
+: ${conf_log_sudo_beep_tone:=''}
+
+: ${conf_install_apple_beep_message:=beep}
+: ${conf_install_apple_sudo_precmd_message:="sudo"}

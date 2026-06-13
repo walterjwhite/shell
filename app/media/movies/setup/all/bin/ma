@@ -1,0 +1,60 @@
+#!/bin/sh
+
+lib .
+
+_movies_download_trailers() {
+  while :; do
+    _movies_download_trailer || return
+  done
+}
+
+_movies_download_trailer() {
+  _stdin_read_if "Enter Movie Trailer" _MOVIE_TRAILER
+  [ -z "$_MOVIE_TRAILER" ] && return 1
+
+  printf '%s\n' "$_MOVIE_TRAILER" >>$_MOVIE_DATA_PATH/trailers
+  unset _MOVIE_TRAILER
+}
+
+_movies_references() {
+  while :; do
+    _movies_reference || return
+  done
+}
+
+_movies_reference() {
+  _stdin_read_if "Enter Movie Reference" _MOVIE_REFERENCE
+  [ -z "$_MOVIE_REFERENCE" ] && return 1
+
+  printf '%s\n' "$_MOVIE_REFERENCE" >>$_MOVIE_DATA_PATH/references
+  unset _MOVIE_REFERENCE
+}
+
+_data_app_init
+
+_stdin_read_if "Enter Title" _MOVIE_TITLE
+validation_require "$_MOVIE_TITLE" _MOVIE_TITLE
+
+_stdin_read_if "Enter Publish Year" _MOVIE_PUBLISH_YEAR
+validation_require "$_MOVIE_PUBLISH_YEAR" _MOVIE_PUBLISH_YEAR
+
+_YEAR=$_MOVIE_PUBLISH_YEAR
+_movies_decade
+
+_MOVIE_ID=$(_random | tr -d '/')
+
+_MOVIE_DATA_PATH=$decade/$_MOVIE_PUBLISH_YEAR/$_MOVIE_ID
+
+mkdir -p $_MOVIE_DATA_PATH
+
+printf '%s\n' "$_MOVIE_TITLE" >>$_MOVIE_DATA_PATH/title
+
+_stdin_read_if "Enter Movie Tags ',' delimeted" _MOVIE_TAGS
+validation_require "$_MOVIE_TAGS" _MOVIE_TAGS
+
+printf '%s\n' "$_MOVIE_TAGS" | tr ',' '\n' >>$_MOVIE_DATA_PATH/tags
+
+_movies_download_trailers
+_movies_references
+
+_movies_git $_MOVIE_DATA_PATH

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="git_branch:Branch to make changes on|git_ref:Git reference to pull changes from"
+
+original_branch=$(gcb)
+gco $git_branch
+gcp $git_ref
+gpush
+
+gco $original_branch

@@ -1,0 +1,29 @@
+#!/bin/sh
+
+lib ./package-lookup.sh
+
+if [ $# -eq 0 ]; then
+  exit 0
+fi
+
+error_count=0
+
+for package_name in "$@"; do
+  log_info "looking up package: $package_name"
+
+  if _lookup_package "$package_name" "$show_details"; then
+    log_info "package found: $package_name"
+
+    [ -n "$DETAILS" ] && {
+      _lookup_package_details
+
+      log_info "$package_url"
+      log_info "$package_version"
+    }
+  else
+    log_warn "package not found: $package_name"
+    error_count=$((error_count + 1))
+  fi
+done
+
+[ $error_count -eq 0 ]

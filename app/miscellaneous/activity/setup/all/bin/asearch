@@ -1,0 +1,10 @@
+#!/bin/sh
+
+lib .
+
+_activity_init $_OPTN_ACTIVITY_NAME
+_activity_project_dir_arg=1
+
+cd $_activity_directory || exit_with_error "activity directory does not exist"
+
+search "$@"

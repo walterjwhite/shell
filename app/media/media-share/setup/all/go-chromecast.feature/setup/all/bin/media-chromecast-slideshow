@@ -1,0 +1,10 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_MEDIA_DIRECTORY:Media Directory"
+
+lib feature:.
+
+cfg feature:.
+
+_media_get_chromecast
+_media_chromecast_play

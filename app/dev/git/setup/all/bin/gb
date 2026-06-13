@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+git branch --no-color $@ |
+  grep -v HEAD |
+  sed -e "s/^\* //" -e "s/^  //" |
+  $GNU_SED -e "s/remotes\/[[:alnum:]]\+\///" |
+  sort -u

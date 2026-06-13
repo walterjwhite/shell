@@ -1,0 +1,16 @@
+command -v winget > /dev/null 2>&1 && readonly WINGET=1
+command -v choco > /dev/null 2>&1 && readonly CHOCOLATEY=1
+command -v scoop > /dev/null 2>&1 && readonly SCOOP=1
+
+: ${IO_STAT_ARGS:='-c %a'}
+
+: ${SOFTWARE_CENTER_EXECUTABLE:="C:/Windows/CCM/ClientUX/scclient.exe"}
+
+readonly GNU_GREP=grep
+readonly GNU_SED=sed
+
+
+readonly PLATFORM_PATH=$HOME/.local/walterjwhite
+readonly BIN_PATH=$HOME/.local/bin
+readonly PLATFORM_SYSTEM_ID_PATH=$HOME/.local/etc/walterjwhite/system
+

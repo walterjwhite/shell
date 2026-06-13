@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cfg feature:.
+
+$conf_dev_java_google_java_format_jdk $conf_dev_java_google_java_format_options -jar $conf_dev_google_java_format_jar -r "$@"

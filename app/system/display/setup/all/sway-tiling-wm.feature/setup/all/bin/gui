@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cfg feature:.
+
+export XDG_RUNTIME_DIR=/run/user/$UID
+mkdir -p $XDG_RUNTIME_DIR
+
+$_DISPLAY_SWAY_TILING_WM_LOCK_CMD
+
+$_DISPLAY_SWAY_TILING_WM_LAUNCH_SWAY_CMD

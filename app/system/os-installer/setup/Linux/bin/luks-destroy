@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib ./luks.sh
+
+cfg .
+
+_luks_device "$1"
+_luks_encrypted_device
+
+cryptsetup luksHeaderBackup $_luks_encrypted_device \
+  --header-backup-file $os_installer_luks_key_header_path
+
+file_require "$os_installer_luks_key_header_path" "GENTOO_LUKS_KEY_HEADER_PATH"
+log_warn "header backed up to: $os_installer_luks_key_header_path"
+
+cryptsetup luksErase $_LUKS_OPTIONS $_luks_encrypted_device

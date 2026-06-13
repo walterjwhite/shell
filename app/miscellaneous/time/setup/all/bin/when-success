@@ -1,0 +1,24 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_TIME_SUCCESS_CMD:CMD to evaluate before running primary cmd|_TEST_SUCCESS_EVERY:Test success every|_EXECUTION_CMD:CMD and any arguments to execute"
+
+lib ./delay.sh
+
+_time_delay_duration $delay
+allowed_iterations=$time_iterations
+
+while :; do
+  $_TIME_SUCCESS_CMD && {
+    log_info "success cmd completed successfully"
+    break
+  }
+
+  _time_delay_duration $_TEST_SUCCESS_EVERY
+
+  [ -n "$time_iterations" ] && {
+    time_iterations=$(($time_iterations - 1))
+    [ $time_iterations -eq 0 ] && exit_with_error "failed after $allowed_iterations tries"
+  }
+done
+
+$_TIME_EXECUTE

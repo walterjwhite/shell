@@ -1,0 +1,20 @@
+#!/bin/sh
+
+lib ./driver
+lib ./git.sh
+lib ./remote.sh
+
+cfg .
+
+sudo_ensure_not_root
+processes_restrict_to_single_process
+
+_agent_run_remotely "$@" && exit $remote_exit_status
+
+_agent_git_init_workspace
+
+if [ $# -eq 0 ]; then
+  _driver_run_all_jobs
+else
+  _driver_run_specified_jobs "$@"
+fi

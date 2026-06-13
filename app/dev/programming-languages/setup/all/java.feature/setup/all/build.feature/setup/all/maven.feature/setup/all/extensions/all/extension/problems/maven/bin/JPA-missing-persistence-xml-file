@@ -1,0 +1,10 @@
+#!/bin/sh
+
+
+for _PROJECT in $(find . -type f -name .jpa2 | sed -e "s/\.jpa2//"); do
+  persistence_unit_xml=$_PROJECT/src/main/resources/META-INF/persistence.xml
+
+  if [ ! -e $persistence_unit_xml ]; then
+    log_warn "missing: $persistence_unit_xml"
+  fi
+done

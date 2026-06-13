@@ -1,0 +1,47 @@
+#!/bin/sh
+
+lib app.sh
+lib feature.sh
+lib ./git.sh
+lib git.sh
+lib ./install
+lib install
+lib io/file.sh
+lib io/write.sh
+lib platform.sh
+lib ./uninstall
+
+constant ./install
+
+cfg install
+
+init platform.sh
+
+sudo_ensure_root "$@"
+
+platform_is_supported
+
+_APP_INSTALLATION=1
+
+[ -z "$APP_INSTALL_DEPENDENCY" ] && processes_restrict_to_single_process
+
+_settings_init
+_bootstrap_install
+
+if [ $# -gt 0 ]; then
+  target_application_names="$@"
+elif [ -e .app ]; then
+  target_application_names=$(basename $PWD)
+else
+  exit_with_error "specify application to install or cd to app dir"
+fi
+
+log_info "installing $target_application_names"
+
+for target_application_name in $target_application_names; do
+  _app_setup_project $target_application_name
+done
+
+if [ $conf_install_auto_update_packages -gt 0 ]; then
+  package_update
+fi

@@ -1,0 +1,55 @@
+#!/bin/sh
+
+lib .
+
+_expenses_get_all() {
+  _expenses_header
+
+  local field
+  for field in $(printf '%s' "$conf_expenses_text_fields" | tr '|' '\n'); do
+    _expenses_get $field
+  done
+
+  _expenses_price
+
+  printf '%s\n' "$_record" >>$_expenses_file
+}
+
+_expenses_header() {
+  [ -e $_expenses_file ] && return 1
+  printf '%s\n' "$conf_expenses_text_fields|$conf_expenses_numerical_fields" >$_expenses_file
+}
+
+_expenses_get() {
+  _stdin_read_if "Enter $1" _value
+
+  if [ -n "$_record" ]; then
+    _record="$_record|$_value"
+  else
+    _record="$_value"
+  fi
+
+  unset _value
+}
+
+_expenses_price() {
+  local numerical_field
+  local index=0
+  for numerical_field in $(printf '%s' "$conf_expenses_numerical_fields" | tr '|' '\n'); do
+    _stdin_read_if "Enter $numerical_field:" COST${index}
+    index=$(($index + 1))
+  done
+
+  [ -z "$_COST2" ] && _COST2=0
+  [ -z "$_COST3" ] && _COST3=0
+  [ -z "$_COST4" ] && _COST4=0
+  [ -z "$_COST5" ] && _COST5=$(printf '%s' "$_COST0*$_COST1+$_COST2+$_COST3+$_COST4" | bc)
+
+  _record="$_record|$_COST0|$_COST1|$_COST2|$_COST3|$_COST4|$_COST5"
+}
+
+_expenses_set_filename "$@" && shift
+
+_expenses_get_all
+
+log_info "recorded expense @ $_expenses_file"

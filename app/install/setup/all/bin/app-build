@@ -1,0 +1,21 @@
+#!/bin/sh
+
+lib ./build
+lib ./build-file
+lib ./git.sh
+lib git.sh
+lib ./install/git.sh
+lib ./install/settings.sh
+lib io/file.sh
+lib shell-script.sh
+
+constant ./build
+constant ./install
+
+cfg ./build
+cfg install
+
+
+processes_restrict_to_single_process
+
+_app_build

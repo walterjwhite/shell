@@ -1,0 +1,42 @@
+name: Build (Apple)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'debug'
+        required: true
+        default: false
+        type: boolean
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  conf_log_level: ${{ inputs.debug == true && '0' || '2' }}
+
+jobs:
+  build-macos-arm64:
+    runs-on: macos-latest   # GitHub's macos-latest is arm64 (M-series)
+    if: ${{ github.actor == 'walterjwhite' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: test installing apps
+        run: |
+          curl -sSL \
+            https://raw.githubusercontent.com/walterjwhite/app-registry/refs/heads/main/install/Apple/setup/bin/app-install \
+            -o /tmp/app-install
+          chmod +x /tmp/app-install
+          sudo mv /tmp/app-install /usr/local/bin
+
+          sudo env conf_log_level=${{ env.conf_log_level }} /usr/local/bin/app-install install
+
+          for app in $(find app -type d -maxdepth 2 ! -name install | sort -uV); do
+            app_name=$(basename $app)
+
+            echo "installing $app"
+            conf_log_level=${{ env.conf_log_level }} /usr/local/bin/app-install $app_name || {
+              printf 'failed to install %s\n' "$app_name"
+            }
+          done

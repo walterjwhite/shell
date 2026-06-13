@@ -1,0 +1,6 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_download_fetch "https://raw.githubusercontent.com/Jehops/zap/refs/heads/master/zap"
+_install_file_chmod=755 _download_install_file /usr/local/bin/zap

@@ -1,0 +1,4 @@
+: ${conf_network_test_timeout:=5}
+: ${conf_network_test_targets:="http://connectivity-check.ubuntu.com http://example.org http://www.google.com http://telehack.com http://lxer.com"}
+
+: ${curl_flags:="--connect-timeout 5 --max-time 30"}

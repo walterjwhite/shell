@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+git_town_version=22.3.0
+
+_download_fetch "https://github.com/git-town/git-town/releases/download/v${git_town_version}/git-town_linux_intel_64.tar.gz"
+
+sudo_required=1 _extract_extract $download_file $APP_PLATFORM_BIN_PATH
+sudo_run chmod +x $APP_PLATFORM_BIN_PATH/git-town

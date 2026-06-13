@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib git/github.sh
+
+get_installed_git_for_windows_version() {
+	git --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
+}
+
+_github_install_latest git-bash git-for-windows git .tag_name \
+	'.assets[] | select(.name | test("Git-.*64-bit.exe")) | .browser_download_url' \
+	git-for-windows-amd64 git

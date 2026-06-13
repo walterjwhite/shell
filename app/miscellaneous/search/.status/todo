@@ -1,0 +1,75 @@
+search is not robust
+    fails if not used properly, --changes instead of -changes
+
+ensure spaces and special characters are handled properly
+
+full path is showing up for some searches
+    only show relative path
+    git grep is doing this, we are changing to the project directory for git grep, while the shell may be in another directory
+
+act on results
+    replace pattern in file(s)
+    separate command, replace?
+        restrict to certain filenames
+
+be able to search on all branches, allow user to specify which branches to search or all
+
+when using a pager, pass the pattern directly to less so that we can easily find what we're interested in
+
+iterative search
+    search for a keyword, find usages, then find those usages, repeat
+
+    make a graph / tree, output to a file
+
+    contents
+        java
+            search --recursive --contents catalog-read
+                file:line number:matched line
+
+restrict search to certain files
+    equivalent of using find
+
+split out functionality [enable 'plugins' that work on certain data types when detected]
+    contacts
+    activity
+
+    git
+        branches
+        tags
+        filenames
+        changes
+        logs
+        contents
+            options
+                line number
+                filename
+
+    non-git
+        filenames in given directory(ies)
+        locate (plocate on Ubuntu)
+        grep
+
+    other VCS systems
+
+filename search
+    run output through grep (only when listing filenames) so that the matching portion is highlighted
+        bonus points, configure color to match git grep
+
+test
+    search -filenames
+        'compile' app, but do not install, execute compiled app with args and match output
+            limit execution time
+            if non-zero return status, raise exit_with_error ...
+
+        cannot easily build app, may need dependencies, setup, etc.
+            run test right before cleanup step, locally only, (do not show _test call)
+
+    ensure that any changes do not break functionality
+        write tests that catch regressions
+
+integrate with elasticsearch
+    explore fscrawler project: https://github.com/dadoonet/fscrawler
+        actively developed
+    
+    handle synonyms, misspellings
+    will need to index contents (on commit)

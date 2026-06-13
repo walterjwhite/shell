@@ -1,0 +1,4 @@
+#!/bin/sh
+
+which shfmt >/dev/null 2>&1
+return $?

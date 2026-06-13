@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./setup/console.sh
+
+cfg feature:
+
+shell_type=fish _console_conf_all

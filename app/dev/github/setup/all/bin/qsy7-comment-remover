@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cfg ./qsy7-cli-comment-remover
+
+
+java -jar $qsy7_comment_remover_jar -Path "$PWD" $conf_dev_java_qsy7_comment_remover_options "$@"

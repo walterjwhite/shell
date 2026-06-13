@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib ./fix-case.sh
+
+_tmp_files=$(mktemp)
+_tmp_targets=$(mktemp)
+
+exit_defer rm -f "$_tmp_files" "$_tmp_targets"
+
+_fix_case_targets "$@"
+_fix_case_has_no_work
+_fix_case_work

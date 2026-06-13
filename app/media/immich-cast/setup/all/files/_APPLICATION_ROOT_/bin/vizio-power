@@ -1,0 +1,16 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="action:Action (on or off)"
+
+lib ./vizio
+
+cfg .
+
+case $action in
+on)
+  _vizio_do_on
+  ;;
+off)
+  _vizio_do_off
+  ;;
+esac

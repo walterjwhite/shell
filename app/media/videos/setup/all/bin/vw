@@ -1,0 +1,96 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="video_id:ID of video (can be a substring)"
+
+lib io/path.sh
+lib ./videos.sh
+
+cfg git
+
+sudo_ensure_not_root
+
+_action=watch
+: ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
+
+_watch() {
+  video_key=$(basename $video_media_file | $GNU_GREP -Po "\-{0,1}[0-9A-Za-z_-]{10}[048AEIMQUYcgkosw]\." | tail -1 | sed -e "s/^\-//" -e "s/\.$//" -e "s/\-/\\\-/g")
+  [ -z "$video_key" ] && video_key=$(basename $video_media_file | sed 's/\.[^.]\{2,4\}$//')
+
+  video_file=$(grep "$video_key" downloaded -rl | head -1)
+
+  validation_require "$video_file" "video file not found for $video_key"
+
+  _video_read_meta
+  _video_meta
+  log_info "$videos_url - $video_title @ $video_duration ($video_date:$video_uploader_id:$video_uploader_name)"
+
+  _play
+  _comments
+
+  _move_watched_video
+}
+
+_play() {
+  $conf_videos_video_player $_OPTN_VIDEOS_ARGUMENTS $video_media_file 2>&1 >/dev/null
+}
+
+_comments() {
+  _stdin_read_if "Please enter comments (or hit enter for none)" _COMMENTS
+
+  if [ -n "$_COMMENTS" ]; then
+    printf '\n' >>$video_file
+    printf '%s\n' "$_COMMENTS" >>$video_file
+  fi
+}
+
+_move_watched_video() {
+  _stdin_read_if "Retain video?" _RETAIN "N/y"
+
+  if [ "$_RETAIN" = "y" ]; then
+    _videos_git $video_file
+  else
+    video_watched_file=watched/$(_videos_date)
+
+    rm -f $video_media_file
+
+    _path_remove_empty_directories $conf_videos_download_path
+
+    mkdir -p $(dirname $video_watched_file)
+
+    git mv $video_file $video_watched_file
+    _move_other_downloaded
+
+    _videos_git $video_file $video_watched_file
+  fi
+
+  unset _RETAIN
+}
+
+_move_other_downloaded() {
+  grep -lr "$video_key" downloaded | grep -cqm1 '.' || return
+
+  log_warn "other instances found, moving those to watched too"
+
+  watch_date=$(date +%Y/%m/%d)
+  git mv $(grep -lr "$video_key" downloaded) watched/$watch_date
+}
+
+_watch_specified() {
+  video_media_file=$(find $conf_videos_download_path -type f ! -name '.part' | grep "$video_id")
+
+  [ -z "$video_media_file" ] && {
+    local video_date=$(_videos_date)
+    local video_path=error/$video_date
+
+    mkdir -p $video_path
+    git mv $(git grep -rl "$video_id" downloaded) $video_path
+    _videos_git downloaded $video_path
+
+    return 1
+  }
+
+  _watch
+}
+
+_data_app_init
+_watch_specified $video_id

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cfg feature:.
+
+_sudo_is_root || exit_with_error "this script must be run as root"
+
+log_warn "usb dock connected"
+
+for _EXECUTABLE in $(find /usr/local/etc/walterjwhite/events/on-dock-connected -type f); do
+  log_detail "executing $_EXECUTABLE"
+  . $_EXECUTABLE
+done

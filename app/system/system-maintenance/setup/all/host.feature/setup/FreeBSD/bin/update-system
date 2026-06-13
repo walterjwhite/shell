@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lib alert.sh
+lib feature:apply-patches.sh
+lib feature:update-system
+lib io/write.sh
+lib jail.sh
+lib ./network.sh
+lib system-alert.sh
+
+cfg feature:.
+
+_in_jail && exit_with_error "update System is not designed to run inside jails, aborting"
+
+_patch_physical
+_patch_jails
+
+app-update

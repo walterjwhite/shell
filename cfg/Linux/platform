@@ -1,0 +1,7 @@
+: ${emerge_portage_refresh_period:=3600}
+
+: ${pacman_refresh_period:=3600}
+
+
+: ${pacman_bootstrap_install:=}
+

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_TARGET_FILE:The target file to write to|_SOURCE_FILE:The source file to read from"
+
+lib ./chroot/patches.sh
+lib logging
+
+cfg .
+cfg platform
+
+mkdir -p $(dirname $_TARGET_FILE)
+
+log_debug "key/value: $_SOURCE_FILE"
+
+_patch_name=$(_module_get_patch_name $_SOURCE_FILE)
+
+printf '# %s\n' "$_patch_name" >>$_TARGET_FILE
+$GNU_GREP -Pv "(^#|^$)" $_SOURCE_FILE | while read _LINE; do
+  _key=$(printf '%s' "$_LINE" | sed -e "s/=.*$//")
+  _value=$(printf '%s' "$_LINE" | sed -e "s/^.*=//" | tr -d '"')
+
+  printf '%s="%s"\n' "$_key" "$_value" >>$_TARGET_FILE
+done
+
+printf '\n' >>$_TARGET_FILE

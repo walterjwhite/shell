@@ -1,0 +1,20 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_SOURCE_FILENAME:Source Filename"
+
+grep -cqm1 "@ToString(.*doNotUseGetters = true.*)" $_SOURCE_FILENAME || {
+  log_debug "lombok data - do not use getter - not detected"
+  exit 0
+}
+
+log_detail "$_JAVA_FORMATTER_NAME - Fixing $_SOURCE_FILENAME"
+
+$GNU_SED -i '/@ToString/d' $_SOURCE_FILENAME
+
+$GNU_SED -i '/^@Data/i @ToString(doNotUseGetters = true)' $_SOURCE_FILENAME
+
+grep -cqm1 "import lombok.ToString" $_SOURCE_FILENAME && {
+  $GNU_SED -i '/^import lombok.Data;/i import lombok.ToString;' $_SOURCE_FILENAME
+}
+
+exit 0

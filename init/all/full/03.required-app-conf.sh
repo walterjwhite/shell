@@ -1,0 +1,2 @@
+__REQUIRED_APP_CONF_PLACEHOLDER__
+_cfg_validate_required

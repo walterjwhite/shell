@@ -1,0 +1,35 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+readonly FLUTTER_VERSION=3.44.0-stable
+readonly FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}.tar.xz"
+readonly FLUTTER_INSTALLATION_PATH=/opt/google/flutter
+
+_latest_flutter_version() {
+    printf '%s\n' $FLUTTER_VERSION | sed -e 's/-stable//'
+}
+
+_installed_flutter_version() {
+    which flutter > /dev/null 2>&1 || return 1
+
+    timeout 3 flutter --version | grep '^Flutter' | cut -f2 -d ' '
+}
+
+_install_flutter() {
+    _download_fetch "$FLUTTER_URL"
+
+    rm -rf $FLUTTER_INSTALLATION_PATH
+    _extract_extract $download_file $(dirname $FLUTTER_INSTALLATION_PATH)
+    ln -sf $FLUTTER_INSTALLATION_PATH/bin/flutter $APP_PLATFORM_BIN_PATH/flutter
+}
+
+latest_flutter_version=$(_latest_flutter_version)
+installed_flutter_version=$(_installed_flutter_version)
+
+if [ "$installed_flutter_version" != "$latest_flutter_version" ]; then
+  _install_flutter
+else
+  log_info "latest version of flutter is installed: $latest_flutter_version"
+fi

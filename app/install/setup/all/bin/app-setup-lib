@@ -1,0 +1,7 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="git_remote:Git Remote|remote_name:Remote Name"
+
+rm -rf ${APP_DATA_PATH}/sources/$remote_name
+mkdir -p ${APP_DATA_PATH}/sources/$remote_name
+git archive --remote=$git_remote HEAD cfg constant init lib | tar -x -C ${APP_DATA_PATH}/sources/$remote_name

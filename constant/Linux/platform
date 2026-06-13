@@ -1,0 +1,55 @@
+readonly GNU_GREP=grep
+readonly GNU_SED=sed
+
+readonly _SUDO_CMD="sudo"
+
+readonly PLATFORM_SYSTEM_ID_PATH=/usr/local/etc/walterjwhite/system
+
+readonly EMERGE_FLAGS="-q --quiet-build --quiet-fail"
+
+readonly IO_STAT_ARGS='-c %a'
+
+readonly APP_PLATFORM_SUB_PLATFORM=$($GNU_GREP -Ph "^NAME=" $APP_PLATFORM_ROOT/etc/os-release 2>/dev/null | sed -e 's/^NAME=//' -e 's/ Linux//' -e 's/"//g')
+readonly PLATFORM_PATH=/usr/local/walterjwhite
+readonly BIN_PATH=/usr/local/bin
+
+case $APP_PLATFORM_SUB_PLATFORM in
+  Arch | CachyOS)
+    linux_package_manager=pacman
+
+    case $APP_PLATFORM_SUB_PLATFORM in
+      CachyOS)
+        readonly APP_PLATFORM_DERIVED_SUB_PLATFORM=Arch
+        ;;
+    esac
+
+    readonly PLATFORM_PACKAGES="bc beep curl expect git shellcheck sudo shfmt"
+
+    readonly NPM_PACKAGE="npm"
+    readonly RUST_PACKAGE="rust"
+
+    readonly PYPI_PACKAGE="python"
+
+    readonly GO_PACKAGE="go gcc"
+    readonly EXPECT_PACKAGE="expect"
+
+
+    conf_system_maintenance_reboot_packages="linux-cachyos-lts-zfs|linux-cachyos-zfs|linux-cachyos|linux-cachyos-lts|linux-firmware"
+    ;;
+  Gentoo)
+    linux_package_manager=emerge
+
+    readonly PLATFORM_PACKAGES="dev-vcs/git dev-tcltk/expect net-misc/curl dev-util/sh app-admin/sudo app-misc/beep app-portage/gentoolkit"
+    readonly PLATFORM_PACKAGES_ACCEPT_KEYWORDS="dev-util/sh ~amd64"
+
+    readonly NPM_PACKAGE="net-libs/nodejs"
+    readonly RUST_PACKAGE="dev-lang/rust"
+
+    readonly PYPI_PACKAGE="dev-lang/python"
+
+    readonly GO_PACKAGE="dev-lang/go"
+    readonly EXPECT_PACKAGE="dev-tcltk/expect"
+
+    conf_system_maintenance_reboot_packages="gentoo-kernel"
+    ;;
+esac

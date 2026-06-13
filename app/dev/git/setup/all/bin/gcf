@@ -1,0 +1,9 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_GIT_SINCE:SHA1 Hash of starting commit or date"
+
+lib git/project.directory.sh
+
+_project_directory_get_project_directory
+
+git diff --name-only $(gpc $_GIT_SINCE)

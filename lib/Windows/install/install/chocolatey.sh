@@ -1,0 +1,75 @@
+package_chocolatey_bootstrap() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
+  command -v choco >/dev/null 2>&1 && return 0
+
+  log_info "installing chocolatey"
+  if command -v powershell >/dev/null 2>&1; then
+    powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+  else
+    curl -L https://community.chocolatey.org/install.ps1 | powershell -Command -
+  fi
+
+  [ -d "$APP_PLATFORM_BIN_PATH" ] && export PATH="$APP_PLATFORM_BIN_PATH:$PATH"
+}
+
+package_chocolatey_bootstrap_uninstall() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
+  log_info "uninstalling chocolatey"
+  if command -v choco >/dev/null 2>&1; then
+    log_warn "chocolatey must be manually uninstalled"
+    return 1
+  fi
+
+  log_warn "chocolatey is not installed"
+}
+
+package_chocolatey_install() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
+  package_chocolatey_bootstrap
+
+  log_info "installing package: $*"
+  choco install -y "$@"
+}
+
+package_chocolatey_uninstall() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
+  log_info "uninstalling package: $*"
+  choco uninstall -y "$@"
+}
+
+package_chocolatey_update() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+
+  log_info "updating chocolatey and packages"
+  choco upgrade all -y
+}
+
+package_chocolatey_is_installed() {
+  [ -n "$chocolatey_disabled" ] && {
+    log_warn "chocolatey is disabled"
+    return 1
+  }
+  local package_name=$1
+  [ -z "$package_name" ] && return 1
+
+  choco list --local-only --exact "$package_name" | grep -q "$package_name" 2>/dev/null
+}

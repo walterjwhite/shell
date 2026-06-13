@@ -1,0 +1,3 @@
+: ${conf_firewall_provider:=pf}
+: ${conf_pf_lock_timeout:=60}
+: ${conf_pf_lock_file:=/tmp/pfctl.lock}

@@ -1,0 +1,2 @@
+readonly APPLICATION_START_TIME=$(date +%s)
+readonly APPLICATION_CMD=$(basename $0)

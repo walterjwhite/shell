@@ -1,0 +1,20 @@
+#!/bin/sh
+
+_git_sync() {
+  cd $HOME
+
+  if [ -e $1 ]; then
+    cd $1
+
+    log_detail "pulling changes"
+    gpull
+
+    log_detail "pushing changes"
+    gpush --all
+  fi
+}
+
+log_detail "syncing repositories for user: $USER"
+
+_git_sync projects/git
+_git_sync .data

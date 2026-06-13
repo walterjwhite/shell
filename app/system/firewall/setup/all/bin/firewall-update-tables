@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib io/file.sh
+
+file_require "$conf_firewall_tables_path" conf_firewall_tables_path
+
+find $conf_firewall_tables_path -type f ! -name '*.data' | xargs -P$conf_firewall_parallel_workers -I % firewall-update-table %

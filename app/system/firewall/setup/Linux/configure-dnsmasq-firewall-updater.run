@@ -1,0 +1,4 @@
+#!/bin/sh
+
+systemctl daemon-reload
+systemctl enable --now dnsmasq-nft-updater.service

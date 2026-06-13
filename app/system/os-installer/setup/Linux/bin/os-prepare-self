@@ -1,0 +1,32 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="source_host:source Host (IP / FQDN)"
+
+lib ./CachyOS/prepare.sh
+
+
+_cachyos_switch_to_systemd_networking
+
+rm -rf ~/.config ~/.ssh
+mkdir -p ~/.config
+
+rm -rf ~/.ssh
+scp -qr $source_host:.ssh ~/
+scp -qr $source_host:.config/walterjwhite ~/.config
+scp -q $source_host:$APP_PLATFORM_BIN_PATH/app-install .
+
+sudo_run mv app-install $APP_PLATFORM_BIN_PATH
+
+sudo_run rm -rf /root/.config /root/.ssh /root/.data
+sudo_run mkdir -p /root/.config
+
+scp -qr root@$source_host:/root/.config/walterjwhite root-config
+sudo_run mv root-config /root/.config/walterjwhite
+
+scp -qr root@$source_host:/root/.ssh root-ssh
+sudo_run mv root-ssh /root/.ssh
+
+sudo_run chown -R root:root /root
+
+sudo_run app-install install os-installer
+

@@ -1,0 +1,37 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_DOCKERFILE:path to Dockerfile"
+
+case $_DOCKERFILE in
+*/.run/Dockerfile)
+  log_debug "ignoring run configuration for Dockerfile as this is building an image"
+  exit 0
+  ;;
+esac
+
+cd $(dirname $(dirname $_DOCKERFILE))
+
+
+dockerfile_path=$PWD/.build/Dockerfile
+docker_application_name=$(basename $PWD)
+
+log_detail "building Dockerfile: $docker_application_name"
+
+find . -type f -name '*.go' -print -quit | grep -cqm1 . && {
+  log_debug "detected go files, switching to repo root"
+  log_debug "[ENSURE FILES USING THE COPY CMD ARE RELATIVE TO REPO ROOT]"
+
+  project_root=$(git rev-parse --show-toplevel)
+  cd $project_root
+}
+
+podman build \
+  --build-arg APP_NAME="$(basename $PWD)" \
+  --build-arg APP_VERSION="$(git branch --no-color --show-current)" \
+  --build-arg SCM_ID="$(git rev-parse HEAD)" \
+  --build-arg BUILD_DATE="$(date)" \
+  --build-arg PLATFORM="$APP_PLATFORM_PLATFORM" \
+  --build-arg ARCHITECTURE="$APP_PLATFORM_ARCHITECTURE" \
+  --format docker \
+  -f $dockerfile_path \
+  -t $docker_application_name .

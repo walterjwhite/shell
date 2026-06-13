@@ -1,0 +1,37 @@
+#!/bin/sh
+
+cfg feature:.
+
+[ "$#" -lt 1 ] && exit_with_error "usage: $0 <IP_OR_MAC_1> [IP_OR_MAC_2 ...]"
+
+sudo_ensure_root "$@"
+
+SEARCH_PATTERN=""
+
+for arg in "$@"; do
+  ESCAPED_ARG=$(echo "$arg" | sed 's/\./\\./g')
+
+  if [ -z "$SEARCH_PATTERN" ]; then
+    SEARCH_PATTERN="$ESCAPED_ARG"
+  else
+    SEARCH_PATTERN="$SEARCH_PATTERN|$ESCAPED_ARG"
+  fi
+done
+
+tmux new-session -d -s dhcp_monitor
+
+tmux send-keys -t dhcp_monitor:0 ' tail -f "'${conf_networking_dhcp_monitor_log_file}'" | grep -i DHCP | grep -P "('"${SEARCH_PATTERN}"')" -A10 -B10' C-m
+
+tmux split-window -h
+
+tmux send-keys -t dhcp_monitor:0.1 "tcpdump -i any -nnn -vvv -l 'udp port 67 or udp port 68' | grep -E --line-buffered '$SEARCH_PATTERN'" -A10 -B10 C-m
+
+tmux split-window -v
+
+tmux send-keys -t dhcp_monitor:0.2 ' tcpdump -i any -nnn -vv arp | grep -P "(169\.|'"${SEARCH_PATTERN}"')" ' C-m
+
+tmux split-window -v
+
+tmux send-keys -t dhcp_monitor:0.3 ' watch -n 2 "arp -a | grep -P \"('"${SEARCH_PATTERN}"')\"" ' C-m
+
+tmux attach-session -t dhcp_monitor

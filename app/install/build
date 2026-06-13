@@ -1,0 +1,75 @@
+#!/bin/sh
+
+
+loaded_resources=""
+
+load_directory() {
+  local import_type=$1
+  shift
+
+  local file import_path import_file
+  for file in "$@"; do
+    for resource_platform in all $APP_PLATFORM_PLATFORM; do
+      if [ -n "$is_global_resource" ]; then
+        import_path=$project_root_dir/$import_type/$resource_platform/$file
+      else
+        import_path=$import_type/$resource_platform/$file
+      fi
+
+      [ ! -e $import_path ] && continue
+
+      import_path=$(readlink -f $import_path)
+
+      for import_file in $(find $import_path -type f ! -name '*.test' | sort -u); do
+        case $loaded_resources in
+          *"|$import_file|"*)
+            [ -n "$debug" ] && printf 'file already imported: %s\n' "$import_file"
+            ;;
+          *)
+            loaded_resources="${loaded_resources}|$import_file|"
+            . $import_file || {
+              printf 'Unable import: %s\n' $import_file
+            }
+            ;;
+        esac
+      done
+    done
+  done
+}
+
+[ -n "$debug" ] && set -x
+
+build_wd=$PWD
+project_root_dir=$(git rev-parse --show-toplevel)
+readonly APPLICATION_NAME=$(basename $PWD)
+
+. $project_root_dir/constant/all/application
+. $project_root_dir/constant/all/platform
+. $project_root_dir/constant/all/platform.resolved
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/application)|"
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/platform)|"
+loaded_resources="$loaded_resources|$(readlink -f $project_root_dir/constant/all/platform.resolved)|"
+
+is_global_resource=1 load_directory constant .
+load_directory constant build
+is_global_resource=1 load_directory constant $APPLICATION_NAME
+
+load_directory lib build build-file install/settings.sh git.sh
+is_global_resource=1 load_directory lib $BUILDFILE_FULL_LIB include.sh app.sh git.sh
+
+load_directory constant $APPLICATION_NAME
+
+is_global_resource=1 load_directory lib io/file.sh shell-script.sh
+
+is_global_resource=1 load_directory cfg .
+load_directory cfg $APPLICATION_NAME
+is_global_resource=1 load_directory cfg $APPLICATION_NAME
+
+load_directory cfg install
+is_global_resource=1 load_directory cfg $BUILDFILE_FULL_CFG
+
+_include_optional install
+
+load_directory init $BUILDFILE_FULL_INIT
+
+sequential_build=1 _app_build

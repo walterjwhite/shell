@@ -1,0 +1,111 @@
+#!/bin/sh
+
+
+
+log_info "=========================================================="
+log_info " Starting Automated CachyOS Installation                   "
+log_info " Target: $conf_cachyos_installer_target_disk              "
+log_info "=========================================================="
+
+log_info "--> Wiping existing partition tables and signatures..."
+dd if=/dev/zero of="$conf_cachyos_installer_target_disk" bs=1M count=50 conv=fdatasync
+wipefs -a "$conf_cachyos_installer_target_disk"
+sgdisk --zap-all "$conf_cachyos_installer_target_disk"
+
+log_info "--> Creating layout partitions..."
+sgdisk -n 1:0:+1G -t 1:ef00 -c 1:"EFI" "$conf_cachyos_installer_target_disk"
+sgdisk -n 2:0:0 -t 2:bf00 -c 2:"ZFS" "$conf_cachyos_installer_target_disk"
+partprobe "$conf_cachyos_installer_target_disk"
+sleep 2
+
+case "$conf_cachyos_installer_target_disk" in
+*nvme* | *mmcblk*)
+  part_efi="${conf_cachyos_installer_target_disk}p1"
+  part_zfs="${conf_cachyos_installer_target_disk}p2"
+  ;;
+*)
+  part_efi="${conf_cachyos_installer_target_disk}1"
+  part_zfs="${conf_cachyos_installer_target_disk}2"
+  ;;
+esac
+
+log_info "--> Formatting EFI system partition..."
+mkfs.vfat -F 32 "$part_efi"
+
+log_info "--> Initializing encrypted ZFS Pool..."
+printf '%s\n' "$conf_cachyos_installer_encryption_pass" | zpool create -f \
+  -o ashift=12 \
+  -O encryption=on \
+  -O keylocation=prompt \
+  -O keyformat=passphrase \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O normalization=formD \
+  -O dnodesize=auto \
+  -O canmount=off \
+  -O mountpoint=none \
+  "$conf_cachyos_installer_zpool_name" "$part_zfs"
+
+log_info "--> Structuring dataset system trees..."
+zfs create -o mountpoint=none "$conf_cachyos_installer_zpool_name/ROOT"
+zfs create -o mountpoint=/ "$conf_cachyos_installer_zpool_name/ROOT/default"
+zfs create -o mountpoint=/home "$conf_cachyos_installer_zpool_name/home"
+
+zpool set bootfs="$conf_cachyos_installer_zpool_name/ROOT/default" "$conf_cachyos_installer_zpool_name"
+
+log_info "--> Mounting ZFS structure to targets..."
+zpool export "$conf_cachyos_installer_zpool_name"
+printf '%s\n' "$conf_cachyos_installer_encryption_pass" | zpool import -d /dev -R /mnt "$conf_cachyos_installer_zpool_name" -N
+zfs mount "$conf_cachyos_installer_zpool_name/ROOT/default"
+zfs mount "$conf_cachyos_installer_zpool_name/home"
+
+mkdir -p /mnt/boot
+mount "$part_efi" /mnt/boot
+
+log_info "--> Refreshing live validation keyrings..."
+pacman-key --init
+pacman-key --populate archlinux cachyos
+
+log_info "--> Executing bootstrap system installation..."
+pacstrap -K /mnt base base-devel linux-cachyos linux-cachyos-headers cachyos-keyring cachyos-mirrorlist cachyos-hooks zfs-utils networkmanager sudo
+
+genfstab -U /mnt >>/mnt/etc/fstab
+
+log_info "--> Configuring runtime localization parameters..."
+log_info "$conf_cachyos_installer_host_name" >/mnt/etc/hostname
+
+log_info "--> Assigning root passwords..."
+log_info "root:$conf_cachyos_installer_root_password" | chroot /mnt chpasswd
+
+chroot /mnt zpool set cachefile=/etc/zfs/zpool.cache "$conf_cachyos_installer_zpool_name"
+
+log_info "--> Configuring system bootloader structures..."
+chroot /mnt bootctl install
+
+cat <<EOF >/mnt/boot/loader/loader.conf
+default cachyos.conf
+timeout 4
+console-mode max
+editor no
+EOF
+
+cat <<EOF >/mnt/boot/loader/entries/cachyos.conf
+title   CachyOS (CLI Minimal ZFS)
+linux   /vmlinuz-linux-cachyos
+initrd  /initramfs-linux-cachyos.img
+options zfs=$conf_cachyos_installer_zpool_name/ROOT/default rw
+EOF
+
+chroot /mnt systemctl enable zfs-import-cache
+chroot /mnt systemctl enable zfs-import.target
+chroot /mnt systemctl enable zfs-mount
+chroot /mnt systemctl enable zfs.target
+
+
+log_info "--> Closing environments and initializing final reboot cycle..."
+umount -R /mnt
+zpool export "$conf_cachyos_installer_zpool_name"
+
+log_info "=== INSTALLATION FINISHED. REBOOTING SYSTEM NOW ==="
+sleep 5
+reboot -f

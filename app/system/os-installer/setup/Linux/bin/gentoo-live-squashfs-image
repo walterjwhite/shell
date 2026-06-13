@@ -1,0 +1,31 @@
+#!/bin/sh
+
+cfg .
+
+
+mkdir -p $APP_DATA_PATH
+
+[ -n "$interactive" ] && os_installer_progress="-progress"
+
+root_exclude_file=$CONFIG_PATH/$APPLICATION_NAME.root.exclude
+[ -e $root_exclude_file ] && root_exclude="-ef $root_exclude_file"
+
+log_detail "generating squashfs image"
+mksquashfs / $os_installer_root_squash_output_file \
+  -noappend -comp $conf_os_installer_installer_live_compression_type $os_installer_progress $root_exclude -one-file-system
+
+log_detail "appending /var/log/dirs to squashfs image"
+log_exclude=$(mktemp)
+find /var/log -type f | sort -u >$log_exclude
+mksquashfs /var/log $os_installer_root_squash_output_file \
+  -keep-as-directory \
+  -comp $conf_os_installer_installer_live_compression_type $os_installer_progress $log_exclude -one-file-system
+
+rm -f $log_exclude
+
+log_detail "appending home to squashfs image"
+home_exclude_file=$CONFIG_PATH/$APPLICATION_NAME.home.exclude
+[ -e $home_exclude_file ] && home_exclude="-ef $home_exclude_file"
+mksquashfs /home $os_installer_root_squash_output_file \
+  -keep-as-directory \
+  -comp $conf_os_installer_installer_live_compression_type $os_installer_progress $home_exclude -one-file-system

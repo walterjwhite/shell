@@ -1,0 +1,1 @@
+$GNU_GREP -cqm1 '^readonly REQUIRED_ARGUMENTS=".*"$' $1

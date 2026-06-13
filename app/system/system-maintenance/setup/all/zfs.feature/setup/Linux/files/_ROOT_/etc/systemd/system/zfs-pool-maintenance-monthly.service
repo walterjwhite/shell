@@ -1,0 +1,6 @@
+[Unit]
+Description=ZFS pool maintenance
+
+[Service]
+Type=oneshot
+ExecStart=zfs-pool-maintenance

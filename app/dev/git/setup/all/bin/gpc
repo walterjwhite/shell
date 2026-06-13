@@ -1,0 +1,9 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="git_ref:Git Reference (branch, tag, hash)"
+
+
+git log $git_ref^1 |
+  grep commit |
+  awk '{print$2}' |
+  head -1

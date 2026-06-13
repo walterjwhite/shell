@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib ./init/live-rw.sh
+lib io/file.sh
+
+cfg .
+
+_linux_live_prepare
+
+log_detail "writing data to: $os_installer_live_data_file"
+tar cp --$conf_os_installer_installer_live_compression_type -f $os_installer_live_data_file -C $conf_os_installer_installer_live_overlay_path/root . 2>/dev/null
+log_detail "wrote data to: $os_installer_live_data_file"

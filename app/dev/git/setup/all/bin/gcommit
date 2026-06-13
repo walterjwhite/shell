@@ -1,0 +1,39 @@
+#!/bin/sh
+
+lib git/include.sh
+
+if [ -z "$git_recursive" ]; then
+  _git_in_working_directory || {
+    export git_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir gcommit "$@" \;
+
+    exit
+  }
+fi
+
+if [ -n "$_CONSOLE_CONTEXT_ID" ]; then
+  for _cmd_arg in "$@"; do
+    case $_cmd_arg in
+    -*m)
+      located_message_arg=1
+      ;;
+    -m=*)
+      message_text="${_cmd_arg#*=}"
+      _cmd_arg=-m="$_CONSOLE_CONTEXT_ID - ${_cmd_arg#*=}"
+      unset message_text
+      ;;
+    *)
+      if [ -n "$located_message_arg" ]; then
+        _cmd_arg="$_CONSOLE_CONTEXT_ID - ${_cmd_arg}"
+
+        unset located_message_arg
+      fi
+      ;;
+    esac
+
+    set -- "$@" "$_cmd_arg"
+    shift
+  done
+fi
+
+git commit "$@"

@@ -1,0 +1,91 @@
+#!/bin/sh
+
+lib .
+lib git/project.directory.sh
+
+_append() {
+  if [ -n "$_match" ]; then
+    _match="$_match && \$$1$2"
+  else
+    _match="\$$1$2"
+  fi
+}
+
+_aggregation=sum
+
+_name=total
+_field=11
+
+for _ARG in $@; do
+  case $_ARG in
+  tax)
+    _name=tax
+    _field=8
+    shift
+    ;;
+  tip)
+    _name=tip
+    _field=9
+    shift
+    ;;
+  fees)
+    _name=fees
+    _field=10
+    shift
+    ;;
+  -a)
+    _expenses_file=$git_project_path
+
+    shift
+    ;;
+  esac
+done
+
+[ -z "$_expenses_file" ] && _expenses_file='.'
+
+_group_bucket="sum += \$$_field; n++"
+_group_print="print $_aggregation"
+
+for _ARG in $@; do
+  case $_ARG in
+  -c=*)
+    _append 4 "==\"${_ARG#*=}\""
+    ;;
+  -g=*)
+    case "${_ARG#*=}" in
+    category)
+      _group_bucket="bucket = \$4;A[bucket] = A[bucket] + \$$_field;"
+
+      ;;
+    description)
+      _group_bucket="bucket = \$2;A[bucket] = A[bucket] + \$$_field;"
+
+      ;;
+    name)
+      _group_bucket="bucket = \$1;A[bucket] = A[bucket] + \$$_field;"
+
+      ;;
+    year)
+      _group_bucket="bucket = substr(\$5, 1, 4);A[bucket] = A[bucket] + \$$_field;"
+      ;;
+    month)
+      _group_bucket="bucket = substr(\$5, 1, 7);A[bucket] = A[bucket] + \$$_field;"
+      ;;
+    day)
+      _group_bucket="bucket = substr(\$5, 1, 7);A[bucket] = A[bucket] + \$$_field;"
+      ;;
+    esac
+
+    _group_print="for (i in A) {print i, A[i];}"
+    _group=1
+    ;;
+  esac
+done
+
+_filter=$(_mktemp_mktemp)
+printf '%s {%s} END {%s}\n' "$_match" "$_group_bucket" "$_group_print" >$_filter
+
+awk -F'|' -f $_filter $(find $_expenses_file -type f -path '*/.expenses/*') |
+  sort | sed -e "s/^$/0.00/"
+
+rm -f $_filter

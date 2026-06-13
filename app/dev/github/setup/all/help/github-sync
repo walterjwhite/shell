@@ -1,0 +1,15 @@
+github-sync - GitHub Repository Sync
+
+USAGE:
+    github-sync
+
+DESCRIPTION:
+    Sync all git projects to GitHub repositories using iteration
+    logic from the iterate library.
+
+CONFIGURATION:
+    -conf-github-git-projects-path PATH
+        Path containing git projects to sync
+
+EXAMPLES:
+    github-sync

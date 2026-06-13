@@ -1,0 +1,21 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="media_drive:Media Drive|media_volume_name:Media Volume Name|media_device_name:Media Device Name|media_passphrase:Media Passphrase|media_source_host:Media Source Host"
+
+lib ./encryption.sh
+lib ./partition.sh
+lib ./zfs.sh
+
+sudo_ensure_not_root
+
+_media_git_init
+
+_media_partition_drive
+_media_encrypt_drive
+
+_media_git_sync
+
+zpool attach $media_volume_name $media_device_name
+
+_media_wait_until_resilvered
+_media_offline_drive

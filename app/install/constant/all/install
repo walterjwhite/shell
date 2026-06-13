@@ -1,0 +1,4 @@
+readonly APPLICATION_METADATA_PATH=$APP_PLATFORM_PATH/apps/install/.metadata
+
+readonly ARTIFACTS_PATH=/tmp/$USER/walterjwhite/$APPLICATION_NAME/artifacts
+readonly REGISTRY_PATH=$DATA_PATH/$APPLICATION_NAME/registry

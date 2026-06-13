@@ -1,0 +1,1 @@
+less +G $_REQUEST_LOG_FILE

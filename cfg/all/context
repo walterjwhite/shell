@@ -1,0 +1,2 @@
+: ${APP_CONTEXT:=$_CONSOLE_CONTEXT_ID}
+: ${APP_CONTEXT:=default}

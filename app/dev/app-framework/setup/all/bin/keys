@@ -1,0 +1,12 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_DEVELOPER_KEY:Developer Key"
+
+lib feature.sh
+
+: ${_KEY_SERVERS:="mit.edu pool.sks-keyservers.net gnupg.net keys.pgp.net surfnet.nl"}
+
+for _KEY_SERVER in $_KEY_SERVERS; do
+  gpg --keyserver hkp://${_KEY_SERVER} --send-keys $_DEVELOPER_KEY
+done
+
