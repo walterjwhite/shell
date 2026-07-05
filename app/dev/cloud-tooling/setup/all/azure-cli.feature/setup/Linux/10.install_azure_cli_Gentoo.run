@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cfg feature:.
+
+VENV_PATH=$TARGET_APP_PATH/azure-cli/venv
+mkdir -p $VENV_PATH
+
+python -m venv $VENV_PATH
+. $VENV_PATH/bin/activate
+pip install $conf_dev_azure_python_artifact
+
+deactivate
+
+_install_record_dir "$VENV_PATH"

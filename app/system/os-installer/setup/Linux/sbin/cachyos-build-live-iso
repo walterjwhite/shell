@@ -1,0 +1,28 @@
+#!/bin/sh
+
+lib ./prepare.sh
+
+cfg .
+cfg git
+
+cachyos_live_build_dir=$APP_DATA_PATH/cachyos/live/build
+
+log_info "init"
+rm -rf "$cachyos_live_build_dir" && mkdir -p "$cachyos_live_build_dir"
+
+log_info "initializing CachyOS live repository"
+git clone --depth 1 "$conf_os_installer_cachyos_live_iso_repository_url" "$cachyos_live_build_dir"
+cd "$cachyos_live_build_dir"
+
+os_installer_drive_mount_point=$cachyos_live_build_dir/airootfs
+conf_os_installer_mountpoint=$cachyos_live_build_dir/airootfs
+_copy_conf
+
+log_info "installing apps"
+APP_PLATFORM_ROOT=$cachyos_live_build_dir/airootfs app-install install os-installer
+
+log_info "mkarchiso"
+mkdir -p ../output ../work
+sudo_run mkarchiso -v -w ../work -o ../output .
+
+log_info "build complete: $cachyos_live_build_dir/output"

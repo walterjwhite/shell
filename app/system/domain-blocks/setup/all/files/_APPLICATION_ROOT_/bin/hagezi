@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./blocks.sh
+
+cfg .
+
+_domain_blocks_install "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/${conf_domain_blocks_tier}.txt"

@@ -1,0 +1,29 @@
+search branch names
+search tag names
+
+print args once
+    when recursive, print on first invocation, skip on leaf calls
+
+list relative filenames (to make output more succinct)
+
+search
+    git
+        contents
+            spaces ' the '
+
+        changes
+            spaces ' the '
+            
+        log
+
+filename search results in 2x search
+
+-i is not handled
+filename / path
+commit log / history
+
+act on results - open in editor / xeditor / file-manager
+
+search across different data types easily
+support spaces in arguments
+support special patterns (-G)

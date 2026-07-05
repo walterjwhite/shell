@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ ! -e $HOME/.config/gh/hosts.yml ]; then
+  log_warn "configuring GH"
+  gh auth login
+else
+  log_warn "gh appears to already be configured, skipping ..."
+fi

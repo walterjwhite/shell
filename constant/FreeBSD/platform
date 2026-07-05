@@ -1,0 +1,9 @@
+readonly TAR_ARGS=" -f - "
+
+readonly GNU_GREP=/usr/local/bin/ggrep
+readonly GNU_SED=gsed
+
+readonly SUDO_CMD="sudo"
+
+readonly IO_STAT_ARGS='-f %OLp'
+

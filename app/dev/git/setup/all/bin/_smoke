@@ -1,0 +1,51 @@
+#!/bin/sh
+
+cfg ./smoke
+
+_git_smoke_cleanup() {
+  cd
+  rm -rf $git_smoke_tmp_dir
+}
+
+_git_smoke_iteration() {
+  git push origin :$conf_git_smoke_target_branch
+
+  git checkout -b $conf_git_smoke_target_branch
+
+  for i in $(seq 1 $conf_git_smoke_commits); do
+    touch .PLACEHOLDER-$i
+    git add .PLACEHOLDER-$i
+    git commit .PLACEHOLDER-$i -m $conf_git_smoke_commit_message
+    git push
+  done
+
+  git checkout $original_branch
+  git branch -D $conf_git_smoke_target_branch
+}
+
+_git_smoke_iteration_delay() {
+  log_warn "sleeping $conf_git_smoke_sleep_duration"
+  sleep $conf_git_smoke_sleep_duration
+}
+
+git_smoke_tmp_dir=$(_mktemp_mktemp)
+exit_defer _git_smoke_cleanup
+
+git clone $conf_git_smoke_repository_url $git_smoke_tmp_dir
+cd $git_smoke_tmp_dir
+
+original_branch=$(git branch --no-color --show-current)
+
+if [ "$conf_smoke_iterations" -eq "-1" ]; then
+  log_warn "running indefinitely"
+
+  while :; do
+    _git_smoke_iteration
+    _git_smoke_iteration_delay
+  done
+else
+  for i in $(seq 1 $conf_smoke_iterations); do
+    _git_smoke_iteration
+    _git_smoke_iteration_delay
+  done
+fi

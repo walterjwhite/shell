@@ -1,0 +1,67 @@
+#!/bin/sh
+
+
+_LPR=${_LPR:-/usr/local/bin/lpr}
+_CUPS_PATH=${_CUPS_PATH:-/usr/local/etc/cups}
+
+_PRINTER=$(awk -F'[ >]+' '/[Dd]efaultPrinter/ {print $2; exit}' "${_CUPS_PATH}/printers.conf" 2>/dev/null)
+
+_DOCUMENT_COUNT="$#"
+_INDEX=1
+
+exit_with_error() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+log_detail() {
+  [ "${_VERBOSE:-}" ] && printf '%s\n' "$1" >&2
+}
+
+_stdin_read_if() {
+  msg=$1
+  varname=$2
+  printf '%s\n' "$msg" >&2
+  IFS= read placeholder
+  if [ -n "$varname" ]; then
+    eval "$varname=1"
+  fi
+}
+
+_print() {
+  "${_LPR}" -P "${_PRINTER}" "$@" "${_DOCUMENT}"
+}
+
+_print_even() {
+  _print -o page-set=even -o outputorder=reverse -o orientation-requested=6
+}
+
+_print_odd() {
+  _print -o page-set=odd
+}
+
+if [ "$#" -lt 1 ]; then
+  exit_with_error "document to print is required."
+fi
+
+_print_document() {
+  log_detail "printing even pages"
+  _print_even
+
+  _stdin_read_if "Place paper back into the printer in EXACT OUTPUT ORDER (face down in tray) then press ENTER" _CONTINUE
+
+  log_detail "printing odd pages"
+  _print_odd
+}
+
+_wait_between_documents() {
+  if [ "$_INDEX" -lt "$_DOCUMENT_COUNT" ]; then
+    _stdin_read_if "Press ENTER when document is finished printing ($_INDEX) $_DOCUMENT_COUNT" _CONTINUE
+    _INDEX=$((_INDEX + 1))
+  fi
+}
+
+for _DOCUMENT in "$@"; do
+  _print_document
+  _wait_between_documents
+done

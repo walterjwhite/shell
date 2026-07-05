@@ -1,0 +1,10 @@
+clean - Application Cleaner
+
+USAGE:
+    clean
+
+DESCRIPTION:
+    Clean application build artifacts.
+
+EXAMPLES:
+    clean

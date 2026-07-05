@@ -1,0 +1,2 @@
+: ${conf_install_apple_beep_message:=beep}
+: ${conf_install_apple_sudo_precmd_message:=Please enter your sudo credentials}

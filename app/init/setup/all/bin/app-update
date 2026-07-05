@@ -1,0 +1,34 @@
+#!/bin/sh
+
+lib ./install/git.sh
+
+constant ./init
+
+cfg init
+
+_app_update_update_all() {
+  for _APP_NAME in "$@"; do
+    app-install "$_APP_NAME" || log_warn "$_APP_NAME - installation failed"
+  done
+}
+
+_git_has_updates || {
+  log_warn "no updates detected, aborting"
+  exit
+}
+
+if [ $# -eq 0 ]; then
+  _user_platform_path=$HOME/.local/walterjwhite
+  _all_metadata=$(
+    find "$APP_PLATFORM_PATH" -maxdepth 2 -type f -name .metadata \
+      ! -path '*/install/*' 2>/dev/null
+    [ "$_user_platform_path" != "$APP_PLATFORM_PATH" ] &&
+      find "$_user_platform_path" -maxdepth 2 -type f -name .metadata \
+        ! -path '*/install/*' 2>/dev/null
+  )
+  _app_names=$(printf '%s\n' "$_all_metadata" |
+    sed -e 's/\/.metadata$//' -e 's/^.*\///' | sort -u | tr '\n' ' ')
+  _app_update_update_all $APPLICATION_NAME $_app_names
+else
+  _app_update_update_all "$@"
+fi

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cfg .
+
+_extension_find_default -exec grep -l 'LoggerFactory.getLogger' {} + | xargs -P$conf_dev_format_parallel -I % lombok-slf4j %

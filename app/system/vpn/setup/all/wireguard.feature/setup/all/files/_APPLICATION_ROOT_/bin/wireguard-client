@@ -1,0 +1,39 @@
+#!/bin/sh
+
+cfg feature:.
+
+log_info "setting up wireguard client connection: $conf_vpn_wireguard_interface"
+
+if [ -n "$conf_vpn_remote_server_ip" ]; then
+  log_detail "using remote: $conf_vpn_remote_server_ip [user provided]"
+  sudo_run $GNU_SED -i "s/\(Endpoint = \)[0-9.]\+/\1$conf_vpn_remote_server_ip/" ${conf_vpn_wireguard_conf_dir}/wg0.conf
+else
+  conf_vpn_remote_server_ip=$(sudo_run grep Endpoint ${conf_vpn_wireguard_conf_dir}/wg0.conf | awk {'print$3'} | awk -F: {'print$1'})
+  log_detail "using remote: $conf_vpn_remote_server_ip [existing]"
+fi
+
+if ip link show dev "$conf_vpn_wireguard_interface" >/dev/null 2>&1; then
+  log_warn "interface $conf_vpn_wireguard_interface is present, bringing it down first"
+  sudo_run wg-quick down $conf_vpn_wireguard_interface
+fi
+
+sudo_run wg-quick up $conf_vpn_wireguard_interface || exit_with_error "failed to start $conf_vpn_wireguard_interface"
+exit_defer sudo_run wg-quick down $conf_vpn_wireguard_interface
+
+log_add_context "while"
+
+while :; do
+  log_detail "monitoring wireguard client connection: $conf_vpn_wireguard_interface"
+
+  sudo_run wg | grep -cqm1 "interface: $conf_vpn_wireguard_interface" || {
+    log_warn "$conf_vpn_wireguard_interface is no longer up"
+    break
+  }
+
+  sleep $conf_vpn_wireguard_client_check_interval &
+  sleep_pid=$!
+
+  wait "$sleep_pid" 2>/dev/null
+done
+
+log_remove_context

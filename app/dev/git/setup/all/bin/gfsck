@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lib git/include.sh
+
+if [ -z "$git_recursive" ]; then
+  _git_in_working_directory || {
+    export git_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir git-fsck \;
+
+    exit
+  }
+fi
+
+log_info "git FSCK"
+sudo_options="-u $conf_git_git_user" sudo_run git fsck

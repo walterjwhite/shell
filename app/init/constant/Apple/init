@@ -1,0 +1,7 @@
+readonly PLATFORM_PACKAGES="git coreutils gnu-sed grep expect mas-cli/tap/mas shfmt"
+readonly NPM_PACKAGE="node"
+readonly RUST_PACKAGE="rust"
+readonly PYPI_PACKAGE="python"
+readonly GO_PACKAGE="go"
+
+: ${conf_install_HOMEBREW_CMD:=/opt/homebrew/bin/brew}

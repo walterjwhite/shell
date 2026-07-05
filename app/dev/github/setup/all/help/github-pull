@@ -1,0 +1,18 @@
+github-pull - GitHub Repository Pull
+
+USAGE:
+    github-pull
+
+DESCRIPTION:
+    Pull changes from GitHub repository and compare with local
+    working directory. Must be run in a project directory.
+
+CONFIGURATION:
+    -conf-github-username-key KEY
+        Secret key for GitHub username
+
+    -conf-github-diff-cmd COMMAND
+        Diff command to compare repositories
+
+EXAMPLES:
+    github-pull

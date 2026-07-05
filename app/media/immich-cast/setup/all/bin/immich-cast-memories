@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib .
+
+cfg .
+
+if fetch_memories; then
+  cast_slideshow
+else
+  exit_with_success "no memories to show"
+fi

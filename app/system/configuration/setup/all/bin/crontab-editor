@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib io/file.sh
+
+validation_require "$_CRONTAB" CRONTAB
+file_require "$_CRONTAB" CRONTAB
+
+cp $_CRONTAB $1
+

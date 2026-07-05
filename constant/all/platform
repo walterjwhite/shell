@@ -1,0 +1,49 @@
+readonly APP_PLATFORM_ARCHITECTURE=$(uname -m)
+readonly APP_PLATFORM_OS_NAME=$(uname)
+case "$APP_PLATFORM_OS_NAME" in
+  Darwin)
+    readonly APP_PLATFORM_PLATFORM="Apple"
+    ;;
+  MINGW64_NT-* | MSYS_NT-*)
+    readonly APP_PLATFORM_PLATFORM="Windows"
+    ;;
+  *)
+    readonly APP_PLATFORM_PLATFORM="$APP_PLATFORM_OS_NAME"
+    ;;
+esac
+
+
+: ${APP_PLATFORM_ROOT:=/}
+APP_PLATFORM_ROOT=$(realpath -m $APP_PLATFORM_ROOT)
+
+[ "$HOME" = "/" ] || [ -z "$HOME" ] && HOME=/root
+
+readonly RUN_PATH=/tmp/$USER/walterjwhite/app
+
+readonly APP_CONTEXT="default"
+readonly APPLICATION_CONTEXT_GROUP=$RUN_PATH/$APP_CONTEXT
+readonly APPLICATION_CMD_DIR=$APPLICATION_CONTEXT_GROUP/$APPLICATION_NAME/$APPLICATION_CMD
+readonly APPLICATION_PIPE=$APPLICATION_CMD_DIR/$$
+readonly APPLICATION_PIPE_DIR=$(dirname $APPLICATION_PIPE)
+
+case $0 in
+  *${HOME}*)
+    readonly APP_PLATFORM_PATH=$(printf '%s' "$APP_PLATFORM_ROOT/$HOME/.local/walterjwhite" | tr -s /)
+    readonly APP_PLATFORM_CONFIG_PATH=$(printf '%s' $APP_PLATFORM_ROOT${HOME}/.config/walterjwhite/shell | tr -s /)
+    readonly APP_PLATFORM_BIN_PATH=$(printf '%s' $APP_PLATFORM_ROOT${HOME}/.local/bin | tr -s /)
+    ;;
+  *)
+    readonly APP_PLATFORM_PATH=$(printf '%s' "$APP_PLATFORM_ROOT/usr/local/walterjwhite" | tr -s /)
+    readonly APP_PLATFORM_CONFIG_PATH=$(printf '%s' $APP_PLATFORM_ROOT/usr/local/etc/walterjwhite/shell | tr -s /)
+    readonly APP_PLATFORM_BIN_PATH=$(printf '%s' $APP_PLATFORM_ROOT/usr/local/bin | tr -s /)
+    ;;
+esac
+
+readonly APP_PLATFORM_DATA_PATH=$(printf '%s' ${APP_PLATFORM_ROOT}$HOME/.data | tr -s /)
+readonly APP_PLATFORM_APPS_PATH=$APP_PLATFORM_PATH/apps
+readonly APP_PLATFORM_EXTENSIONS_PATH=$APP_PLATFORM_PATH/extensions
+
+readonly APP_DATA_PATH=$APP_PLATFORM_DATA_PATH/$APPLICATION_NAME
+readonly APP_PATH=$APP_PLATFORM_APPS_PATH/$APPLICATION_NAME
+readonly APP_CONFIG_PATH=$APP_PLATFORM_CONFIG_PATH/$APPLICATION_NAME
+

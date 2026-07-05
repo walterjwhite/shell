@@ -1,0 +1,67 @@
+name: Central Gatekeeper
+
+on:
+  workflow_call:
+    inputs:
+      workflow_name:
+        required: true
+        type: string
+        description: "Name of the calling workflow to check history against"
+    outputs:
+      should_run:
+        description: "Returns 'true' if the build should proceed"
+        value: ${{ jobs.check.outputs.should_run }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check_gate.outputs.should_run }}
+    steps:
+      - name: Install GitHub CLI (gh)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl gnupg
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y gh
+          gh --version
+
+      - name: Evaluate Time Window and New Changes
+        id: check_gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            CURRENT_HOUR=$(date -u +%H)
+            if [ "$CURRENT_HOUR" -ge 0 ] && [ "$CURRENT_HOUR" -lt 2 ]; then
+              echo "Push detected inside window. Proceeding."
+              echo "should_run=true" >> $GITHUB_OUTPUT
+            else
+              echo "Push detected outside window [$CURRENT_HOUR|0|2]. Skipping."
+              echo "should_run=false" >> $GITHUB_OUTPUT
+            fi
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Cron triggered. Checking for new commits since last success..."
+            
+            LAST_SUCCESS_SHA=$(gh api "repos/${{ github.repository }}/actions/workflows/${{ inputs.workflow_name }}/runs?status=success&per_page=1" \
+              --jq '.workflow_runs[0].head_sha')
+
+            CURRENT_SHA="${{ github.sha }}"
+
+            echo "Last successful build SHA: $LAST_SUCCESS_SHA"
+            echo "Current repository SHA:     $CURRENT_SHA"
+
+            if [ "$CURRENT_SHA" = "$LAST_SUCCESS_SHA" ]; then
+              echo "No new changes since the last successful run. Skipping build."
+              echo "should_run=false" >> $GITHUB_OUTPUT
+            else
+              echo "New changes found. Proceeding with catch-up build."
+              echo "should_run=true" >> $GITHUB_OUTPUT
+            fi
+          fi

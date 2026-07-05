@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="media_drive:Media Drive|media_volume_name:Media Volume Name|media_source_host:Media Source Host|media_passphrase:Media Passphrase"
+
+lib ./encryption.sh
+lib ./partition.sh
+lib ./zfs.sh
+
+_media_online_drive
+_media_wait_until_resilvered
+_media_offline_drive

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+lib ./cidr.sh
+lib ./country-cidr.sh
+
+
+_country_allowlist=/usr/local/etc/walterjwhite/network/country-blocks/allowlist
+_table_name=country_allowlist
+
+rm -f $_country_allowlist
+mkdir -p $(dirname $_country_allowlist)
+
+_firewall_country_block_add_declared
+_firewall_country_block_download_all
+_firewall_country_block_refresh

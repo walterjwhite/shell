@@ -1,0 +1,16 @@
+: ${conf_log_beep_err:='500,400'}
+: ${conf_log_beep_alrt:='600,200'}
+: ${conf_log_beep_scs:='700,100'}
+: ${conf_log_beep_wrn:=''}
+: ${conf_log_beep_info:=''}
+: ${conf_log_beep_detail:=''}
+: ${conf_log_beep_debug:=''}
+: ${conf_log_beep_stdin:='700,200'}
+
+chocolatey_disabled=1
+scoop_disabled=1
+winget_disabled=1
+
+LC_COLLATE=en_US.UTF-8
+LC_CTYPE=en_US.UTF-8
+LC_MESSAGES=en_US.UTF-8

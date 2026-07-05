@@ -1,0 +1,16 @@
+#!/bin/sh
+
+lib provider.sh
+lib service.sh
+
+sudo_ensure_root "$@"
+
+action=live
+[ $# -gt 0 ] && action=off
+
+log_info "making system $action"
+
+extension_function_suffix=_${action}
+provider_path=/usr/local/etc/walterjwhite/live _provider_run_all
+
+log_info "system is $action"

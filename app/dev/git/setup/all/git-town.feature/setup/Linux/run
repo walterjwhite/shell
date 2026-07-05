@@ -1,0 +1,35 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+git_town_version=23.0.3
+
+_get_installed_git_town_version() {
+    if [ -e $TARGET_APP_PLATFORM_BIN_PATH/git-town ]; then
+        $TARGET_APP_PLATFORM_BIN_PATH/git-town version | awk '{print $NF}'
+    fi
+}
+
+_install_git_town() {
+  _download_fetch "https://github.com/git-town/git-town/releases/download/v${git_town_version}/git-town_linux_intel_64.tar.gz"
+
+    tmp_dir=$(_mktemp_options=d _mktemp_mktemp)
+    exit_defer rm -rf "$tmp_dir"
+
+    _extract_extract $download_file $tmp_dir
+
+    mv $tmp_dir/git-town $TARGET_APP_PLATFORM_BIN_PATH/git-town
+    chmod +x $TARGET_APP_PLATFORM_BIN_PATH/git-town
+}
+
+case $APP_PLATFORM_SUB_PLATFORM in
+    Gentoo)
+        installed_git_town_version=$(_get_installed_git_town_version)
+        if [ "$installed_git_town_version" = "$git_town_version" ]; then
+            log_detail "git-town $git_town_version is already installed"
+        else
+            _install_git_town
+        fi
+        ;;
+esac

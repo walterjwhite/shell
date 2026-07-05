@@ -1,0 +1,6 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_PF_TABLE_NAME:pf table name|_PF_TABLE_DATA_FILE:pf table filename"
+
+_pfctl -t $_PF_TABLE_NAME -T replace -f $_PF_TABLE_DATA_FILE
+

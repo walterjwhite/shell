@@ -1,0 +1,8 @@
+readonly TAR_ARGS=" -f - "
+readonly SUDO_CMD="sudo"
+
+readonly GNU_SED=/opt/homebrew/bin/gsed
+readonly GNU_GREP=/opt/homebrew/opt/grep/libexec/gnubin/grep
+
+readonly IO_STAT_ARGS='-f %OLp'
+

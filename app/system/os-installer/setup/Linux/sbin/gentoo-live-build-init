@@ -1,0 +1,19 @@
+#!/bin/sh
+
+lib ./init/build.sh
+lib ./live.sh
+
+cfg ./init
+
+
+log_detail "generating initramfs"
+
+_init_prepare_work_dir
+_init_busybox
+_init_dependencies
+_init_initscript
+
+_init_kernel_modules
+_init_conf
+
+_init_build

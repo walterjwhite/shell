@@ -1,0 +1,118 @@
+name: GitHub Sync
+
+on:
+
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    env:
+      GH_TOKEN: ${{ secrets.TARGET_GITHUB_TOKEN }}
+      GITHUB_USERNAME: ${{ secrets.TARGET_GITHUB_USERNAME }}
+
+    steps:
+      - name: Update and Install Core Tools
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git base-devel openssh sudo
+
+      - name: Create Non-Root User
+        run: |
+          useradd -m -s /bin/sh runner
+
+          printf 'runner ALL=(ALL) NOPASSWD: ALL\n' >> /etc/sudoers
+
+      - uses: actions/checkout@v6
+
+      - name: Fix Workspace Ownership
+        run: |
+          chown -R runner:runner "$GITHUB_WORKSPACE"
+
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure SSH key
+        run: |
+          su - runner -c "
+            install -dm 700 ~/.ssh
+            printf '%s\n' '${{ secrets.TARGET_SSH_PRIVATE_KEY }}' > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+          "
+
+      - name: Configure git identity
+        run: |
+          su - runner -c "
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            git config --global user.name 'github-actions[bot]'
+            git config --global --add safe.directory '$GITHUB_WORKSPACE'
+          "
+
+
+      - name: build and install init 'app'
+        run: |
+          su - runner -c "
+            cd '$GITHUB_WORKSPACE/app/init'
+            ./build && printf 'build complete\n'
+          "
+
+          if [ ! -e /tmp/root ]; then
+            cp -r /tmp/runner /tmp/root
+
+            printf 'created symlink\n'
+          fi
+
+          cd "$GITHUB_WORKSPACE/app/init"
+          export USER=root
+
+          app_publish_cmd_path=$(find /tmp/runner/walterjwhite/init -type f -path '*/setup/bin/app-publish' -print -quit)
+
+          if [ -n "$app_publish_cmd_path" ] && [ -f "$app_publish_cmd_path" ]; then
+            printf 'publishing\n'
+
+            /bin/sh "$app_publish_cmd_path" || {
+              printf 'failed to publish\n'
+              pwd
+              find /tmp/root -type f
+              exit 1
+            }
+
+            printf 'published\n'
+
+            /bin/sh "$(dirname "$app_publish_cmd_path")/app-install" || {
+              printf 'failed to install\n'
+              pwd
+              exit 1
+            }
+          else
+            printf 'failed to find installation files\n'
+            exit 1
+          fi
+
+      - name: build and install github 'app'
+        run: |
+          mkdir -p ~/.config/walterjwhite/shell
+
+          {
+            printf 'gitg_feature_disabled=1\n'
+            printf 'git_town_feature_disabled=1\n'
+            printf 'gh_feature_disabled=1\n'
+            printf 'glab_feature_disabled=1\n'
+            printf 'bitbucket_client_feature_disabled=1\n'
+          } > ~/.config/walterjwhite/shell/git
+
+
+          su - runner -c "
+            cd '$GITHUB_WORKSPACE/app/dev/github'
+            /usr/local/bin/app-build && /usr/local/bin/app-publish && /usr/local/bin/app-install
+          "
+
+      - name: sync with public mirror
+        run: |
+          su - runner -c "
+            github-sync
+            github-push
+          "

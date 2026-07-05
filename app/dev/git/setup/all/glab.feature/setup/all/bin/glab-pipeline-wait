@@ -1,0 +1,29 @@
+#!/bin/sh
+
+lib feature:./glab
+
+_until_is_done() {
+  _glab_pipeline_status
+  _glab_pipeline_status_is_terminal && {
+    _glab_pipeline_status_isexit_with_success && return 0
+
+    log_warn "$conf_dev_gitlab_pipeline_pipeline_name failed - $_glab_pipeline_status"
+    return 1
+  }
+
+  log_detail "$conf_dev_gitlab_pipeline_pipeline_name $_glab_pipeline_status (in-progress)"
+  return $when_exit_status
+}
+
+for arg in "$@"; do
+  case $arg in
+  --stage=*)
+    glab_pipeline_stage="${arg#*=}"
+    ;;
+  esac
+
+  shift
+done
+
+validation_require "$glab_pipeline_stage" _GLAB_PIPELINE_STAGE
+

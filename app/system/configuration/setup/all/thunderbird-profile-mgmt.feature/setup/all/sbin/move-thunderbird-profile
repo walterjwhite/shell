@@ -1,0 +1,20 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_OLD_PROFILE_NAME:Old Profile Name|_NEW_PROFILE_NAME:New Profile Name"
+
+lib io/file.sh
+
+
+file_require $HOME/.thunderbird/"$_OLD_PROFILE_NAME"
+file_require $HOME/.thunderbird/"$_NEW_PROFILE_NAME"
+
+mkdir $HOME/.thunderbird.bak
+
+log_info "backed up newly created profile @ $HOME/.thunderbird.bak"
+mv $HOME/.thunderbird/$_NEW_PROFILE_NAME $HOME/.thunderbird.bak/
+
+log_info "moved old profile @ $HOME/.thunderbird/$_NEW_PROFILE_NAME"
+mv $HOME/.thunderbird/$_OLD_PROFILE_NAME $HOME/.thunderbird/$_NEW_PROFILE_NAME
+
+log_info "replaced profile pointers"
+$GNU_SED -i "s/$_OLD_PROFILE_NAME/$_NEW_PROFILE_NAME/g" $(find $HOME/.thunderbird -type f -exec grep -l $_OLD_PROFILE_NAME {} +)

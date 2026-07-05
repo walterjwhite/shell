@@ -1,0 +1,64 @@
+sudo_run() {
+  [ $# -eq 0 ] && exit_with_error 'no arguments were provided to sudo_run'
+
+  sudo_is_validation_required || {
+    "$@"
+    return
+  }
+
+  validation_require "$SUDO_CMD" "sudo_cmd - $*"
+
+  [ -z "$NON_INTERACTIVE" ] && {
+    $SUDO_CMD -n ls >/dev/null 2>&1 || sudo_precmd "$@"
+  }
+
+  $SUDO_CMD $sudo_options "$@"
+  local sudo_return_status=$?
+  unset sudo_options
+
+  return $sudo_return_status
+}
+
+sudo_is_validation_required() {
+  [ -n "$sudo_user" ] && {
+    [ "$sudo_user" = "$USER" ] && return 1
+
+    sudo_options="$sudo_options -u $sudo_user"
+    return 0
+  }
+
+  [ "$USER" = "root" ] && return 1
+
+  return 0
+}
+
+
+_sudo_is_root() {
+  [ "$(id -u)" -eq 0 ]
+}
+
+sudo_ensure_root() {
+  [ "$(id -u)" -eq 0 ] && return
+
+  log_info "enter sudo password to run this program as root"
+
+  sudo_run "$0" "$@"
+  exit $?
+}
+
+sudo_ensure_not_root() {
+  [ $(id -u) -ne 0 ] && return
+
+  exit_with_error "$0 cannot be run as root"
+}
+
+sudo_ensure_non_root_user() {
+  [ "$(id -u)" -ne 0 ] && return
+
+  [ -z "$SUDO_USER" ] && exit_with_error "unable to determine non-root user"
+
+  sudo_user=$SUDO_USER
+
+  sudo_run "$0" "$@"
+  exit $?
+}

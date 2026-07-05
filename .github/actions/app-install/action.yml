@@ -1,0 +1,21 @@
+name: App Install Action
+description: "Installs and verifies apps within the current environment"
+
+inputs:
+  platform:
+    required: true
+    description: "platform name"
+  bin-path:
+    required: false
+    description: "bin path"
+    default: "/usr/local/bin"
+
+runs:
+  using: "composite"
+  steps:
+    - name: test installing and uninstalling apps
+      shell: bash
+      env:
+        conf_log_level: ${{ env.conf_log_level || '2' }}
+      run: |
+        ${{ github.action_path }}/test.sh "${{ inputs.platform }}" "${{ inputs.bin-path }}"

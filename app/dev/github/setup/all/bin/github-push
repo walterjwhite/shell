@@ -1,0 +1,11 @@
+#!/bin/sh
+
+lib git/project.directory.sh
+lib io/file.sh
+lib ./iterate.sh
+lib ./push
+
+cfg .
+
+file_require $APP_DATA_PATH
+_github_iterate_main

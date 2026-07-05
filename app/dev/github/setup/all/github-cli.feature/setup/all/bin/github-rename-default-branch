@@ -1,0 +1,30 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_FROM_BRANCH:From Branch Name|_TO_BRANCH:To Branch Name"
+
+cfg .
+
+mkdir -p /tmp/$USER/$APPLICATION_NAME &&
+  cd /tmp/$USER/$APPLICATION_NAME
+
+gh auth status >/dev/null 2>&1 || gh auth login
+for repo in $(gh repo list --limit 1000 --json sshUrl |
+  tr ',' '\n' | grep sshUrl | sed -e 's/^.*sshUrl":"//' -e 's/"}.*$//'); do
+  log_detail "processing $repo..."
+
+  repo_name=$(basename $repo | sed -e 's/.git//')
+  git clone -b $_FROM_BRANCH --depth 1 $repo
+  cd $repo_name
+
+  git branch -m $_TO_BRANCH
+
+  git push -u origin $_TO_BRANCH
+
+  _owner=$(dirname $repo | sed -e 's/^.*://')
+  gh api -X PATCH /repos/$_owner/$repo_name -F default_branch=$_TO_BRANCH >/dev/null 2>&1
+
+  git push origin :$_FROM_BRANCH
+
+  cd ..
+  rm -rf $repo # Clean up
+done

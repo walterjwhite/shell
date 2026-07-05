@@ -1,0 +1,22 @@
+#!/bin/sh
+
+find . -type f -name '*Controller.java' -exec $GNU_GREP '^[\s]*@RequestMapping' -m 1 -Hn {} \; 2>/dev/null | while read -r spring_controller_mapping_match; do
+  spring_controller_mapping_file=$(printf "$spring_controller_mapping_match" | cut -f1 -d':')
+  spring_controller_mapping_line_number=$(printf "$spring_controller_mapping_match" | cut -f2 -d':')
+  spring_controller_mapping_match=$(printf "$spring_controller_mapping_match" | cut -f3 -d':')
+
+  spring_controller_mapping_path=$(printf "$spring_controller_mapping_match" | $conf_dev_gawk 'match($0, /value = "(.*)"/, a) {print a[1]}')
+
+  log_info "$spring_controller_mapping_file ($spring_controller_mapping_path)"
+
+  $GNU_GREP -Phn '^[\s]*@(Request|Post|Put|Get)Mapping' $spring_controller_mapping_file | $GNU_GREP -Pv "^$spring_controller_mapping_line_number\:" |
+    $conf_dev_gawk 'match($0, /^([0-9]+):/, ln) \
+                                match($0, /(value|path) *= *"(.*)"/, a) \
+								match($0, /@(Get|Post|Put)Mapping\("(.*)"\)/, e) \
+                                match($0, /@(Get|Post|Put)Mapping/, b) \
+                                match($0, /method *= *RequestMethod.(.*)\)/, c) \
+                                {printf "  %-4s:%-30s%s\n",  ln[1],\
+								(length(e[2]) > 0?e[2]:a[2]),\
+								(length(b[1]) > 0?toupper(b[1]):toupper(c[1]))\
+								}'
+done

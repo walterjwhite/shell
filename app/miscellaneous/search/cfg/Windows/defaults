@@ -1,0 +1,5 @@
+conf_search_file_manager=explorer
+conf_search_locate_database=grep
+conf_search_locate_updatedb_cmd=printf
+
+conf_search_xeditor=code

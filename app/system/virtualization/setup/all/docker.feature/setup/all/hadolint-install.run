@@ -1,0 +1,10 @@
+lib git/github.sh
+
+get_installed_hadolint_version() {
+    hadolint -v | sed -e 's/^Haskell Dockerfile Linter /v/'
+}
+
+hadolint_platform=$(printf '%s' $APP_PLATFORM_PLATFORM | tr '[:upper:]' '[:lower:]')
+_github_install_latest hadolint hadolint hadolint .name \
+    ".assets[] | select(.name | test(\"hadolint-$hadolint_platform-$APP_PLATFORM_ARCHITECTURE\")) | .browser_download_url" \
+    hadolint-$hadolint_platform-$APP_PLATFORM_ARCHITECTURE hadolint

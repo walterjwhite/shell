@@ -1,0 +1,99 @@
+name: Build (Arch Linux)
+
+on:
+  push:
+    branches: [dev]
+
+    paths:
+      - ".github/workflows/build-arch.yml"
+
+      - "**" # Matches every file in the repo
+      - "!.github/workflows/**" # EXCLUDES all workflow files except the one explicitly allowed above
+
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: "debug"
+        required: true
+        default: false
+        type: boolean
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  conf_log_level: ${{ inputs.debug == true && '0' || '2' }}
+
+jobs:
+  build-cachyos-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: bootstrap pacman and test installing apps
+        timeout-minutes: 2
+        run: |
+          pacman -Syu --noconfirm base-devel curl git openssh sudo
+
+
+      - name: Create Non-Root User
+        run: |
+          useradd -m -s /bin/sh runner
+
+          printf 'runner ALL=(ALL) NOPASSWD: ALL\n' >> /etc/sudoers
+
+      - name: Fix Workspace Ownership
+        run: |
+          chown -R runner:runner "$GITHUB_WORKSPACE"
+
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure SSH key
+        run: |
+          su - runner -c "
+            install -dm 700 ~/.ssh
+            printf '%s\n' '${{ secrets.TARGET_SSH_PRIVATE_KEY }}' > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+          "
+
+      - name: Configure git identity
+        run: |
+          su - runner -c "
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            git config --global user.name 'github-actions[bot]'
+            git config --global --add safe.directory '$GITHUB_WORKSPACE'
+          "
+
+
+      - name: build and install init 'app'
+        run: |
+          su - runner -c "
+            cd '$GITHUB_WORKSPACE/app/init'
+            ./build && printf 'build complete\n'
+          "
+
+          if [ ! -e /tmp/root ]; then
+            cp -r /tmp/runner /tmp/root
+          fi
+
+          app_publish_cmd_path=$(find /tmp/runner/walterjwhite/init -type f -path '*/setup/bin/app-publish' -print -quit)
+
+          if [ -n "$app_publish_cmd_path" ] && [ -f "$app_publish_cmd_path" ]; then
+            /bin/sh "$app_publish_cmd_path"
+            /bin/sh "$(dirname "$app_publish_cmd_path")/app-install"
+          else
+            printf 'failed to find installation files\n'
+            exit 1
+          fi
+
+      - name: build remaining apps
+        run: |
+          su - runner -c "
+            cd '$GITHUB_WORKSPACE/app'
+            /usr/local/bin/app-build
+          "
+
+
+

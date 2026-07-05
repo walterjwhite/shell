@@ -1,0 +1,23 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="log_file1:Log File 1"
+
+cfg .
+
+
+sudo_ensure_not_root
+
+tmux kill-session -t agent_viewer 2>/dev/null || true
+tmux new-session -d -s agent_viewer
+
+if [ -n "$1" ]; then
+  tmux send-keys -t agent_viewer:0.0 "tail -f \"${log_file1}\"" C-m
+  tmux split-window -h
+  tmux send-keys -t agent_viewer:0.1 "tail -f \"${1}\"" C-m
+else
+  tmux send-keys -t agent_viewer:0.0 "tail -f \"${log_file1}\"" C-m
+  tmux split-window -h
+  tmux send-keys -t agent_viewer:0.1 "cat" C-m
+fi
+
+tmux attach-session -t agent_viewer

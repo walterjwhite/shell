@@ -1,0 +1,17 @@
+#!/bin/sh
+
+for _ARG in "$@"; do
+  case $_ARG in
+  put)
+    ;;
+  delete) ;;
+
+  move) ;;
+
+  get) ;;
+
+  *)
+    exit_with_error "unknown argument: $_ARG"
+    ;;
+  esac
+done

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+command -v ollama > /dev/null 2>&1 || {
+    _download_fetch https://ollama.ai/download/Ollama-darwin.zip
+
+    ollama_contents=$(_mktemp_options=d _mktemp_mktemp)
+    _extract_extract $download_file $ollama_contents
+
+    mv $ollama_contents/Ollama.app /Applications
+    _install_record_dir "/Applications/Ollama.app"
+
+    local _dest="$TARGET_APP_PLATFORM_BIN_PATH/ollama"
+    ln -s /Applications/Ollama.app/Contents/Resources/ollama "$_dest"
+    _install_record_symlink "$_dest"
+
+    rm -rf $ollama_contents
+}

@@ -1,0 +1,37 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_MEAL:Meal prepared"
+
+lib .
+lib git/data.app.sh
+lib io/file.sh
+
+cfg git
+
+file_require "$_MEAL" "$_MEAL does not exist"
+
+_project_directory_get_project_directory
+
+_target() {
+  date +%Y/%m/%d/%H.%M.%S
+}
+
+_comments() {
+  _stdin_read_if "Please enter comments (or hit enter for none)" _COMMENTS
+
+  if [ -n "$_COMMENTS" ]; then
+    printf '\n' >>$_activity_file
+    printf '%s\n' "$_COMMENTS" >>$_activity_file
+  fi
+}
+
+_meal_git() {
+  _data_app_save "prepared - $_MEAL" $_activity_file
+}
+
+_activity_file=$_MEAL/.activity/$(_target)
+
+mkdir -p $(dirname $_activity_file)
+
+_comments
+_meal_git

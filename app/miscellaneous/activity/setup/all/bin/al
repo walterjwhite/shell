@@ -1,0 +1,6 @@
+#!/bin/sh
+
+lib .
+
+_activity_init $_OPTN_ACTIVITY_NAME
+find $_activity_directory -type f | sed -e "s/^.*.activity\///" | sort -h

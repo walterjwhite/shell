@@ -1,0 +1,29 @@
+#!/bin/sh
+
+lib git/data.app.sh
+lib iostat.sh
+
+cfg git
+
+sudo_ensure_not_root
+
+_find_duplicate_videos() {
+  find downloaded -type f -exec head -n 1 {} + |
+    cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | uniq -d
+}
+
+_find_older_duplicates() {
+  _iostat_ctime_many $(find downloaded -type f -exec grep -l "$duplicate_video_url" {} +) | sort -k1 -r | sed 1d
+}
+
+_move_older_files() {
+  target_dir=error/$(date +%Y/%m/%d)
+  mkdir -p $target_dir
+
+  git mv $(_find_older_duplicates) $target_dir
+}
+
+_data_app_init
+for duplicate_video_url in $(_find_duplicate_videos); do
+  _move_older_files
+done

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+log_info "scrubbing ZFS pools"
+zpool list -H |
+  awk {'print$1'} |
+  xargs zpool scrub

@@ -1,0 +1,19 @@
+: ${conf_git_system_template_path:=/usr/share/git/templates}
+
+: ${conf_git_clone_timeout:=30}
+
+: ${conf_git_compression_format:=xz}
+: ${conf_git_compression_cmd:="xz -z"}
+
+: ${conf_git_squash_commits:=2}
+
+: ${conf_git_backup_date_time_format:=%Y.%m.%d-%H.%M.%S}
+
+: ${conf_git_delete_period_days:=365}
+: ${conf_git_delete_dryrun:=0}
+
+: ${conf_git_workspace_base_path:=$HOME/workspace}
+: ${conf_git_workspace_base_branch:=dev}
+: ${conf_git_project_base_path:=$HOME/projects}
+
+readonly GIT_WORKSPACE_BASE_PATH=$conf_git_workspace_base_path

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+lib ./init/live-rw.sh
+lib io/file.sh
+
+cfg .
+
+_linux_live_prepare
+
+file_require "$os_installer_live_data_file"
+
+log_detail "restoring $os_installer_live_data_file"
+tar xp --$conf_os_installer_installer_live_compression_type -f $os_installer_live_data_file -C /$1
+log_detail "restored $os_installer_live_data_file"

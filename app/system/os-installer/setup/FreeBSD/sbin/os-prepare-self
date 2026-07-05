@@ -1,0 +1,9 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="configuration_host:Configuration Host"
+
+rm -rf ~/.config && mkdir -p ~/.config
+scp -r $configuration_host:.config/walterjwhite ~/.config
+
+rm -rf ~/.ssh
+scp -r $configuration_host:.ssh ~/.ssh

@@ -1,0 +1,23 @@
+github-backup - GitHub Repository Backup
+
+USAGE:
+    github-backup [project1] [project2] ...
+
+DESCRIPTION:
+    Backup git projects to GitHub repositories. Creates repositories
+    if they don't exist, sets up remotes, and syncs all branches and tags.
+
+ARGUMENTS:
+    project1, project2, ...
+        Specific projects to backup (optional, defaults to all)
+
+CONFIGURATION:
+    -conf-github-git-projects-path PATH
+        Path containing git projects to backup
+
+    -git-username USERNAME
+        GitHub username
+
+EXAMPLES:
+    github-backup
+    github-backup project1 project2

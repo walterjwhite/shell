@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="conf_os_installer_mountpoint:OS Installer Mountpoint"
+
+lib ./bootstrap
+
+cfg .
+
+sudo_ensure_root "$@"
+
+_bootstrap_mounts

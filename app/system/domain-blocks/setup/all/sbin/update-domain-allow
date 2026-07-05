@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib ./blocks.sh
+
+cfg .
+
+sudo_ensure_root
+
+_domain_blocks_aggregate $conf_domain_blocks_allowlist

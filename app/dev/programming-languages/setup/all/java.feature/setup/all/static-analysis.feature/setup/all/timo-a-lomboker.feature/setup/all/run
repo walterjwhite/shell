@@ -1,0 +1,20 @@
+#!/bin/sh
+
+lib net/download.sh
+lib git/github.sh
+cfg feature:.
+
+get_installed_timo_a_lomboker_version() {
+  [ ! -e $TARGET_APP_PATH/tools/timo-a-lomboker.jar ] && return
+  
+  printf 'v'
+  java -jar $TARGET_APP_PATH/tools/timo-a-lomboker.jar version | cut -d' ' -f2
+}
+
+install_timo_a_lomboker() {
+  _download_install_file $TARGET_APP_PATH/tools/timo-a-lomboker.jar
+}
+
+_github_install_latest timo-a-lomboker timo-a lomboker '.tag_name' \
+    ".assets[] | select(.name | test(\"lomboker-.*.jar\")) | .browser_download_url" \
+    timo-a-lomboker.jar

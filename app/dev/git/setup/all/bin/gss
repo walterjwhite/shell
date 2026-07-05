@@ -1,0 +1,27 @@
+#!/bin/sh
+
+lib git/include.sh
+lib io/file.sh
+
+_git_status_header() {
+  if [ -n "$git_status_recursive" ]; then
+    log_info "$git_project_relative_path"
+    return
+  fi
+
+  gcb
+}
+
+if [ -z "$git_status_recursive" ]; then
+  _git_in_working_directory || {
+    log_warn "running git status recursively"
+
+    export git_status_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir gss \;
+    exit
+  }
+fi
+
+_git_relative_path
+_git_status_header
+git status -s "$@" 2>/dev/null

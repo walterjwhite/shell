@@ -1,0 +1,9 @@
+#!/bin/sh
+
+lib net/download.sh
+cfg feature:.
+
+comment_remover_jar_url=https://repo1.maven.org/maven2/$conf_dev_comment_remover_group/$conf_dev_comment_remover_artifact/${conf_dev_comment_remover_version}/$conf_dev_comment_remover_jar_FILENAME
+
+_download_fetch $comment_remover_jar_url
+_download_install_file $conf_dev_comment_remover_jar

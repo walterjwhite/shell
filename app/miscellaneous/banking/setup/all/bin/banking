@@ -1,0 +1,13 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="banking_command:Banking Command (transact, balance, interest)"
+
+lib .
+lib git/data.app.sh
+
+cfg .
+cfg git
+
+_banking_init
+_validation_value_in "$banking_command" "activity|balance|interest|transact"
+banking_${banking_command} "$@"

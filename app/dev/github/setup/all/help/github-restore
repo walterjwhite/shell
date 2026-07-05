@@ -1,0 +1,18 @@
+github-restore - GitHub Repository Restore
+
+USAGE:
+    github-restore
+
+DESCRIPTION:
+    Restore all GitHub repositories to local filesystem using mirror
+    clones. Converts repository names back to original path structure.
+
+CONFIGURATION:
+    -conf-github-restore-path PATH
+        Path to restore repositories to (default: /projects)
+
+    -conf-github-git-user USERNAME
+        GitHub username
+
+EXAMPLES:
+    github-restore

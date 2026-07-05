@@ -1,0 +1,50 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [dev]
+
+    paths:
+      - ".github/workflows/build-windows.yml"
+
+      - "**" # Matches every file in the repo
+      - "!.github/workflows/**" # EXCLUDES all workflow files except the one explicitly allowed above
+
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: "debug"
+        required: true
+        default: false
+        type: boolean
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  conf_log_level: ${{ inputs.debug == true && '0' || '2' }}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Enable Windows Long Paths
+        shell: powershell
+        run: |
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+          git config --global core.longpaths true
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          set-safe-directory: "true"
+
+      - name: install Git Bash
+        shell: pwsh
+        run: |
+          echo "C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "C:\Program Files\Git\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Run App Install Verification
+        uses: ./.github/actions/app-install
+        with:
+          platform: Windows
+          bin-path: /tmp

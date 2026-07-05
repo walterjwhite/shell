@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib git/include.sh
+
+
+_git_relative_path=$(git remote get-url origin | sed -e "s/^.*@//" -e "s/\:\//\//g")
+
+if _git_workspace_ticket_id; then
+  log_info $GIT_WORKSPACE_BASE_PATH/$git_ticket_id/repos/$_git_relative_path
+else
+  log_info $conf_git_project_base_path/$_git_relative_path
+fi

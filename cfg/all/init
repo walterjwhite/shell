@@ -1,0 +1,13 @@
+#
+#
+: ${no_remove_unused_functions:=}
+
+: ${no_remove_unused_variables:=}
+
+#
+#
+#
+#
+: ${remove_unused_variables_exclude_patterns:=}
+
+: ${no_check_missing_functions:=}

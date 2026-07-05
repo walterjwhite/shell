@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./find-private-functions.sh
+
+[ "$#" -eq 0 ] && set -- "."
+
+_find_private_functions "$@"

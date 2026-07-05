@@ -1,0 +1,89 @@
+#!/bin/sh
+
+lib net/download.sh
+lib extract.sh
+
+readonly DEVIN_BASE_URL="https://static.devin.ai/cli"
+
+_get_latest_devin_version_info() {
+    _get_devin_manifest
+    _get_devin_target_triple || return 1
+
+    latest_devin_version=$(jq -r '.version' $devin_manifest)
+    latest_devin_download_url=$(jq -r --arg target "$devin_target_triple" '.platforms[$target].url' $devin_manifest)
+    latest_devin_checksum=$(jq -r --arg target "$devin_target_triple" '.platforms[$target].sha256' $devin_manifest)
+}
+
+_get_devin_manifest() {
+    no_cache=1 _download_fetch "${DEVIN_BASE_URL}/current/manifest.json" "devin-manifest.json"
+    devin_manifest=$download_file
+}
+
+_get_devin_target_triple() {
+    case "$APP_PLATFORM_OS_NAME" in
+    Darwin)
+        case "$APP_PLATFORM_ARCHITECTURE" in
+        arm64) devin_target_triple="aarch64-apple-darwin" ;;
+        x86_64) devin_target_triple="x86_64-apple-darwin" ;;
+        esac
+        ;;
+    Linux)
+        case "$APP_PLATFORM_ARCHITECTURE" in
+        x86_64) devin_target_triple="x86_64-unknown-linux" ;;
+        aarch64) devin_target_triple="aarch64-unknown-linux" ;;
+        esac
+        ;;
+    esac
+
+    if [ -z "$devin_target_triple" ]; then
+        log_warn "devin has no released build for $APP_PLATFORM_OS_NAME $APP_PLATFORM_ARCHITECTURE"
+        return 1
+    fi
+}
+
+_get_installed_devin_version() {
+    if [ -e $TARGET_APP_PLATFORM_BIN_PATH/devin ]; then
+        $TARGET_APP_PLATFORM_BIN_PATH/devin --version | awk '{print $NF}'
+    fi
+}
+
+_devin_install() {
+    devin_url=$latest_devin_download_url
+    versioned_filename="devin-$latest_devin_version-$devin_target_triple.tar.gz"
+    _download_fetch $devin_url "$versioned_filename"
+
+    log_detail "verifying checksum: $latest_devin_checksum"
+    printf '%s  %s' "$latest_devin_checksum" "$download_file" | sha256sum -c - || {
+        log_warn "checksum verification failed for $versioned_filename"
+        return 1
+    }
+    log_detail "checksum verification passed"
+
+    cd /tmp
+    versioned_extract_dir="devin-$latest_devin_version"
+    mkdir -p "/tmp/$versioned_extract_dir"
+    _extract_extract $download_file "/tmp/$versioned_extract_dir"
+    exit_defer rm -rf "/tmp/$versioned_extract_dir"
+
+    local _dest="$TARGET_APP_PLATFORM_BIN_PATH/devin"
+    mv "/tmp/$versioned_extract_dir/bin/devin" "$_dest"
+    chmod 755 "$_dest"
+    _install_record_path "$_dest"
+}
+
+_devin_is_latest_version() {
+    local installed_devin_version=$(_get_installed_devin_version)
+    [ "$installed_devin_version" = "$latest_devin_version" ]
+}
+
+if _get_latest_devin_version_info; then
+    if ! _devin_is_latest_version; then
+        log_info "installing devin $latest_devin_version"
+        _devin_install
+    else
+        log_info "devin is already installed and up-to-date"
+    fi
+else
+    log_warn "unable to determine devin release info for this platform"
+    false
+fi

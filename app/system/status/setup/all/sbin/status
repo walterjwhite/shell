@@ -1,0 +1,31 @@
+#!/bin/sh
+
+lib alert.sh
+lib feature.sh
+lib net/mail.sh
+lib provider.sh
+lib system-alert.sh
+
+status_before_each() {
+  log_info "checking"
+}
+
+status_after_each() {
+  case $provider_status in
+  0)
+    [ "$_status_message" ] || _status_message="OK"
+
+    log_detail "$_status_message" "$_status_message"
+    ;;
+  1)
+    log_warn "disabled"
+    ;;
+  *)
+    _system_alert "$provider_name" "$_status_message"
+    ;;
+  esac
+
+  unset _status_message
+}
+
+_provider_run_all

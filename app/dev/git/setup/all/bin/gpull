@@ -1,0 +1,22 @@
+#!/bin/sh
+
+lib git/include.sh
+
+if [ -z "$git_recursive" ]; then
+  _git_in_working_directory || {
+    export git_recursive=1
+    find . \( -type d -or -type f \) -and -name '.git' -execdir gpull "$@" \;
+
+    exit
+  }
+fi
+
+_git_relative_path
+log_info "$git_project_relative_path"
+
+git_remotes=$(git remote | wc -l)
+if [ $git_remotes -ne 1 ] && [ $# -eq 0 ]; then
+  exit_with_error 'please specify remote to pull'
+fi
+
+git pull "$@"

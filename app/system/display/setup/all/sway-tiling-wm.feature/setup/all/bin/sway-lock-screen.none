@@ -1,0 +1,4 @@
+#!/bin/sh
+
+swaylock -e --color 000000 -u &
+killall ssh-agent

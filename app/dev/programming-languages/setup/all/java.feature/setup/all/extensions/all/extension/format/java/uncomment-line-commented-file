@@ -1,0 +1,15 @@
+#!/bin/sh
+
+cfg feature:.
+
+commented_file_uncomment() {
+	$GNU_SED -i 's/^\/\/ //' $_FILE
+	$GNU_SED -i 's/^\/\/$//' $_FILE
+	$GNU_SED -i 's/^\/\/\/\/ //' $_FILE
+}
+
+commented_file_delete() {
+	rm -f $_FILE
+}
+
+

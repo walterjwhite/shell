@@ -1,0 +1,8 @@
+param(
+  [Parameter(Mandatory)] [string] $SrcDir
+)
+
+Get-ChildItem -Path $SrcDir -Filter '*.reg' | ForEach-Object {
+  reg import $_.FullName 2>$null | Out-Null
+  Write-Host "Imported $($_.Name)"
+}

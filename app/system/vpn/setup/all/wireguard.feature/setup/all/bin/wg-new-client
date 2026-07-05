@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib feature:.
+
+_required_configuration="_WG_CLIENT_IP_CIDR:Wireguard Client IP CIDR|_WG_CLIENT_NAME:Wireguard Client Name"
+
+
+[ ! -n $conf_vpn_wireguard_conf_dir/$conf_vpn_wireguard_interface.conf ] && {
+  _wireguard_new_server
+}
+
+_wireguard_new_client

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+lib ./videos.sh
+
+cfg .
+cfg git
+
+sudo_ensure_not_root
+
+_action=queue
+: ${_OPTN_DISABLE_LONG_RUNNING_CMD_NOTIFICATION:=1}
+_data_app_init
+
+if [ -z "$videos_url" ]; then
+  _videos_clipboard_get
+
+  [ -z "$videos_url" ] && exit_with_error "no video URL was found on the clipboard"
+fi
+
+_videos_previously_downloaded && exit_with_error "$videos_url was previously downloaded, to download again, please force download (-force)" 2
+_video_fetch_metadata
+
+vd

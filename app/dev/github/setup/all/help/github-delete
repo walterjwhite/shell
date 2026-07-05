@@ -1,0 +1,19 @@
+github-delete - GitHub Repository Delete
+
+USAGE:
+    github-delete <repositories>
+
+DESCRIPTION:
+    Delete specified GitHub repositories.
+
+ARGUMENTS:
+    repositories
+        Space-separated list of repository names to delete (required)
+
+CONFIGURATION:
+    -conf-github-git-user USERNAME
+        GitHub username
+
+EXAMPLES:
+    github-delete repo1 repo2
+    github-delete old-project

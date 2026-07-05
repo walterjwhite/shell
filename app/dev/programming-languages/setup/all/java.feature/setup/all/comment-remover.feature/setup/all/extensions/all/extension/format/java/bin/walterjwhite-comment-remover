@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cfg feature:.
+
+
+java -jar $conf_dev_comment_remover_jar -Path "$PWD" $conf_dev_java_comment_remover_options "$@"

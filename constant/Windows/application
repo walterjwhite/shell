@@ -1,0 +1,1 @@
+[ -z "$USER" ] && [ -n "$USERNAME" ] && readonly USER=$USERNAME

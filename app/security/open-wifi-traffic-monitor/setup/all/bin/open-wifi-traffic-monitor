@@ -1,0 +1,16 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="SSID:The SSID to connect and monitor traffic"
+
+
+sudo_ensure_root
+
+_traffic_monitor_networking
+_traffic_monitor_is_connected_to_target_ssid
+
+log_info "connected"
+
+log_info "capturing HTTP traffic @: $conf_open_wifi_traffic_monitor_capture_file"
+log_info "press ctrl+c to stop capture"
+
+tcpdump -i "$conf_open_wifi_traffic_monitor_interface" -w "$conf_open_wifi_traffic_monitor_capture_file" -s 0 'tcp port 80'

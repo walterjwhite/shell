@@ -1,0 +1,31 @@
+#!/bin/sh
+
+lib ./git.sh
+lib ./organization.sh
+lib ./processing.sh
+lib sudo.sh
+lib ./zap.sh
+
+cfg .
+
+_STAGING_AREA=$conf_media_mountpoint/staging
+
+
+
+
+sudo_ensure_root "$@"
+exit_defer _cleanup_staging
+
+_has_media || exit_with_error "no media files found @ $_STAGING_AREA" 1
+
+_remove_spaces
+_organize_by_date
+
+_media_process_staging_all
+_media_git_annex
+
+if [ -n "$files_processed" ]; then
+  _media_zap
+else
+  log_info "no files processed, skipping zap snapshot"
+fi

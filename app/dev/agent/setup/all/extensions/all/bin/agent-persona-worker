@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="agent_persona:Agent Persona"
+
+lib ./extension.create.job.sh
+lib ./extension.sh
+
+cfg .
+
+sudo_ensure_not_root
+

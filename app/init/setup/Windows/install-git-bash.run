@@ -1,0 +1,31 @@
+#!/bin/sh
+
+lib net/download.sh
+
+_get_installed_git_bash_version() {
+  git --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
+}
+
+_get_latest_git_bash_version() {
+  latest_git_bash_url=$(curl -s https://api.github.com/repos/git-for-windows/git/releases/latest | \
+    grep -o '"browser_download_url": "[^"]*"' | \
+    grep 'Git-.*64-bit\.exe' | \
+    sed 's/"browser_download_url": "//;s/"//')
+
+  printf '%s\n' "$latest_git_bash_url" | sed -E 's/.*Git-(.*)-64-bit.*/\1/'
+}
+
+_install_git_bash() {
+  _download_fetch "$latest_git_bash_url"
+  _install_file_chmod=755 _download_install_file "$TARGET_APP_PLATFORM_BIN_PATH/git.exe"
+}
+
+latest_git_bash_version=$(_get_latest_git_bash_version)
+installed_git_bash_version=$(_get_installed_git_bash_version)
+
+if [ "$installed_git_bash_version" != "$latest_git_bash_version" ]; then
+  log_info "installing $latest_git_bash_version"
+  _install_git_bash
+else
+  log_warn "latest version already installed: $latest_git_bash_version"
+fi

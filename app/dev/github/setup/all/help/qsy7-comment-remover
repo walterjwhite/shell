@@ -1,0 +1,27 @@
+qsy7-comment-remover - QSY7 Comment Remover
+
+USAGE:
+    qsy7-comment-remover [options...]
+
+DESCRIPTION:
+    Remove comments from Java files using QSY7 comment remover tool.
+    Processes all files in current directory recursively.
+
+OPTIONS:
+    [options...]
+        Options passed to QSY7 comment remover
+
+CONFIGURATION:
+    -conf-dev-java-qsy7-comment-remover-options OPTIONS
+        Default options for QSY7 comment remover
+
+    -qsy7-comment-remover-jar PATH
+        Path to QSY7 comment remover JAR file
+
+NOTE:
+    This utility does not take filenames as arguments - it processes
+    the entire current directory.
+
+EXAMPLES:
+    qsy7-comment-remover
+    qsy7-comment-remover --verbose

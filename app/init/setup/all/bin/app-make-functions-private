@@ -1,0 +1,7 @@
+#!/bin/sh
+
+lib ./convert-public-function-to-private.sh
+
+[ "$#" -ge 1 ] || exit_with_error 'usage: convert-public-function-to-private <public-function-name> [path ...]\n'
+
+_convert_public_function_to_private "$@"

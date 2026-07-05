@@ -1,0 +1,31 @@
+#!/bin/sh
+
+lib feature:./cagent.sh
+
+case $APP_PLATFORM_PLATFORM in
+  Apple)
+    cagent_platform=darwin
+    ;;
+  FreeBSD)
+    cagent_platform=linux
+    ;;
+  *)
+    cagent_platform=$(printf '%s' $APP_PLATFORM_PLATFORM | tr '[:upper:]' '[:lower:]')
+    ;;
+esac
+
+case $APP_PLATFORM_ARCHITECTURE in
+  x86_64)
+    cagent_architecture=amd64
+    ;;
+  arm_64)
+    cagent_architecture=arm64
+    ;;
+  *)
+    log_warn "unsupported architecture"
+    ;;
+esac
+
+_github_install_latest cagent docker docker-agent .name \
+    ".assets[] | select(.name | test(\"cagent-$cagent_platform-$cagent_architecture\")) | .browser_download_url" \
+    cagent-$APP_PLATFORM_PLATFORM-$APP_PLATFORM_ARCHITECTURE cagent

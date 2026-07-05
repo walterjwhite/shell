@@ -1,0 +1,32 @@
+#!/bin/sh
+
+
+_repository_owner=$1
+shift
+
+_repository=$1
+shift
+
+validation_require "$_repository_owner" _repository_owner
+validation_require "$_repository" _repository
+
+: ${conf_gh_delete_workflow_parallel_runs:=10}
+
+gh_query='.workflow_runs[] | "\(.id)"'
+if [ $# -gt 0 ]; then
+  case $1 in
+  select\(*)
+    gh_query=$(printf '.workflow_runs[] | %s | "\(.id)"' "$1")
+    ;;
+  *=*)
+    gh_query=$(printf '.workflow_runs[] | select(.head_branch "%s" | "\(.id)"' "$1")
+    ;;
+  *)
+    gh_query=$(printf '.workflow_runs[] | select(.head_branch = "%s" | "\(.id)"' "$1")
+    ;;
+  esac
+fi
+
+gh api repos/$_repository_owner/$_repository/actions/runs \
+  --paginate -q "$gh_query" |
+  xargs -n1 -P $conf_gh_delete_workflow_parallel_runs -I % gh api repos/$_repository_owner/$_repository/actions/runs/% -X DELETE

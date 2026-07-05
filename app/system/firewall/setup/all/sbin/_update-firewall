@@ -1,0 +1,27 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_TARGET_SERVER:Target server to install firewall on"
+
+lib net/firewall.sh
+
+
+_cleanup_firewall() {
+  rm -rf /tmp/firewall
+}
+
+_aggregate_firewall_configuration() {
+  for d in $(find . -type d -path '*/usr/local/etc/walterjwhite/firewall'); do
+    tar cp -C $d . | tar xp -C /tmp/firewall
+  done
+}
+
+_install_firewall_on_host() {
+  ssh root@$_TARGET_SERVER mv /usr/local/etc/walterjwhite/firewall /usr/local/etc/walterjwhite/firewall-$(date +%s)
+  scp -r /tmp/firewall root@$_TARGET_SERVER:/usr/local/etc/walterjwhite
+}
+
+_cleanup_firewall && mkdir -p /tmp/firewall
+exit_defer _cleanup_firewall
+
+_aggregate_firewall_configuration
+_install_firewall_on_host

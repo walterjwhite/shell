@@ -1,0 +1,7 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="git_remote:Git Remote|remote_name:Remote Name"
+
+[ -z "$no_overwrite" ] && rm -rf ${APP_DATA_PATH}/sources/$remote_name
+
+git clone $git_remote ${APP_DATA_PATH}/sources/$remote_name

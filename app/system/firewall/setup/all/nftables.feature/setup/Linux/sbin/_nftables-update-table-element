@@ -1,0 +1,8 @@
+#!/bin/sh
+
+readonly REQUIRED_ARGUMENTS="_NFTABLES_SET_NAME:nftables set name|_NFTABLES_ACTION:nftables action"
+
+[ "$_NFTABLES_ACTION" = "del" ] && _NFTABLES_ACTION=delete
+
+_nftables_elements=$(printf '%s' "$*" | tr ' ' ',')
+nft $_NFTABLES_ACTION element ip global $_NFTABLES_SET_NAME { $_nftables_elements }

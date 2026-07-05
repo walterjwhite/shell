@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cfg feature:.
+
+log_info "setting up wstunnel client connection"
+
+wstunnel client --http-upgrade-path-prefix "${conf_vpn_wstunnel_path_prefix}" \
+  -L "${conf_vpn_wstunnel_forward}" \
+  "wss://${conf_vpn_wstunnel_url}" &
+
+wstunnel_pid=$!
+exit_defer timeout -k 2s 1s kill -15 $wstunnel_pid
+
+wait $wstunnel_pid

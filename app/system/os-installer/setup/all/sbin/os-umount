@@ -1,0 +1,12 @@
+#!/bin/sh
+
+lib ./bootstrap
+
+cfg .
+
+sudo_ensure_root "$@"
+
+_select_disk
+_init_disk_encryption_get_device
+
+_cleanup_prior_installation

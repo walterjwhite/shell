@@ -1,0 +1,55 @@
+#!/bin/sh
+
+lib extract.sh
+lib net/download.sh
+
+case $APP_PLATFORM_PLATFORM in
+Apple) cursor_platform=darwin ;;
+Linux) cursor_platform=linux ;;
+*) log_warn "unsupported platform: $APP_PLATFORM_PLATFORM" ;;
+esac
+
+case $APP_PLATFORM_ARCHITECTURE in
+x86_64) cursor_architecture=x64 ;;
+arm_64) cursor_architecture=arm64 ;;
+*) log_warn "unsupported architecture" ;;
+esac
+
+_cursor_get_latest_version() {
+  curl $conf_curl_flags -fsS "https://api2.cursor.sh/updates/latest-build?platform=${cursor_platform}&architecture=${cursor_architecture}" 2>/dev/null |
+    grep -o '"version":"[^"]*"' | head -1 | cut -f2 -d: | tr -d '"'
+}
+
+CURSOR_VERSION=$(_cursor_get_latest_version)
+: ${CURSOR_VERSION:="2026.03.25-933d5a6"}
+readonly CURSOR_VERSION
+readonly CURSOR_DOWNLOAD_URL="https://downloads.cursor.com/lab/${CURSOR_VERSION}/${cursor_platform}/${cursor_architecture}/agent-cli-package.tar.gz"
+readonly CURSOR_INSTALL_PATH=/opt/cursor
+
+_cursor_is_installed() {
+  command -v cursor-agent >/dev/null 2>&1
+}
+
+_cursor_get_installed_version() {
+  cursor --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
+}
+
+_cursor_install() {
+  [ -z "$cursor_platform" ] && return 1
+  [ -z "$cursor_architecture" ] && return 1
+
+  _download_fetch "$CURSOR_DOWNLOAD_URL" "$CURSOR_VERSION-$(basename $CURSOR_DOWNLOAD_URL)"
+
+  clean=1 _extract_extract $download_file $CURSOR_INSTALL_PATH
+  mv $CURSOR_INSTALL_PATH/dist-package/* $CURSOR_INSTALL_PATH/
+  rm -rf $CURSOR_INSTALL_PATH/dist-package
+
+  _install_record_dir "$CURSOR_INSTALL_PATH"
+
+  for _bin in cursor-agent cursor-askpass cursor-sandbox; do
+    ln -sf "$CURSOR_INSTALL_PATH/$_bin" "$TARGET_APP_PLATFORM_BIN_PATH/$_bin"
+    _install_record_symlink "$TARGET_APP_PLATFORM_BIN_PATH/$_bin"
+  done
+}
+
+_cursor_is_installed || _cursor_install
